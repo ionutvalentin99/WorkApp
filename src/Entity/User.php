@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -30,6 +32,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $email = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Concedii::class)]
+    private Collection $Concedii;
+
+    public function __construct()
+    {
+        $this->Concedii = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -110,6 +120,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Concedii>
+     */
+    public function getConcedii(): Collection
+    {
+        return $this->Concedii;
+    }
+
+    public function addConcedii(Concedii $concedii): self
+    {
+        if (!$this->Concedii->contains($concedii)) {
+            $this->Concedii->add($concedii);
+            $concedii->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConcedii(Concedii $concedii): self
+    {
+        if ($this->Concedii->removeElement($concedii)) {
+            // set the owning side to null (unless already changed)
+            if ($concedii->getUser() === $this) {
+                $concedii->setUser(null);
+            }
+        }
 
         return $this;
     }
