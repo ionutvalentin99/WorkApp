@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User{% endblock %}
+
+{% block body %}
+
+    <div class="flex flex-col">
+        <div class="sm:-mx-6 lg:-mx-8">
+            <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                <div class="overflow-hidden">
+                    <table class="min-w-full">
+                        <thead class="border-b">
+                        <tbody>
+                        <tr>
+                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left dark:text-white">Id</th>
+                <td>{{ user.id }}</td>
+            </tr>
+
+            <tr>
+                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left dark:text-white">Username</th>
+                <td>{{ user.username }}</td>
+            </tr>
+            <tr>
+                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left dark:text-white">Roles</th>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+            </tr>
+            <tr>
+                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left dark:text-white">Password</th>
+                <td>{{ user.password }}</td>
+            </tr>
+            <tr>
+                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left dark:text-white">Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex space-x-2 justify-center">
+        <div>
+            <a href="{{ path('app_user_crud_index') }}" class="block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Back to list</a>
+            <a href="{{ path('app_user_crud_edit', {'id': user.id}) }}" class="block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Edit</a>
+            {{ include('user_crud/_delete_form.html.twig') }}
+        </div>
+    </div>
+
+{% endblock %}

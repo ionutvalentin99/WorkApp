@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}All Users{% endblock %}
+
+{% block body %}
+
+    <table class="table-auto m-4">
+        <thead class="bg-gray-800">
+        <tr class="text-left font-medium">
+            <th class="px-4 py-2">Users:</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr class="text-left">
+                <td class="px-4 py-2">{{ user.username }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock %}
