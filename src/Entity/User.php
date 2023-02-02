@@ -30,15 +30,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Concedii::class)]
-    private Collection $Concedii;
+    #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Concedii::class)]
+    private Collection $concedii;
+
 
     public function __construct()
     {
         $this->Concedii = new ArrayCollection();
+        $this->concedii = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,14 +131,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getConcedii(): Collection
     {
-        return $this->Concedii;
+        return $this->concedii;
     }
 
     public function addConcedii(Concedii $concedii): self
     {
-        if (!$this->Concedii->contains($concedii)) {
-            $this->Concedii->add($concedii);
-            $concedii->setUser($this);
+        if (!$this->concedii->contains($concedii)) {
+            $this->concedii->add($concedii);
+            $concedii->setUserId($this);
         }
 
         return $this;
@@ -144,10 +146,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeConcedii(Concedii $concedii): self
     {
-        if ($this->Concedii->removeElement($concedii)) {
+        if ($this->concedii->removeElement($concedii)) {
             // set the owning side to null (unless already changed)
-            if ($concedii->getUser() === $this) {
-                $concedii->setUser(null);
+            if ($concedii->getUserId() === $this) {
+                $concedii->setUserId(null);
             }
         }
 
