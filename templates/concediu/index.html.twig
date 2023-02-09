@@ -4,8 +4,13 @@
 
 {% block body %}
 
-    <a href="{{ path('app_concediu_new') }}" class="block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Adauga Concediu</a>
+    <a href="{{ path('app_concediu_new') }}" class="inline-block shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Cerere concediu</a>
+    <a href="{{ path('app_concediu_showconcedii') }}" class="inline-block shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Vizualizare Concedii</a>
 
-    <a href="{{ path('app_concediu_showconcedii') }}" class="block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Vizualizeaza Concedii</a>
+    {% if is_granted('ROLE_ADMIN') %}
+
+    <a href="{{ path('app_pending_concedii') }}" class="inline-block shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Aprobare Concedii</a>
+
+    {% endif %}
 
 {% endblock %}

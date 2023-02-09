@@ -1,4 +1,4 @@
-<form method="post" action="{{ path('app_user_crud_delete', {'id': user.id}) }}" class="block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2" onsubmit="return confirm('Are you sure you want to delete this item?');">
+<form method="post" action="{{ path('app_user_crud_delete', {'id': user.id}) }}" class="text-center block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2" onsubmit="return confirm('Are you sure you want to delete this item?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
     <button class="btn">Delete</button>
 </form>

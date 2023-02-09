@@ -33,13 +33,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
-    #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Concedii::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Concedii::class)]
     private Collection $concedii;
+
+    #[ORM\Column(length: 255)]
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $lastName = null;
 
 
     public function __construct()
     {
-        $this->Concedii = new ArrayCollection();
         $this->concedii = new ArrayCollection();
     }
 
@@ -152,6 +157,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $concedii->setUserId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
 
         return $this;
     }

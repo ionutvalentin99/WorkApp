@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin/crud')]
@@ -22,24 +23,35 @@ class UserCrudController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_user_crud_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new', name: 'app_user_crud_new')]
+    public function new(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
+        {
+            $user = new User();
+            $form = $this->createForm(UserType::class, $user);
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($user);
-            $entityManager->flush();
+            if ($form->isSubmitted() && $form->isValid()) {
+                /** @var User $user */
+                $user = $form->getData();
+                $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
+                $user->setPassword($hashedPassword);
+                $firstname = $form["firstname"]->getData();
+                $lastname = $form["lastname"]->getData();
+                $user->setFirstName($firstname);
+                $user->setLastName($lastname);
 
-            return $this->redirectToRoute('app_user_crud_index', [], Response::HTTP_SEE_OTHER);
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_user_crud_index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            return $this->render('user_crud/new.html.twig', [
+                'user' => $user,
+                'form' => $form,
+            ]);
         }
-
-        return $this->render('user_crud/new.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
     }
 
     #[Route('/{id}', name: 'app_user_crud_show', methods: ['GET'])]
@@ -51,12 +63,17 @@ class UserCrudController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_crud_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $user = $form->getData();
+            $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
+            $user->setPassword($hashedPassword);
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_user_crud_index', [], Response::HTTP_SEE_OTHER);

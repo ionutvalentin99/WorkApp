@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Concediul {{ concedii.id }}{% endblock %}
+
+{% block body %}
+
+        <p> Nume:  {{ concedii.userId.lastName }}</p>
+
+        <p>Prenume: {{ concedii.userId.firstName }} </p>
+
+        <p>De la: {{ concedii.getStartDate|date("d.M.Y")}}</p>
+
+        <p>Pana la: {{ concedii.getEndDate|date("d.M.Y")}}</p>
+
+        <p>Detalii: {{ concedii.details }}</p>
+
+        <a href="{{ path('app_pending_approved', {'id':concedii.id}) }}" onclick="return confirm('Are you sure you want to approve?')" class="text-center block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Aproba</a>
+
+        <a href="{{ path('app_pending_denied', {'id':concedii.id}) }}" onclick="return confirm('Are you sure you want to deny?')" class="text-center block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Respinge</a>
+
+
+{% endblock %}

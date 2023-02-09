@@ -7,7 +7,9 @@
 
     {{ include('user_crud/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('app_user_crud_index') }}">back to list</a>
-
     {{ include('user_crud/_delete_form.html.twig') }}
+
+    <a href="{{ path('app_user_crud_index') }}" class="text-center block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Back to list</a>
+
+
 {% endblock %}
