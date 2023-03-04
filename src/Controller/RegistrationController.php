@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use DateTime;
 
 class RegistrationController extends AbstractController
 {
@@ -27,6 +28,7 @@ class RegistrationController extends AbstractController
             $user->setEmail($data['email']);
             $user->setFirstName($data['firstname']);
             $user->setLastName($data['lastname']);
+            $user->setCreated(new DateTime());
             $plainPassword = ($data['password']);
             $data['password'] = $passwordHasher->hashPassword($user, $plainPassword);
 

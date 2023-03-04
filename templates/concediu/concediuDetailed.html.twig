@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Concediul {{ concedii.id }}{% endblock %}
+
+{% block body %}
+
+    <div>Concediul cu numarul {{ concedii.id }}:</div>
+
+    <p>De la: {{ concedii.getStartDate|date("d.M.Y")}}</p>
+
+    <p>Pana la: {{ concedii.getEndDate|date("d.M.Y")}}</p>
+
+    <div class="font-bold">A fost respins cu motivul:</div>
+    <p> {{ concedii.details }} </p>
+
+{% endblock %}

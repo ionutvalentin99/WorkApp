@@ -58,7 +58,7 @@
 
            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
             {% if concediu.status == 'denied' %}
-            <a href="{{ path('app_concediu_new') }}" class="text-blue-600 hover:underline">Vizualizeaza</a>
+            <a href="{{ path('app_concediu_detailed', {'id': concediu.id }) }}" class="text-blue-600 hover:underline">Vizualizeaza</a>
             {% endif %}
            </td>
 

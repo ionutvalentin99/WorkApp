@@ -41,8 +41,11 @@ class PendingController extends AbstractController
     #[Route('/{id}/response/deny', name: 'app_pending_denied')]
     public function deny(Concedii $concedii, EntityManagerInterface $entityManager): Response
     {
+        $details = $_POST['deny'];
+        $concedii->setDetails($details);
         $concedii->setStatus('denied');
         $entityManager->flush();
         return $this->redirectToRoute('app_pending_concedii');
     }
+
 }

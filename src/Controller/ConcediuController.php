@@ -11,6 +11,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use DateTime;
 
 #[Route('/user')]
 class ConcediuController extends AbstractController
@@ -43,8 +44,8 @@ class ConcediuController extends AbstractController
             $concediu->setStartDate($startDate);
             $concediu->setEndDate($endDate);
             $concediu->setDetails($details);
+            $concediu->setCreated(new DateTime());
             $concediu->setStatus('pending');
-
             $entityManager->persist($concediu);
             $entityManager->flush();
 
@@ -69,4 +70,11 @@ class ConcediuController extends AbstractController
             ]);
     }
 
+    #[Route('concedii/{id}/response', name: 'app_concediu_detailed')]
+    public function concediuDetailed(Concedii $id): Response
+    {
+        return $this->render('concediu/concediuDetailed.html.twig', [
+            'concedii' => $id
+        ]);
+    }
 }

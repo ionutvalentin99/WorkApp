@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use DateTime;
 
 #[Route('/admin/crud')]
 class UserCrudController extends AbstractController
@@ -40,6 +41,7 @@ class UserCrudController extends AbstractController
                 $lastname = $form["lastname"]->getData();
                 $user->setFirstName($firstname);
                 $user->setLastName($lastname);
+                $user->setCreated(new DateTime());
 
                 $entityManager->persist($user);
                 $entityManager->flush();

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -42,10 +43,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $created = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updated = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Pontaje::class)]
+    private Collection $pontajes;
+
 
     public function __construct()
     {
         $this->concedii = new ArrayCollection();
+        $this->pontajes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -181,6 +192,60 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getCreated(): ?\DateTimeInterface
+    {
+        return $this->created;
+    }
+
+    public function setCreated(\DateTimeInterface $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function getUpdated(): ?\DateTimeInterface
+    {
+        return $this->updated;
+    }
+
+    public function setUpdated(?\DateTimeInterface $updated): self
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Pontaje>
+     */
+    public function getPontajes(): Collection
+    {
+        return $this->pontajes;
+    }
+
+    public function addPontaje(Pontaje $pontaje): self
+    {
+        if (!$this->pontajes->contains($pontaje)) {
+            $this->pontajes->add($pontaje);
+            $pontaje->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePontaje(Pontaje $pontaje): self
+    {
+        if ($this->pontajes->removeElement($pontaje)) {
+            // set the owning side to null (unless already changed)
+            if ($pontaje->getUser() === $this) {
+                $pontaje->setUser(null);
+            }
+        }
 
         return $this;
     }
