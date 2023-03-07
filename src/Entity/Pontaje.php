@@ -23,6 +23,18 @@ class Pontaje
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updated = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $date = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $time_start = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $time_end = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $details = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +72,54 @@ class Pontaje
     public function setUpdated(?\DateTimeInterface $updated): self
     {
         $this->updated = $updated;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(?\DateTimeInterface $date): self
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getTimeStart(): ?\DateTimeInterface
+    {
+        return $this->time_start;
+    }
+
+    public function setTimeStart(?\DateTimeInterface $time_start): self
+    {
+        $this->time_start = $time_start;
+
+        return $this;
+    }
+
+    public function getTimeEnd(): ?\DateTimeInterface
+    {
+        return $this->time_end;
+    }
+
+    public function setTimeEnd(?\DateTimeInterface $time_end): self
+    {
+        $this->time_end = $time_end;
+
+        return $this;
+    }
+
+    public function getDetails(): ?string
+    {
+        return $this->details;
+    }
+
+    public function setDetails(?string $details): self
+    {
+        $this->details = $details;
 
         return $this;
     }

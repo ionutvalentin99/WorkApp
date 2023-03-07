@@ -4,4 +4,21 @@
 
 {% block body %}
 
+    <a href="{{ path('app_pontaj_new') }}" class="inline-block shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Adaugare pontaj</a>
+
+    {% if pontaje %}
+
+        {% for pontaj in pontaje %}
+
+            <p>Ziua: </p>
+            {{ pontaj.getDate|date("d.M.Y") }}
+
+        {% endfor %}
+
+    {% else %}
+
+    <p>Nu sunt intrari in ziua respectiva.</p>
+
+    {% endif %}
+
 {% endblock %}
