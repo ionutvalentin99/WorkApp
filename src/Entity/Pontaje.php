@@ -14,7 +14,7 @@ class Pontaje
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'pontajes')]
+    #[ORM\ManyToOne(inversedBy: 'pontaje')]
     private ?User $user = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

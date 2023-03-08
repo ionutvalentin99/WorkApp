@@ -4,20 +4,24 @@
 
 {% block body %}
 
-    <a href="{{ path('app_pontaj_new') }}" class="inline-block shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Adaugare pontaj</a>
+    <a href="{{ path('app_pontaj_new') }}" class="inline-block shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-0.5 mt-4 mb-2">Adaugare pontaj</a>
+    {% if is_granted('ROLE_ADMIN') %}
+    <a href="{{ path('app_pontaje_admin') }}" class="inline-block shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-0.5 mt-4 mb-2">Pontaje Useri</a>
+    {% endif %}
 
     {% if pontaje %}
 
+        <p class="dark:text-blue-500">Pontajele tale: </p>
         {% for pontaj in pontaje %}
-
-            <p>Ziua: </p>
+            <p>
             {{ pontaj.getDate|date("d.M.Y") }}
+                De la: {{ pontaj.getTimeStart|date('H:i') }} pana la: {{ pontaj.getTimeEnd|date('H:i') }} </p>
 
         {% endfor %}
 
     {% else %}
 
-    <p>Nu sunt intrari in ziua respectiva.</p>
+    <p class="dark:text-blue-500">Nu sunt intrari in ziua respectiva.</p>
 
     {% endif %}
 

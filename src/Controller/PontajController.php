@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Pontaje;
 use App\Form\PontajeType;
+use App\Repository\PontajeRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,13 +51,18 @@ class PontajController extends AbstractController
     }
 
     #[Route('/pontaje', name: 'app_pontaj')]
-    public function index(Security $security, EntityManagerInterface $entityManager): Response
+    public function index(Security $security, PontajeRepository $pontajeRepository): Response
     {
         $user = $security->getUser();
-        $pontaje = $entityManager->getRepository(Pontaje::class)->findBy(['user' => $user]);
         return $this->render('pontaj/index.html.twig', [
-            'pontaje' => $pontaje
+            'pontaje' => $pontajeRepository->findBy(['user' => $user]),
         ]);
+    }
+    #[Route('/pontaje/delete', name: 'app_pontaj_delete')]
+    public function deletePontaj(): Response
+    {
+
+        return $this->redirectToRoute('app_pontaj');
     }
 
 }

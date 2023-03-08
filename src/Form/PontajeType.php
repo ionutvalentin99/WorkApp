@@ -30,6 +30,8 @@ class PontajeType extends AbstractType
             ->add('time_start', TimeType::class, [
                 'mapped' => true,
                 'label' => 'Start Time: ',
+                'widget' => 'single_text',
+                'data' => new DateTime('08:00'),
                 'attr' => [
                     'class' => 'block dark:text-black',
                     'name' => 'time_start'
@@ -38,6 +40,8 @@ class PontajeType extends AbstractType
             ->add('time_end', TimeType::class, [
                 'mapped' => true,
                 'label' => 'End Time: ',
+                'widget' => 'single_text',
+                'data' => new DateTime('08:00'),
                 'attr' => [
                     'class' => 'block dark:text-black',
                     'name' => 'time_end'

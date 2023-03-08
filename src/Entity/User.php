@@ -50,13 +50,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeInterface $updated = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Pontaje::class)]
-    private Collection $pontajes;
+    private Collection $pontaje;
 
 
     public function __construct()
     {
         $this->concedii = new ArrayCollection();
-        $this->pontajes = new ArrayCollection();
+        $this->pontaje = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -225,13 +225,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getPontajes(): Collection
     {
-        return $this->pontajes;
+        return $this->pontaje;
     }
 
     public function addPontaje(Pontaje $pontaje): self
     {
-        if (!$this->pontajes->contains($pontaje)) {
-            $this->pontajes->add($pontaje);
+        if (!$this->pontaje->contains($pontaje)) {
+            $this->pontaje->add($pontaje);
             $pontaje->setUser($this);
         }
 
@@ -240,7 +240,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removePontaje(Pontaje $pontaje): self
     {
-        if ($this->pontajes->removeElement($pontaje)) {
+        if ($this->pontaje->removeElement($pontaje)) {
             // set the owning side to null (unless already changed)
             if ($pontaje->getUser() === $this) {
                 $pontaje->setUser(null);
