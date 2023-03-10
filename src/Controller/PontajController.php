@@ -46,7 +46,7 @@ class PontajController extends AbstractController
         }
 
         return $this->render('pontaj/new.html.twig', [
-            'form' => $form
+            'form' => $form->createView()
         ]);
     }
 
@@ -58,9 +58,13 @@ class PontajController extends AbstractController
             'pontaje' => $pontajeRepository->findBy(['user' => $user]),
         ]);
     }
-    #[Route('/pontaje/delete', name: 'app_pontaj_delete')]
-    public function deletePontaj(): Response
+    #[Route('/pontaje/delete/{id}', name: 'app_pontaj_delete')]
+    public function deletePontaj(Pontaje $pontaje, EntityManagerInterface $entityManager): Response
     {
+        $entityManager->remove($pontaje);
+        $entityManager->flush();
+
+        $this->addFlash('danger', 'Pontajul a fost sters!');
 
         return $this->redirectToRoute('app_pontaj');
     }
