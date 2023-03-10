@@ -4,6 +4,61 @@
 
 {% block body %}
 
+<div class="flex justify-center">
     {{ form(form) }}
+</div>
+    {% if pontaje %}
+
+        <div class="block rounded relative top-5 left-auto">
+        <div class="text-green-500">Pontaje active: </div>
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Ziua
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        De la
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Pana la
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Ore muncite
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Detalii
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for pontaj in pontaje %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4">
+                            {{ pontaj.getDate|date("D, d.M.Y") }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ pontaj.getTimeStart|date("H:i")}}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ pontaj.getTimeEnd|date("H:i")}}
+                        </td>
+
+                        <td class="px-6 py-4">
+                         #
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {{ pontaj.details }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    {% else %}
+
+        <p class="dark:text-white flex justify-center relative top-4">Astazi, {{ date }}, nu aveti niciun pontaj activ.</p>
+
+    {% endif %}
 
 {% endblock %}

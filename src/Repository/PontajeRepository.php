@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Pontaje;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,6 +18,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PontajeRepository extends ServiceEntityRepository
 {
+    public function getLastInsertByUser(int $userId): array
+    {
+        $date = new DateTime();
+        return $this->createQueryBuilder('p')
+            ->select('p.date')
+            ->addSelect('p.time_end')
+            ->where('p.user = :user')
+            ->setParameter('user', $userId)
+            ->andWhere('p.date = :date')
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->orderBy('p.date', Criteria::ASC)
+            ->addOrderBy('p.time_end', Criteria::DESC)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Pontaje::class);
