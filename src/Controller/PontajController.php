@@ -176,7 +176,7 @@ class PontajController extends AbstractController
         }
 
 //        Numar elemente per pagina:
-        $perPage = 20;
+        $perPage = 3;
 
         $pagination = $paginator->paginate(
             $qbData,
