@@ -45,7 +45,17 @@
                         </td>
 
                         <td class="px-6 py-4">
-                         #
+                            {% set difference = date(pontaj.getTimeEnd).diff(date(pontaj.getTimeStart)) %}
+
+                            {% if difference|date("%d")%}
+                                {{ difference|date("%d")}} zile  {{ difference|date("%h") }} ore {{ difference|date("%i") }} minute
+                            {% elseif not difference|date("%h") %}
+                                {{ difference|date("%i") }} minute
+                            {% elseif not difference|date("%i") %}
+                                {{ difference|date("%h") }} ore
+                            {% else %}
+                                {{ difference|date("%h") }} ore {{ difference|date("%i") }} minute
+                            {% endif %}
                         </td>
 
                         <td class="px-6 py-4">
@@ -57,7 +67,7 @@
             </table>
     {% else %}
 
-        <p class="dark:text-white flex justify-center relative top-4">Astazi, {{ date }}, nu aveti niciun pontaj activ.</p>
+        <p class="dark:text-white flex justify-center relative top-4">Astazi, {{ date }}, nu aveti niciun pontaj activ. </p>
 
     {% endif %}
 

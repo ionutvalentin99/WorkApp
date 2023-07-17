@@ -4,6 +4,20 @@
 
 {% block body %}
 
-    {{ form(form) }}
+    <section class="flex justify-center">
 
+    {{ form_start(form) }}
+    {{ form_label(form.startDate) }}
+    {{ form_widget(form.startDate) }}
+
+    {{ form_label(form.endDate) }}
+    {{ form_widget(form.endDate) }}
+
+    {{ form_label(form.details) }}
+    {{ form_widget(form.details) }}
+
+    {{ form_widget(form.save) }}
+    {{ form_end(form) }}
+
+    </section>
 {% endblock %}

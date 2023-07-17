@@ -18,7 +18,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PontajeRepository extends ServiceEntityRepository
 {
-    public function getLastInsertByUser(int $userId): array
+    public function getLastInsertByUser($userId): array
     {
         $date = new DateTime();
         return $this->createQueryBuilder('p')

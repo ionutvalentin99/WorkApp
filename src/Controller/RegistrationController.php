@@ -15,7 +15,7 @@ use DateTime;
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_registration')]
-    public function register(Request $request, UserRepository $users, UserPasswordHasherInterface $passwordHasher): Response
+    public function register(Request $request, UserRepository $repository, UserPasswordHasherInterface $passwordHasher): Response
     {
         $form = $this->createForm(RegisterFormType::class);
         $form->handleRequest($request);
@@ -33,7 +33,7 @@ class RegistrationController extends AbstractController
             $data['password'] = $passwordHasher->hashPassword($user, $plainPassword);
 
             $user->setPassword($data['password']);
-            $users->add($user, true);
+            $repository->add($user, true);
 
             $this->addFlash('success', 'You are now registered!');
 
@@ -42,7 +42,7 @@ class RegistrationController extends AbstractController
         return $this->render(
             'registration/index.html.twig',
             [
-                'form' => $form
+                'form' => $form->createView()
             ]
         );
     }}

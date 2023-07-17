@@ -8,6 +8,7 @@ use DateTime;
 use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -21,13 +22,13 @@ class PontajeType extends AbstractType
     {
     }
 
+
     /**
      * @throws Exception
      */
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $date = $this->pontajeRepository->getLastInsertByUser($this->security->getUser()->getId());
+        $date = $this->pontajeRepository->getLastInsertByUser($this->security->getUser());
         $currentDate = new DateTime();
 
         if(empty($date) || $date[0]['time_end'] < $currentDate) {
@@ -38,19 +39,19 @@ class PontajeType extends AbstractType
         }
 
         $builder
-            ->add('date', DateType::class,  [
+//            ->add('date', DateType::class,  [
+//                'mapped' => true,
+//                'widget' => 'single_text',
+//                'data' => new DateTime(),
+//                'label' => 'Date: ',
+//                'attr' => [
+//                    'class' => 'block dark:text-black rounded-full',
+//                    'name' => 'date'
+//                ]
+//            ])
+            ->add('time_start', DateTimeType::class, [
                 'mapped' => true,
-                'widget' => 'single_text',
-                'data' => new DateTime(),
-                'label' => 'Date: ',
-                'attr' => [
-                    'class' => 'block dark:text-black rounded-full',
-                    'name' => 'date'
-                ]
-            ])
-            ->add('time_start', TimeType::class, [
-                'mapped' => true,
-                'label' => 'Start Time: ',
+                'label' => 'Început la: ',
                 'widget' => 'single_text',
                 'data' => new DateTime($date->format('H:i')),
                 'attr' => [
@@ -58,9 +59,9 @@ class PontajeType extends AbstractType
                     'name' => 'time_start'
                     ]
             ])
-            ->add('time_end', TimeType::class, [
+            ->add('time_end', DateTimeType::class, [
                 'mapped' => true,
-                'label' => 'End Time: ',
+                'label' => 'Sfârșit la: ',
                 'widget' => 'single_text',
                 'data' => new DateTime($date->format('H:i')),
                 'attr' => [
@@ -79,7 +80,7 @@ class PontajeType extends AbstractType
             ->add('Trimite', SubmitType::class, [
                 'attr' => [
                     'class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-                ]
+                ],
             ]);
     }
 

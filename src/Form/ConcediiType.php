@@ -20,9 +20,9 @@ class ConcediiType extends AbstractType
                 'mapped' => true,
                 'widget' => 'single_text',
                 'data' => new DateTime(),
-                'label' => 'Due',
+                'label' => 'De la: ',
                 'attr' => [
-                    'class' => 'block dark:text-black',
+                    'class' => 'block dark:text-black rounded-full',
                     'name' => 'startDate'
                 ]
             ])
@@ -31,9 +31,9 @@ class ConcediiType extends AbstractType
                 'mapped' => true,
                 'widget' => 'single_text',
                 'data' => new DateTime(),
-                'label' => 'To',
+                'label' => 'pana la: ',
                 'attr' => [
-                    'class' => 'block dark:text-black',
+                    'class' => 'block dark:text-black rounded-full',
                     'name' => 'endDate'
                 ]
             ])
@@ -41,14 +41,15 @@ class ConcediiType extends AbstractType
             ->add('details', TextType::class, [
                 'label' => 'Detalii: ',
                 'attr' => [
-                    'placeholder' => 'Detalii despre concediul dorit...',
-                    'class' => 'block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    'placeholder' => 'Detalii despre concediu...',
+                    'class' => 'block w-auto rounded-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
                 ]
             ])
 
-            ->add('Trimite', SubmitType::class, [
+            ->add('save', SubmitType::class, [
+                'label' => 'Trimite',
                 'attr' => [
-                    'class' => 'block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2'
+                    'class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
                 ]
             ])
         ;
