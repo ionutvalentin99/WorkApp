@@ -13,7 +13,7 @@ class HomeController extends AbstractController
     public function index(): Response
     {
         /** @var User $user */
-        $user = $this->getUser()->getFirstName();
+        $user = $this->getUser()?->getFirstName();
 
         return $this->render('home/index.html.twig', [
         'user' => $user

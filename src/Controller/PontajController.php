@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -155,9 +154,10 @@ class PontajController extends AbstractController
      * @throws Exception
      */
     #[Route('/pontaje/all', name: 'app_pontaj_showAll')]
-    public function showAll(Security $security, EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator): Response
+    public function showAll(EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator): Response
     {
-        $user = $security->getUser();
+        /** @var User $user */
+        $user = $this->getUser();
         $form = $this->createFormBuilder()
             ->add('date', DateType::class, [
                 'widget' => 'single_text',

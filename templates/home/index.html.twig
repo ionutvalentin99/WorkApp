@@ -10,5 +10,7 @@
 {% endblock %}
 
 {% block body %}
+    {% if app.user %}
     <p class="justify-center"> Bun venit, {{ user }}! </p>
+    {% endif %}
 {% endblock %}
