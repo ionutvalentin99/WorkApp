@@ -19,10 +19,9 @@ class RegistrationController extends AbstractController
     {
         $form = $this->createForm(RegisterFormType::class);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-
             $data = $form->getData();
-
             $user = new User();
             $user->setUsername($data['username']);
             $user->setEmail($data['email']);
@@ -31,10 +30,9 @@ class RegistrationController extends AbstractController
             $user->setCreated(new DateTime());
             $plainPassword = ($data['password']);
             $data['password'] = $passwordHasher->hashPassword($user, $plainPassword);
-
             $user->setPassword($data['password']);
-            $repository->add($user, true);
 
+            $repository->add($user, true);
             $this->addFlash('success', 'You are now registered!');
 
             return $this->redirectToRoute('app_login');
