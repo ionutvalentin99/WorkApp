@@ -11,6 +11,11 @@
 
 {% block body %}
     {% if app.user %}
-    <p class="justify-center"> Bun venit, {{ user }}! </p>
+        {% if isVerified == 0 %}
+            Your email is not verified! <a href="{{path('app_send_email_verification')}}">Send link!</a>
+            {% endif %}
     {% endif %}
+
+
+
 {% endblock %}
