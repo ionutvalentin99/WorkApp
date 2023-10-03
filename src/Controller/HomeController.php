@@ -7,6 +7,7 @@ use App\Security\EmailVerifier;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -15,6 +16,7 @@ class HomeController extends AbstractController
     public function __construct(private readonly EmailVerifier $emailVerifier)
     {
     }
+
     #[Route('/', name: 'app_home')]
     public function index(): Response
     {
@@ -28,6 +30,9 @@ class HomeController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route('/email/sendVerification', name: 'app_send_email_verification')]
     public function secondVerifyEmail(): Response
     {
