@@ -49,7 +49,7 @@
                             {{ pontaj.user.firstName }} {{ pontaj.user.lastName }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ pontaj.getDate|date("d.M.Y") }}
+                            {{ pontaj.getTimeStart|date("d.M.Y") }}
                         </td>
                         <td class="px-6 py-4">
                             {{ pontaj.getTimeStart|date("H:i")}}

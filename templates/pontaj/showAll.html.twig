@@ -26,27 +26,27 @@
     {% if pontaje %}
 
         <div class="rounded relative top-5">
-        <div class="text-white">Număr pontaje: {{ entryNumber }}</div>
+        <div class="text-white">Number of records: {{ entryNumber }}</div>
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-3">
-                        Ziua
+                        Day
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        De la
+                        From
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Pana la
+                        To
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Ore muncite
+                        Worked Hours
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Detalii
+                        Details
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Acțiuni
+                        Actions
                     </th>
                 </tr>
                 </thead>
@@ -55,7 +55,7 @@
                     {% set queryParams = app.request.query.all %}
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                         <td class="px-6 py-4">
-                           {{ pontaj.getDate|date("D, d.M.Y") }}
+                           {{ pontaj.getTimeStart|date("D, d.M.Y") }}
                         </td>
                         <td class="px-6 py-4">
                             {{ pontaj.getTimeStart|date("H:i")}}
@@ -67,22 +67,22 @@
                             {% set difference = date(pontaj.getTimeEnd).diff(date(pontaj.getTimeStart)) %}
 
                             {% if difference|date("%d")%}
-                                {{ difference|date("%d")}} zile  {{ difference|date("%h") }} ore {{ difference|date("%i") }} minute
+                                {{ difference|date("%d")}} days {{ difference|date("%h") }} hours {{ difference|date("%i") }} minutes
                             {% elseif not difference|date("%h") %}
-                                {{ difference|date("%i") }} minute
+                                {{ difference|date("%i") }} minutes
                             {% elseif not difference|date("%i") %}
-                                {{ difference|date("%h") }} ore
+                                {{ difference|date("%h") }} hours
                             {% else %}
-                                {{ difference|date("%h") }} ore {{ difference|date("%i") }} minute
+                                {{ difference|date("%h") }} hours {{ difference|date("%i") }} minutes
                             {% endif %}
                         </td>
                         <td class="px-6 py-4">
                             {{ pontaj.details }}
                         </td>
                         <td class="px-6 py-4">
-                            <a href="{{ path('app_pontaj_update', {id: pontaj.id}) }}" class="text-blue-600 hover:underline hover:text-blue-500">Modifică</a>
+                            <a href="{{ path('app_pontaj_update', {id: pontaj.id}) }}" class="text-blue-600 hover:underline hover:text-blue-500">Modify</a>
                             <br>
-                            <a href="{{ path('app_pontaj_delete', {id: pontaj.id}) }}" class="text-red-600 hover:underline hover:text-red-500" onclick="return confirm('Are you sure you want to delete?')">Șterge</a>
+                            <a href="{{ path('app_pontaj_delete', {id: pontaj.id}) }}" class="text-red-600 hover:underline hover:text-red-500" onclick="return confirm('Are you sure you want to delete?')">Delete</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -94,7 +94,7 @@
 
         {% else %}
 
-            <div class="text-white">Nu aveți niciun pontaj înregistrat.</div>
+            <div class="text-white">You have no records.</div>
 
     {% endif %}
 

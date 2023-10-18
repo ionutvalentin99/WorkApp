@@ -22,7 +22,6 @@ class PontajeType extends AbstractType
     {
     }
 
-
     /**
      * @throws Exception
      */
@@ -34,7 +33,7 @@ class PontajeType extends AbstractType
         if(empty($date) || $date[0]['time_end'] < $currentDate) {
             $date = new DateTime();
         }
-        else{
+        else {
             $date = $date[0]['time_end'];
         }
 

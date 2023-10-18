@@ -22,8 +22,23 @@ use Knp\Component\Pager\PaginatorInterface;
 #[Route('/user')]
 class PontajController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly PontajeRepository $pontajeRepository)
+    public function __construct(
+        private readonly PontajeRepository $pontajeRepository)
     {
+    }
+
+    #[Route('/pontaje', name: 'app_pontaj')]
+    public function index(): Response
+    {
+        $date = new DateTime();
+        /** @var User $user */
+        $user = $this->getUser();
+        $pontaje = $this->pontajeRepository->getActivePontaje($user);
+
+        return $this->render('pontaj/index.html.twig', [
+            'pontaje' => $pontaje,
+            'date' => $date->format('d-M-Y'),
+        ]);
     }
 
     /**
@@ -39,17 +54,15 @@ class PontajController extends AbstractController
         $date = new DateTime();
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $dateUsed = $form["time_start"]->getData();
-            $dateUsed->format('Y-m-d');
             $time_start = $form["time_start"]->getData();
             $time_end = $form["time_end"]->getData();
             $details = $form["details"]->getData();
 
-            if ($time_start <= $time_end) {
+            if ($time_start < $time_end) {
                 $pontaj = new Pontaje();
                 $pontaj->setUser($user);
-                $pontaj->setDate($dateUsed);
                 $pontaj->setTimeStart($time_start);
+                $pontaj->setDate($time_start);
                 $pontaj->setTimeEnd($time_end);
                 $pontaj->setCreated(new DateTime());
                 $pontaj->setDetails($details);
@@ -66,82 +79,39 @@ class PontajController extends AbstractController
             return $this->redirectToRoute('app_pontaj');
         }
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('pontaje')
-            ->from('App:Pontaje', 'pontaje')
-            ->where('pontaje.user = :user')
-            ->setParameter('user', $user)
-            ->andWhere('pontaje.date = :date')
-            ->setParameter('date', $date->format('Y-m-d'))
-            ->andWhere('pontaje.time_end >= :time_end')
-            ->setParameter('time_end', $date)
-            ->orderBy('pontaje.date', Criteria::ASC)
-            ->addOrderBy('pontaje.time_start', Criteria::ASC);
-
-        $qbData = $queryBuilder->getQuery()->getResult();
+        $pontaje = $this->pontajeRepository->getActivePontaje($user);
 
         return $this->render('pontaj/new.html.twig', [
             'form' => $form->createView(),
             'date' => $date->format('d-M-Y'),
-            'pontaje' => $qbData,
+            'pontaje' => $pontaje,
         ]);
     }
 
-    #[Route('/pontaje', name: 'app_pontaj')]
-    public function index(): Response
-    {
-        $date = new DateTime();
-        /** @var User $user */
-        $user = $this->getUser();
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('pontaje')
-            ->from('App:Pontaje', 'pontaje')
-            ->where('pontaje.user = :user')
-            ->setParameter('user', $user)
-            ->andWhere('pontaje.date = :date')
-            ->setParameter('date', $date->format('Y-m-d'))
-            ->andWhere('pontaje.time_end >= :time_end')
-            ->setParameter('time_end', $date)
-            ->orderBy('pontaje.date', Criteria::ASC)
-            ->addOrderBy('pontaje.time_start', Criteria::ASC);
-
-        $qbData = $queryBuilder->getQuery()->getResult();
-
-        return $this->render('pontaj/index.html.twig', [
-            'pontaje' => $qbData,
-            'date' => $date->format('d-M-Y'),
-        ]);
-    }
-    #[Route('/pontaje/delete/{id}', name: 'app_pontaj_delete')]
-    public function delete(Pontaje $pontaje): Response
-    {
-        $this->pontajeRepository->remove($pontaje, true);
-        $this->addFlash('danger', 'Pontajul a fost sters!');
-
-        return $this->redirectToRoute('app_pontaj');
-    }
     #[Route('/pontaje/update/{id}', name: 'app_pontaj_update')]
     public function edit(Request $request, Pontaje $pontaje, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(PontajeType::class, $pontaje);
-        $form->handleRequest($request);
+        try {
+            $form = $this->createForm(PontajeType::class, $pontaje);
+            $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
+            if ($form->isSubmitted() && $form->isValid()) {
+                $time_end = $form["time_end"]->getData();
+                $time_start = $form["time_start"]->getData();
+                $details = $form["details"]->getData();
+                $pontaje->setTimeStart($time_start);
+                $pontaje->setTimeEnd($time_end);
+                $pontaje->setDate($time_start);
+                $pontaje->setDetails($details);
+                $pontaje->setUpdated(new DateTime());
 
-        $time_end = $form["time_end"]->getData();
-        $time_start = $form["time_start"]->getData();
-        $details = $form["details"]->getData();
-        $date = $form["date"]->getData();
-        $pontaje->setDate($date);
-        $pontaje->setTimeStart($time_start);
-        $pontaje->setTimeEnd($time_end);
-        $pontaje->setDetails($details);
-        $pontaje->setUpdated(new DateTime());
+                $entityManager->flush();
 
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Pontajul a fost actualizat!');
-        return $this->redirectToRoute('app_pontaj');
+                $this->addFlash('success', 'Record has been updated!');
+                return $this->redirectToRoute('app_pontaj');
+            }
+        } catch (Exception $e) {
+            dd($e);
         }
 
         return $this->render('pontaj/edit.html.twig', [
@@ -161,12 +131,12 @@ class PontajController extends AbstractController
         $form = $this->createFormBuilder()
             ->add('date', DateType::class, [
                 'widget' => 'single_text',
-                'label' => 'Căutare după zi: ',
+                'label' => 'Day Search: ',
                 'data' => new DateTime(),
                 'attr' => ['class' => 'rounded-full text-black hover:focus:ring-3 dark:hover:bg-gray-200 top-3']
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Căutare',
+                'label' => 'Search',
                 'attr' => ['class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800']
             ])
             ->setMethod('GET')
@@ -175,18 +145,18 @@ class PontajController extends AbstractController
         $formMonth = $this->createFormBuilder()
             ->add('from', DateType::class, [
                 'widget' => 'single_text',
-                'label' => 'Căutare interval de la: ',
+                'label' => 'Interval Search from: ',
                 'data' => new DateTime(),
                 'attr' => ['class' => 'rounded-full text-black hover:focus:ring-3 dark:hover:bg-gray-200 top-3']
             ])
             ->add('to', DateType::class, [
                 'widget' => 'single_text',
-                'label' => 'până la: ',
+                'label' => 'to: ',
                 'data' => new DateTime(),
                 'attr' => ['class' => 'rounded-full text-black hover:focus:ring-3 dark:hover:bg-gray-200 top-3']
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Căutare',
+                'label' => 'Search',
                 'attr' => ['class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800']
             ])
             ->setMethod('GET')
@@ -197,13 +167,15 @@ class PontajController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $date = $form["date"]->getData();
+
             $qb = $entityManager->createQueryBuilder();
             $qb->select('p')
                 ->from('App:Pontaje', 'p')
                 ->where('p.user = :user')
                 ->setParameter('user', $user)
                 ->andWhere('p.date = :date')
-                ->setParameter('date', $form["date"]->getData());
+                ->setParameter('date', $date);
 
             $qbData = $qb->getQuery()->getResult();
         }
@@ -227,7 +199,7 @@ class PontajController extends AbstractController
             }
             else
             {
-                throw new Exception('Start Date must be lower than End Date or equal!');
+                throw new InvalidArgumentException('Start Date must be lower than End Date or equal!');
             }
 
         }
@@ -261,6 +233,15 @@ class PontajController extends AbstractController
             'entryNumber' => $totalCount,
             'pagination' => $pagination,
         ]);
+    }
+
+    #[Route('/pontaje/delete/{id}', name: 'app_pontaj_delete')]
+    public function delete(Pontaje $pontaje): Response
+    {
+        $this->pontajeRepository->remove($pontaje, true);
+        $this->addFlash('danger', 'Record has been deleted!');
+
+        return $this->redirectToRoute('app_pontaj');
     }
 
 }

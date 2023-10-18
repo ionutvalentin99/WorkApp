@@ -18,17 +18,26 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PontajeRepository extends ServiceEntityRepository
 {
-    public function getLastInsertByUser($userId): array
+    public function getActivePontaje($userId): array
     {
         $date = new DateTime();
         return $this->createQueryBuilder('p')
-            ->select('p.date')
-            ->addSelect('p.time_end')
+            ->select('p')
             ->where('p.user = :user')
             ->setParameter('user', $userId)
-            ->andWhere('p.date = :date')
-            ->setParameter('date', $date->format('Y-m-d'))
-            ->orderBy('p.date', Criteria::ASC)
+            ->andWhere('p.time_end >= :time_end')
+            ->setParameter('time_end', $date)
+            ->orderBy('p.time_start', Criteria::ASC)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getLastInsertByUser($userId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.time_end')
+            ->where('p.user = :user')
+            ->setParameter('user', $userId)
             ->addOrderBy('p.time_end', Criteria::DESC)
             ->setMaxResults(1)
             ->getQuery()

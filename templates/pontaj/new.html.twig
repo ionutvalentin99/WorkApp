@@ -35,7 +35,7 @@
                 {% for pontaj in pontaje %}
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <td class="px-6 py-4">
-                            {{ pontaj.getDate|date("D, d.M.Y") }}
+                            {{ pontaj.getTimeStart|date("D, d.M.Y") }}
                         </td>
                         <td class="px-6 py-4">
                             {{ pontaj.getTimeStart|date("H:i")}}
