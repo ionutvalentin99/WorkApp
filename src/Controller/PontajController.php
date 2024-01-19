@@ -165,8 +165,7 @@ class PontajController extends AbstractController
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if($form->isSubmitted() && $form->isValid()) {
             $date = $form["date"]->getData();
 
             $qb = $entityManager->createQueryBuilder();
@@ -176,13 +175,10 @@ class PontajController extends AbstractController
                 ->setParameter('user', $user)
                 ->andWhere('p.date = :date')
                 ->setParameter('date', $date);
-
             $qbData = $qb->getQuery()->getResult();
         }
-        elseif ($formMonth->isSubmitted() && $formMonth->isValid())
-        {
-            if($formMonth["from"]->getData() <= $formMonth["to"]->getData())
-            {
+        elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() <= $formMonth["to"]->getData()) {
+
                 $qb = $entityManager->createQueryBuilder();
                 $qb->select('p')
                     ->from('App:Pontaje', 'p')
@@ -197,12 +193,10 @@ class PontajController extends AbstractController
 
                 $qbData = $qb->getQuery()->getResult();
             }
-            else
+        elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() > $formMonth["to"]->getData())
             {
                 throw new InvalidArgumentException('Start Date must be lower than End Date or equal!');
             }
-
-        }
         else
         {
             $queryBuilder = $entityManager->createQueryBuilder();
@@ -217,7 +211,6 @@ class PontajController extends AbstractController
         }
 
         $totalCount = count($qbData);
-
         $perPage = 5;
 
         $pagination = $paginator->paginate(

@@ -37,8 +37,7 @@ class PontajeAdminController extends AbstractController
 
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if($form->isSubmitted() && $form->isValid()) {
             $qb = $entityManager->createQueryBuilder();
             $qb->select('p')
                 ->from('App:Pontaje', 'p')
@@ -47,8 +46,7 @@ class PontajeAdminController extends AbstractController
 
             $qbData = $qb->getQuery()->getResult();
         }
-        else
-        {
+        else {
             $queryBuilder = $entityManager->createQueryBuilder();
             $queryBuilder->select('pontaje')
                 ->from('App:Pontaje', 'pontaje')
@@ -58,9 +56,7 @@ class PontajeAdminController extends AbstractController
             $qbData = $queryBuilder->getQuery()->getResult();
         }
 
-
         $perPage = 10;
-
         $paginate = $paginator->paginate(
             $qbData,
            $request->query->getInt('page', 1),
@@ -90,7 +86,6 @@ class PontajeAdminController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
-
             $time_start = $form["time_start"]->getData();
             $time_end = $form["time_end"]->getData();
             $details = $form["details"]->getData();
@@ -104,6 +99,7 @@ class PontajeAdminController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Pontajul a fost actualizat!');
+
             return $this->redirectToRoute('app_pontaje_admin');
         }
 

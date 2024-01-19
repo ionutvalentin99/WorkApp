@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="dark" lang="">
     <head>
+        {% block head %}
         <meta charset="UTF-8">
         <title>{% block title %}Aplicatie Pontaj{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
@@ -19,28 +20,21 @@
             </script>
 
         {% endblock %}
+        {% endblock %}
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
-
         {% endblock %}
-
-
-
     </head>
 
+    {% block header %}
     {% include 'PageElements/navbar.html.twig' %}
+    {% endblock %}
 
     <body class="bg-gray-100 text-gray-800 m-5 dark:bg-gray-800 dark:text-white">
 
-
-{#    <div class="w-full md:w-1/4 ">#}
-
         {% block body %}
-
         {% endblock %}
-
-
 
         {% for message in app.flashes('success') %}
             <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400">{{ message }}</div>
@@ -49,8 +43,5 @@
         {% for message in app.flashes('danger') %}
         <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400">{{ message }}</div>
         {% endfor %}
-
-
-
     </body>
 </html>

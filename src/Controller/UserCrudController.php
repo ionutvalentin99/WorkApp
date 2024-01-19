@@ -33,14 +33,8 @@ class UserCrudController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                /** @var User $user */
-                $user = $form->getData();
-                $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
+                $hashedPassword = $passwordHasher->hashPassword($user, $form->getData()->getPassword());
                 $user->setPassword($hashedPassword);
-                $firstname = $form["firstname"]->getData();
-                $lastname = $form["lastname"]->getData();
-                $user->setFirstName($firstname);
-                $user->setLastName($lastname);
                 $user->setCreated(new DateTime());
 
                 $entityManager->persist($user);
@@ -50,7 +44,6 @@ class UserCrudController extends AbstractController
             }
 
             return $this->render('user_crud/new.html.twig', [
-                'user' => $user,
                 'form' => $form,
             ]);
         }
