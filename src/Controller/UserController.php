@@ -10,10 +10,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     #[Route('/user', name: 'app_user')]
-    public function index(UserRepository $users): Response
+    public function index(UserRepository $userRepository): Response
     {
         return $this->render('user/index.html.twig', [
-            'users' => $users->findAll(),
+            'users' => $userRepository->findAll(),
         ]);
     }
 }

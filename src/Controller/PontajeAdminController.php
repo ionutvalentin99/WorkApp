@@ -56,11 +56,11 @@ class PontajeAdminController extends AbstractController
             $qbData = $queryBuilder->getQuery()->getResult();
         }
 
-        $perPage = 10;
+        $itemsPerPage = 10;
         $paginate = $paginator->paginate(
             $qbData,
-           $request->query->getInt('page', 1),
-           $perPage
+            $request->query->getInt('page', 1),
+            $itemsPerPage
         );
 
         return $this->render('pontaje_admin/index.html.twig', [
