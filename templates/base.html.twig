@@ -3,6 +3,7 @@
     <head>
         {% block head %}
         <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Aplicatie Pontaj{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
@@ -28,10 +29,11 @@
     </head>
 
     {% block header %}
-    {% include 'PageElements/navbar.html.twig' %}
+    {% include 'PageElements/_navbar.html.twig' %}
+        {% include 'PageElements/_footer.html.twig' %}
     {% endblock %}
 
-    <body class="bg-gray-100 text-gray-800 m-5 dark:bg-gray-800 dark:text-white">
+    <body class="bg-white dark:bg-gray-800 dark:text-white">
 
         {% block body %}
         {% endblock %}

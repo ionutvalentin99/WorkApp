@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\UserEditType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,17 +59,17 @@ class UserCrudController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_crud_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(UserType::class, $user);
+        $userCurrentEmail = $user->getEmail();
+        $form = $this->createForm(UserEditType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $user = $form->getData();
-            $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
-            $user->setPassword($hashedPassword);
-
+            $userFormData = $form->getData();
+            if ($userFormData->getEmail() !== $userCurrentEmail) {
+                $user->setIsVerified(false);
+            }
             $entityManager->flush();
 
             return $this->redirectToRoute('app_user_crud_index', [], Response::HTTP_SEE_OTHER);

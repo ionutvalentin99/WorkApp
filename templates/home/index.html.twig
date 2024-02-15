@@ -8,14 +8,5 @@
     Welcome!
     {% endif %}
 {% endblock %}
-
 {% block body %}
-    {% if app.user %}
-        {% if isVerified == 0 %}
-            Your email is not verified! <a href="{{path('app_send_email_verification')}}">Send link!</a>
-            {% endif %}
-    {% endif %}
-
-
-
 {% endblock %}
