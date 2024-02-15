@@ -1,0 +1,119 @@
+
+{#<nav class="fixed top-0 left-0 z-20 w-full p-4 bg-white border-t border-gray-200 shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800 dark:border-gray-600">#}
+{#    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">#}
+{#        <div class="relative flex h-16 items-center justify-between">#}
+{#            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">#}
+{#                <!-- Mobile menu button-->#}
+{#                <button type="button" class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">#}
+{#                    <span class="sr-only">Open main menu</span>#}
+{#                    <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">#}
+{#                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path>#}
+{#                    </svg>#}
+{#                    <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">#}
+{#                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>#}
+{#                    </svg>#}
+{#                </button>#}
+{#            </div>#}
+{#            <button id="toggleButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">#}
+{#                Toggle Dark Mode#}
+{#            </button>#}
+{#            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">#}
+{#                <div class="hidden sm:ml-6 sm:block">#}
+{#                    <div class="flex space-x-4">#}
+{#                        <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->#}
+{#                        <a href="{{ path('app_home') }}" class="text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Home</a>#}
+
+{#                        {% if app.user %}#}
+{#                            <a href="{{ path('app_pontaj') }}" class="text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Your Work</a>#}
+{#                            <a href="{{ path('app_concediu') }}" class="text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Holidays</a>#}
+{#                            {% if is_granted('ROLE_ADMIN') %}#}
+{#                                <a href="{{ path('app_user_crud_index') }}" class="text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Admin Crud</a>#}
+{#                            {% endif %}#}
+{#                        {% endif %}#}
+
+{#                        {% if not app.user %}#}
+{#                            <a href="{{ path('app_login') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Sign In</a>#}
+{#                            <a href="{{ path('app_registration') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Register</a>#}
+{#                        {% endif %}#}
+
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">#}
+
+{#                {% if app.user %}#}
+{#                <!-- Profile dropdown -->#}
+{#                    <button id="dropdownUserAvatarButton" data-dropdown-toggle="dropdownAvatar" class="flex mx-3 text-sm bg-gray-800 dark:bg-gray-900 hover:text-blue-500 rounded-full md:mr-0 text-white" type="button">#}
+{#                        {{ app.user.firstName }}</button>#}
+
+
+{#                    <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-blue ring-opacity-5 focus:outline-none hidden" id="dropdownAvatar" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">#}
+{#                        <a href="{{ path('app_profile') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Profil</a>#}
+{#                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>#}
+{#                        <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        </div>#}
+{#    <script src=""></script>#}
+{#</nav>#}
+
+<nav class="w-full bg-white border-gray-200 dark:bg-gray-900">
+    <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
+        <a href="{{ path('app_home') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
+            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Shift Tracker</span>
+        </a>
+        {% if app.user %}
+            {% if app.user.verified == 0 %}
+                <a href="{{path('app_send_email_verification')}}">Your email is not verified, click to send a confirmation link!</a>
+            {% endif %}
+        {% endif %}
+        {% if not app.user %}
+                <ul>
+                <li class="flex items-center space-x-6 rtl:space-x-reverse">
+                    <a href="{{ path('app_login') }}" class="text-sm  text-blue-600 dark:text-blue-500 hover:underline">Login</a>
+                </li>
+                <li class="flex items-center space-x-6 rtl:space-x-reverse">
+                    <a href="{{ path('app_registration') }}" class="text-sm  text-blue-600 dark:text-blue-500 hover:underline">Register</a>
+                </li>
+                </ul>
+        {% endif %}
+        {% if app.user %}
+        <!-- Profile dropdown -->
+        <button id="dropdownUserAvatarButton" data-dropdown-toggle="dropdownAvatar" class="flex mx-3 text-sm dark:bg-gray-900 dark:text-white rounded-full md:mr-0 text-gray-900 text-3xl p-1 ring ring-offset-2 text-gray-900" type="button">
+            {{ app.user.firstName }}</button>
+        <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-blue ring-opacity-5 focus:outline-none hidden" id="dropdownAvatar" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+            <a href="{{ path('app_profile') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Profil</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>
+            <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
+        </div>
+    </div>
+    {% endif %}
+</nav>
+
+{% if app.user %}
+<nav class="w-full bg-gradient-to-r from-blue-500 to-pink-600">
+    <div class="max-w-screen-xl px-4 py-3 mx-auto">
+        <div class="flex items-center">
+            <ul class="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm">
+                <li>
+                    <a href="{{ path('app_home') }}" class="text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Home</a>
+                </li>
+                <li>
+                    <a href="{{ path('app_pontaj') }}" class="text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Your Work</a>
+                </li>
+                <li>
+                    <a href="{{ path('app_concediu') }}" class="text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Holidays</a>
+                </li>
+                {% if is_granted('ROLE_ADMIN') %}
+                <li>
+                    <a href="{{ path('app_user_crud_index') }}" class="text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Admin</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endif %}

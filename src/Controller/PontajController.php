@@ -117,7 +117,6 @@ class PontajController extends AbstractController
         return $this->render('pontaj/edit.html.twig', [
             'form' => $form->createView()
         ]);
-
     }
 
     /**
