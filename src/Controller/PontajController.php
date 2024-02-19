@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Form\PontajeType;
 use App\Repository\PontajeRepository;
 use DateTime;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use InvalidArgumentException;
@@ -123,7 +122,7 @@ class PontajController extends AbstractController
      * @throws Exception
      */
     #[Route('/pontaje/all', name: 'app_pontaj_showAll')]
-    public function showAll(EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator): Response
+    public function showAll(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -165,32 +164,10 @@ class PontajController extends AbstractController
         $formMonth->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
-            $date = $form["date"]->getData();
-
-            $qb = $entityManager->createQueryBuilder();
-            $qb->select('p')
-                ->from('App:Pontaje', 'p')
-                ->where('p.user = :user')
-                ->setParameter('user', $user)
-                ->andWhere('p.date = :date')
-                ->setParameter('date', $date);
-            $qbData = $qb->getQuery()->getResult();
+            $qbData = $repository->getSingleDaySearchResult($user, $form["date"]->getData());
         }
         elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() <= $formMonth["to"]->getData()) {
-
-                $qb = $entityManager->createQueryBuilder();
-                $qb->select('p')
-                    ->from('App:Pontaje', 'p')
-                    ->where('p.user = :user')
-                    ->setParameter('user', $user)
-                    ->andWhere('p.date >= :from')
-                    ->setParameter('from', $formMonth["from"]->getData())
-                    ->andWhere('p.date <= :to')
-                    ->setParameter('to', $formMonth["to"]->getData())
-                    ->orderBy('p.date', Criteria::DESC)
-                    ->addOrderBy('p.time_end', Criteria::DESC);
-
-                $qbData = $qb->getQuery()->getResult();
+                $qbData = $repository->getIntervalSearchLessThan($user, $formMonth["from"]->getData(), $formMonth["to"]->getData());
             }
         elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() > $formMonth["to"]->getData())
             {
@@ -198,15 +175,7 @@ class PontajController extends AbstractController
             }
         else
         {
-            $queryBuilder = $entityManager->createQueryBuilder();
-            $queryBuilder->select('p')
-                ->from('App:Pontaje', 'p')
-                ->where('p.user = :user')
-                ->setParameter('user', $user)
-                ->orderBy('p.date', Criteria::DESC)
-                ->addOrderBy('p.time_end', Criteria::DESC);
-
-            $qbData = $queryBuilder->getQuery()->getResult();
+            $qbData = $repository->getDefaultEntries($user);
         }
 
         $totalCount = count($qbData);
