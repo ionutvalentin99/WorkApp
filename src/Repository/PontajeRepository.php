@@ -18,6 +18,43 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PontajeRepository extends ServiceEntityRepository
 {
+    public function getSingleDaySearchResult($user, $date): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('p.date = :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getResult();
+    }
+    public function getIntervalSearchLessThan($user, $from, $to): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('p.date >= :from')
+            ->setParameter('from', $from)
+            ->andWhere('p.date <= :to')
+            ->setParameter('to', $to)
+            ->orderBy('p.date', Criteria::DESC)
+            ->addOrderBy('p.time_end', Criteria::DESC)
+            ->getQuery()
+            ->getResult();
+    }
+    public function getDefaultEntries($user): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('p.date', Criteria::DESC)
+            ->addOrderBy('p.time_end', Criteria::DESC)
+            ->getQuery()
+            ->getResult();
+    }
     public function getActivePontaje($userId): array
     {
         $date = new DateTime();
