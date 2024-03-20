@@ -4,133 +4,74 @@
 
 {% block body %}
 
-   {% if concedii %}
+    <style>
+        .noHolidays {
+            position: absolute;
+            left: 35%;
+            top: 17%;
+        }
+    </style>
 
-{#    <div class="flex flex-col">#}
-{#     <div class="sm:-mx-6 lg:-mx-8">#}
-{#      <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">#}
-{#       <div class="overflow-hidden rounded-lg">#}
-{#        <table class="min-w-full bg-white">#}
-{#         <thead class="border-b dark:bg-gray-600">#}
-{#         <tr>#}
+    {% if concedii %}
+        <div class="rounded relative top-5">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        From
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        To
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Details
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for concediu in pagination %}
+                    {% set queryParams = app.request.query.all %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="px-6 py-4">
+                            {{ concediu.getStartDate|date("d.M.Y") }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ concediu.getEndDate|date("d.M.Y") }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if concediu.status == 'pending' %}
+                                <p>Pending</p>
+                            {% elseif concediu.status == 'approved' %}
+                                <p class="text-green-400">Approved</p>
+                            {% elseif concediu.status == 'denied' %}
+                                <p class="text-red-400">Denied</p>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if concediu.status == 'denied' %}
+                                <div class="text-red-400">{{ concediu.getDetails }}</div>
+                            {% elseif concediu.status == 'approved' %}
+                                <div class="text-green-400">Approved
+                                    at {{ concediu.getUpdated|date('d.m.Y H:i:s') }}</div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
-{#          <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">#}
-{#           De la#}
-{#          </th>#}
+            <div class="dark:text-white text-center bg-white text-gray-500 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white">
+                {{ knp_pagination_render(pagination, '@KnpPaginator/Pagination/sliding.html.twig') }}
+            </div>
+        </div>
+    {% else %}
 
-{#          <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">#}
-{#           Pana la#}
-{#          </th>#}
+        <p class="noHolidays">{{ app.user.username }}, you don't have any holiday. You can make a request <a
+                    href="{{ path('app_concediu_new') }}" class="text-blue-600">here.</a>. </p>
 
-{#          <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">#}
-{#           Status#}
-{#          </th>#}
-
-{#          <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">#}
-{#           Detalii#}
-{#          </th>#}
-
-{#         </tr>#}
-{#         </thead>#}
-{#         <tbody>#}
-{#         {% for concediu in concedii %}#}
-{#          <tr class="border-b">#}
-
-{#           <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">#}
-{#            {{ concediu.getStartDate|date("d.M.Y")}}#}
-{#           </td>#}
-
-{#           <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">#}
-{#            {{ concediu.getEndDate|date("d.M.Y")}}#}
-{#           </td>#}
-
-{#           <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">#}
-
-{#             {% if concediu.status == 'pending' %}#}
-{#              <p>In asteptare</p>#}
-{#             {% elseif concediu.status == 'approved' %}#}
-{#              <p class="text-green-400">Aprobat</p>#}
-{#              {% elseif concediu.status == 'denied' %}#}
-{#              <p class="text-red-400">Respins</p>#}
-{#              {% endif %}#}
-
-{#           </td>#}
-
-{#           <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">#}
-{#            {% if concediu.status == 'denied' %}#}
-{#            <a href="{{ path('app_concediu_detailed', {'id': concediu.id }) }}" class="text-blue-600 hover:underline">Vizualizeaza</a>#}
-{#            {% endif %}#}
-{#           </td>#}
-
-{#          </tr>#}
-{#         {% endfor %}#}
-{#         </tbody>#}
-{#        </table>#}
-{#        <p>Doriti sa adaugati inca o cerere? Apasati <a href="{{ path('app_concediu_new') }}" class="text-blue-400 hover:underline">aici.</a></p>#}
-{#       </div>#}
-{#      </div>#}
-{#     </div>#}
-{#    </div>#}
-
-{#    {% else %}#}
-
-{#    <p>{{ app.user.username }}, nu ai niciun concediu disponibil. Poti face o cerere <a href="{{ path('app_concediu_new') }}" class="text-blue-600">aici</a>. </p>#}
-
-{# {% endif %}#}
-
-    <div class="rounded relative top-5">
-     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-      <tr>
-       <th scope="col" class="px-6 py-3">
-        De la
-       </th>
-       <th scope="col" class="px-6 py-3">
-        Pana la
-       </th>
-       <th scope="col" class="px-6 py-3">
-        Status
-       </th>
-       <th scope="col" class="px-6 py-3">
-        Detalii
-       </th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for concediu in concedii %}
-
-       <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-        <td class="px-6 py-4">
-         {{ concediu.getStartDate|date("d.M.Y")}}
-        </td>
-        <td class="px-6 py-4">
-         {{ concediu.getEndDate|date("d.M.Y")}}
-        </td>
-        <td class="px-6 py-4">
-         {% if concediu.status == 'pending' %}
-                       <p>In asteptare</p>
-                      {% elseif concediu.status == 'approved' %}
-                       <p class="text-green-400">Aprobat</p>
-                       {% elseif concediu.status == 'denied' %}
-                       <p class="text-red-400">Respins</p>
-                       {% endif %}
-        </td>
-        <td class="px-6 py-4">
-         {% if concediu.status == 'denied' %}
-          <a href="{{ path('app_concediu_detailed', {'id': concediu.id }) }}" class="text-blue-600 hover:underline">Vizualizeaza</a>
-         {% endif %}
-        </td>
-       </tr>
-      {% endfor %}
-      </tbody>
-     </table>
-     <p>Doriti sa adaugati inca o cerere? Apasati <a href="{{ path('app_concediu_new') }}" class="text-blue-400 hover:underline">aici.</a></p>
-    </div>
-
-   {% else %}
-
-    <p>{{ app.user.username }}, nu ai niciun concediu disponibil. Poti face o cerere <a href="{{ path('app_concediu_new') }}" class="text-blue-600">aici</a>. </p>
-
-   {% endif %}
+    {% endif %}
 
 {% endblock %}

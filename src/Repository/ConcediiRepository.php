@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Concedii;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,6 +38,28 @@ class ConcediiRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getAllHolidaysDesc($user)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c')
+            ->where('c.user =:user')
+            ->setParameter('user', $user)
+            ->orderBy('c.start_date', Criteria::DESC)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getPendingHolidaysAsc()
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c')
+            ->where('c.status =:status')
+            ->setParameter('status', 'pending')
+            ->orderBy('c.created', Criteria::ASC)
+            ->getQuery()
+            ->getResult();
     }
 
 //    /**
