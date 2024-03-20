@@ -19,11 +19,11 @@ class PendingController extends AbstractController
     #[Route('/pending', name: 'app_pending_concedii')]
     public function pendingConcedii(): Response
     {
-        $concedii = $this->concediiRepository->findBy(['status' => 'pending']);
-        $count = count($concedii);
+        $pendingHolidays = $this->concediiRepository->getPendingHolidaysAsc();
+        $count = count($pendingHolidays);
 
         return $this->render('concediu/pending.html.twig', [
-            'concedii' => $concedii,
+            'concedii' => $pendingHolidays,
             'count' => $count,
         ]);
     }

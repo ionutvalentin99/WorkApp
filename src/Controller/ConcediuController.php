@@ -6,8 +6,7 @@ use App\Entity\Concedii;
 use App\Entity\User;
 use App\Form\ConcediiType;
 use App\Repository\ConcediiRepository;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,10 +16,6 @@ use DateTime;
 #[Route('/user')]
 class ConcediuController extends AbstractController
 {
-    public function __construct(private readonly ConcediiRepository $repository, private readonly EntityManagerInterface $entityManager)
-    {
-    }
-
     #[Route('/concedii', name: 'app_concediu', methods: ['GET'])]
     public function index(): Response
     {
@@ -28,7 +23,10 @@ class ConcediuController extends AbstractController
     }
 
     #[Route('/concedii/new', name: 'app_concediu_new', methods: ['GET', 'POST'])]
-    public function addConcediu(Request $request): Response
+    public function addConcediu(
+        Request            $request,
+        ConcediiRepository $repository,
+    ): Response
     {
         $form = $this->createForm(ConcediiType::class);
         $form->handleRequest($request);
@@ -49,9 +47,9 @@ class ConcediuController extends AbstractController
             $concediu->setCreated(new DateTime());
             $concediu->setStatus('pending');
 
-            $this->repository->save($concediu, true);
+            $repository->save($concediu, true);
 
-            $this->addFlash('success', 'Cererea ta a fost trimisa la verificare!');
+            $this->addFlash('success', 'Your request has been sent!');
 
             return $this->redirectToRoute('app_concediu');
         }
@@ -62,22 +60,27 @@ class ConcediuController extends AbstractController
     }
 
     #[Route('/concedii/concediile-tale', name: 'app_concediu_showconcedii')]
-    public function showConcedii(): Response
+    public function showConcedii(
+        ConcediiRepository $repository,
+        PaginatorInterface $paginator,
+        Request            $request,
+    ): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('c')
-            ->from('App:Concedii', 'c')
-            ->where('c.user = :user')
-            ->setParameter('user', $user)
-            ->orderBy('c.start_date', Criteria::DESC);
+        $userHolidays = $repository->getAllHolidaysDesc($user);
 
-        $queryData = $queryBuilder->getQuery()->getResult();
+        $perPage = 5;
+        $pagination = $paginator->paginate(
+            $userHolidays,
+            $request->query->getInt('page', 1),
+            $perPage,
+        );
 
-        return $this->render('concediu/show.html.twig',[
-            'concedii' => $queryData,
-            ]);
+        return $this->render('concediu/show.html.twig', [
+            'concedii' => $userHolidays,
+            'pagination' => $pagination,
+        ]);
     }
 
     #[Route('concedii/{id}/response', name: 'app_concediu_detailed')]

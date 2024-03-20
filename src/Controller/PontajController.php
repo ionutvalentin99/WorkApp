@@ -65,9 +65,7 @@ class PontajController extends AbstractController
                 $pontaj->setTimeEnd($time_end);
                 $pontaj->setCreated(new DateTime());
                 $pontaj->setDetails($details);
-            }
-            else
-            {
+            } else {
                 throw new InvalidArgumentException('Start time must be lower than end time!');
             }
 
@@ -163,18 +161,13 @@ class PontajController extends AbstractController
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $qbData = $repository->getSingleDaySearchResult($user, $form["date"]->getData());
-        }
-        elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() <= $formMonth["to"]->getData()) {
-                $qbData = $repository->getIntervalSearchLessThan($user, $formMonth["from"]->getData(), $formMonth["to"]->getData());
-            }
-        elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() > $formMonth["to"]->getData())
-            {
-                throw new InvalidArgumentException('Start Date must be lower than End Date or equal!');
-            }
-        else
-        {
+        } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() <= $formMonth["to"]->getData()) {
+            $qbData = $repository->getIntervalSearchLessThan($user, $formMonth["from"]->getData(), $formMonth["to"]->getData());
+        } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() > $formMonth["to"]->getData()) {
+            throw new InvalidArgumentException('Start Date must be lower than End Date or equal!');
+        } else {
             $qbData = $repository->getDefaultEntries($user);
         }
 

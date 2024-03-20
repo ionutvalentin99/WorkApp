@@ -6,56 +6,57 @@
 
     {% if concedii %}
 
-<div class="rounded relative top-5">
-    <div class="text-gray-400">Concedii in asteptare: {{ count }}</div>
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <tr>
-            <th scope="col" class="px-6 py-3">
-                Nume
-            </th>
-            <th scope="col" class="px-6 py-3">
-                Prenume
-            </th>
-            <th scope="col" class="px-6 py-3">
-                De la
-            </th>
-            <th scope="col" class="px-6 py-3">
-                Pana la
-            </th>
-            <th scope="col" class="px-6 py-3">
-                Detalii
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for concediu in concedii %}
+        <div class="rounded relative top-5">
+            <div class="text-gray-400">Concedii in asteptare: {{ count }}</div>
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Nume
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Prenume
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        De la
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Pana la
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Detalii
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for concediu in concedii %}
 
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <td class="px-6 py-4">
-                    {{ concediu.userId.lastName }}
-                </td>
-                <td class="px-6 py-4">
-                    {{ concediu.userId.firstName }}
-                </td>
-                <td class="px-6 py-4">
-                    {{ concediu.getStartDate|date("d.M.Y")}}
-                </td>
-                <td class="px-6 py-4">
-                    {{ concediu.getEndDate|date("d.M.Y")}}
-                </td>
-                <td class="px-6 py-4">
-                    <a href="{{ path('app_pending_show_concediu', {'id':concediu.id}) }}" class="dark:hover:underline">Vizualizeaza</a>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="px-6 py-4">
+                            {{ concediu.userId.lastName }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ concediu.userId.firstName }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ concediu.getStartDate|date("d.M.Y") }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ concediu.getEndDate|date("d.M.Y") }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="{{ path('app_pending_show_concediu', {'id':concediu.id}) }}"
+                               class="dark:hover:underline">Vizualizeaza</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-{% else %}
+    {% else %}
 
-    <p>Nu exista niciun concediu in asteptare. <a href="{{ path('app_concediu') }}" class="text-blue-500 hover:underline">Back.</a> </p>
+        <p>Nu exista niciun concediu in asteptare. <a href="{{ path('app_concediu') }}" class="text-blue-500 hover:underline">Back.</a></p>
 
     {% endif %}
 
