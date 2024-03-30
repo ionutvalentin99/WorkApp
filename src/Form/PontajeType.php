@@ -9,10 +9,8 @@ use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -27,42 +25,27 @@ class PontajeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $date = $this->pontajeRepository->getLastInsertByUser($this->security->getUser());
-        $currentDate = new DateTime();
+        $lastInsert = $this->pontajeRepository->getLastInsertByUser($this->security->getUser());
+        $currentDate = new DateTime('now');
 
-        if(empty($date) || $date[0]['time_end'] < $currentDate) {
-            $date = new DateTime();
-        }
-        else {
-            $date = $date[0]['time_end'];
-        }
+        $date = (empty($lastInsert) || $lastInsert[0]['time_end'] < $currentDate) ? new DateTime('now') : $lastInsert[0]['time_end'];
 
         $builder
-//            ->add('date', DateType::class,  [
-//                'mapped' => true,
-//                'widget' => 'single_text',
-//                'data' => new DateTime(),
-//                'label' => 'Date: ',
-//                'attr' => [
-//                    'class' => 'block dark:text-black rounded-full',
-//                    'name' => 'date'
-//                ]
-//            ])
             ->add('time_start', DateTimeType::class, [
                 'mapped' => true,
                 'label' => 'Început la: ',
                 'widget' => 'single_text',
-                'data' => new DateTime($date->format('H:i')),
+                'data' => new DateTime($date->format('d.m.Y H:i')),
                 'attr' => [
                     'class' => 'block dark:text-black rounded-full',
                     'name' => 'time_start'
-                    ]
+                ]
             ])
             ->add('time_end', DateTimeType::class, [
                 'mapped' => true,
                 'label' => 'Sfârșit la: ',
                 'widget' => 'single_text',
-                'data' => new DateTime($date->format('H:i')),
+                'data' => new DateTime($date->format('d.m.Y H:i')),
                 'attr' => [
                     'class' => 'block dark:text-black rounded-full',
                     'name' => 'time_end'
