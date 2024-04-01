@@ -69,7 +69,7 @@ class PontajeRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getLastInsertByUser($userId): array
+    public function getLastInsertByUser($userId)
     {
         return $this->createQueryBuilder('p')
             ->select('p.time_end')

@@ -10,24 +10,24 @@
     {% if pontaje %}
 
         <div class="block rounded relative top-5 left-auto">
-        <div class="text-green-500">Pontaje active: </div>
+        <div class="text-green-500">Active records: </div>
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-3">
-                        Ziua
+                        Day
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        De la
+                        From
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Pana la
+                        To
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Ore muncite
+                        Worked Hours
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Detalii
+                        Details
                     </th>
                 </tr>
                 </thead>
@@ -67,7 +67,7 @@
             </table>
     {% else %}
 
-        <p class="dark:text-white flex justify-center relative top-4">Astazi, {{ date }}, nu aveti niciun pontaj activ. </p>
+        <p class="dark:text-white flex justify-center relative top-4">Today, {{ date }}, you have no active record. </p>
 
     {% endif %}
 

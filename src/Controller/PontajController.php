@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Pontaje;
 use App\Entity\User;
+use App\Form\DailyWorkSearchType;
+use App\Form\IntervalWorkSearchType;
 use App\Form\PontajeType;
 use App\Repository\PontajeRepository;
 use DateTime;
@@ -11,8 +13,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,18 +21,13 @@ use Knp\Component\Pager\PaginatorInterface;
 #[Route('/user')]
 class PontajController extends AbstractController
 {
-    public function __construct(
-        private readonly PontajeRepository $pontajeRepository)
-    {
-    }
-
     #[Route('/pontaje', name: 'app_pontaj')]
-    public function index(): Response
+    public function index(PontajeRepository $repository): Response
     {
         $date = new DateTime();
         /** @var User $user */
         $user = $this->getUser();
-        $pontaje = $this->pontajeRepository->getActivePontaje($user);
+        $pontaje = $repository->getActivePontaje($user);
 
         return $this->render('pontaj/index.html.twig', [
             'pontaje' => $pontaje,
@@ -44,7 +39,7 @@ class PontajController extends AbstractController
      * @throws Exception
      */
     #[Route('/pontaje/new', name: 'app_pontaj_new')]
-    public function addPontaj(Request $request): Response
+    public function addPontaj(Request $request, PontajeRepository $repository): Response
     {
         $form = $this->createForm(PontajeType::class);
         $form->handleRequest($request);
@@ -65,18 +60,17 @@ class PontajController extends AbstractController
                 $pontaj->setTimeEnd($time_end);
                 $pontaj->setCreated(new DateTime());
                 $pontaj->setDetails($details);
+
+                $repository->save($pontaj, true);
+                $this->addFlash('success', 'Work has been confirmed!');
+                $this->redirectToRoute('app_pontaj');
             } else {
-                throw new InvalidArgumentException('Start time must be lower than end time!');
+                $this->addFlash('danger', 'Start date must be lower than end date!');
+                $this->redirectToRoute('app_pontaj_new');
             }
-
-            $this->pontajeRepository->save($pontaj, true);
-
-            $this->addFlash('success', 'Pontajul a fost inregistrat!');
-
-            return $this->redirectToRoute('app_pontaj');
         }
 
-        $pontaje = $this->pontajeRepository->getActivePontaje($user);
+        $pontaje = $repository->getActivePontaje($user);
 
         return $this->render('pontaj/new.html.twig', [
             'form' => $form->createView(),
@@ -124,49 +118,16 @@ class PontajController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $form = $this->createFormBuilder()
-            ->add('date', DateType::class, [
-                'widget' => 'single_text',
-                'label' => 'Day Search: ',
-                'data' => new DateTime(),
-                'attr' => ['class' => 'rounded-full text-black hover:focus:ring-3 dark:hover:bg-gray-200 top-3']
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Search',
-                'attr' => ['class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800']
-            ])
-            ->setMethod('GET')
-            ->getForm();
-
-        $formMonth = $this->createFormBuilder()
-            ->add('from', DateType::class, [
-                'widget' => 'single_text',
-                'label' => 'Interval Search from: ',
-                'data' => new DateTime(),
-                'attr' => ['class' => 'rounded-full text-black hover:focus:ring-3 dark:hover:bg-gray-200 top-3']
-            ])
-            ->add('to', DateType::class, [
-                'widget' => 'single_text',
-                'label' => 'to: ',
-                'data' => new DateTime(),
-                'attr' => ['class' => 'rounded-full text-black hover:focus:ring-3 dark:hover:bg-gray-200 top-3']
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Search',
-                'attr' => ['class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800']
-            ])
-            ->setMethod('GET')
-            ->getForm();
+        $form = $this->createForm(DailyWorkSearchType::class);
+        $formMonth = $this->createForm(IntervalWorkSearchType::class);
 
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $qbData = $repository->getSingleDaySearchResult($user, $form["date"]->getData());
-        } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() <= $formMonth["to"]->getData()) {
-            $qbData = $repository->getIntervalSearchLessThan($user, $formMonth["from"]->getData(), $formMonth["to"]->getData());
-        } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["from"]->getData() > $formMonth["to"]->getData()) {
-            throw new InvalidArgumentException('Start Date must be lower than End Date or equal!');
+        } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["dateFrom"]->getData() <= $formMonth["dateTo"]->getData()) {
+            $qbData = $repository->getIntervalSearchLessThan($user, $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
         } else {
             $qbData = $repository->getDefaultEntries($user);
         }
@@ -190,9 +151,9 @@ class PontajController extends AbstractController
     }
 
     #[Route('/pontaje/delete/{id}', name: 'app_pontaj_delete')]
-    public function delete(Pontaje $pontaje): Response
+    public function delete(Pontaje $pontaje, PontajeRepository $repository): Response
     {
-        $this->pontajeRepository->remove($pontaje, true);
+        $repository->remove($pontaje, true);
         $this->addFlash('danger', 'Record has been deleted!');
 
         return $this->redirectToRoute('app_pontaj');
