@@ -33,7 +33,7 @@ class PontajeType extends AbstractType
         $builder
             ->add('time_start', DateTimeType::class, [
                 'mapped' => true,
-                'label' => 'Început la: ',
+                'label' => 'Start at: ',
                 'widget' => 'single_text',
                 'data' => new DateTime($date->format('d.m.Y H:i')),
                 'attr' => [
@@ -43,7 +43,7 @@ class PontajeType extends AbstractType
             ])
             ->add('time_end', DateTimeType::class, [
                 'mapped' => true,
-                'label' => 'Sfârșit la: ',
+                'label' => 'End at: ',
                 'widget' => 'single_text',
                 'data' => new DateTime($date->format('d.m.Y H:i')),
                 'attr' => [
@@ -52,11 +52,10 @@ class PontajeType extends AbstractType
                 ]
             ])
             ->add('details', TextType::class, [
-                'label' => 'Detalii: ',
+                'label' => 'Details: ',
                 'attr' => [
                     'class' => 'block w-auto rounded-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2',
-                    'placeholder' => 'Detalii pontaj...',
-
+                    'placeholder' => 'Record details...',
                 ]
             ])
             ->add('Trimite', SubmitType::class, [

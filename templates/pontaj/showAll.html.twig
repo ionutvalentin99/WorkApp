@@ -4,100 +4,103 @@
 
 
 {% block body %}
-
-    <section class="inline-flex">
-        {{ form_start(form) }}
-        {{ form_label(form.date) }}
-        {{ form_widget(form.date, {'widget': 'single_text', 'format': 'yyyy-MM-dd'}) }}
-        {{ form_widget(form.save) }}
-        {{ form_end(form) }}
-
-
-        {{ form_start(formMonth) }}
-        {{ form_label(formMonth.from) }}
-        {{ form_widget(formMonth.from, {'widget': 'single_text', 'format': 'yyyy-MM-dd'}) }}
-        {{ form_label(formMonth.to) }}
-        {{ form_widget(formMonth.to, {'widget': 'single_text', 'format': 'yyyy-MM-dd'}) }}
-        {{ form_widget(formMonth.save) }}
-        {{ form_end(formMonth) }}
-
-    </section>
+    <div class="flex justify-center items-center mt-4">
+        <div class="flex flex-col items-center">
+            <section>
+                {{ form_start(form) }}
+                {{ form_label(form.date) }}
+                {{ form_widget(form.date, {'widget': 'single_text', 'format': 'yyyy-MM-dd'}) }}
+                {{ form_widget(form.save) }}
+                {{ form_end(form) }}
+            </section>
+            <section>
+                {{ form_start(formMonth) }}
+                {{ form_label(formMonth.dateFrom) }}
+                {{ form_widget(formMonth.dateFrom, {'widget': 'single_text', 'format': 'yyyy-MM-dd'}) }}
+                {{ form_label(formMonth.dateTo) }}
+                {{ form_widget(formMonth.dateTo, {'widget': 'single_text', 'format': 'yyyy-MM-dd'}) }}
+                {{ form_widget(formMonth.save) }}
+                <div class="text-red-600">{{ form_errors(formMonth.dateTo) }}</div>
+                {{ form_end(formMonth) }}
+            </section>
+        </div>
+    </div>
 
     {% if pontaje %}
 
         <div class="rounded relative top-5">
-        <div class="text-white">Number of records: {{ entryNumber }}</div>
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <th scope="col" class="px-6 py-3">
-                    Day
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    From
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    To
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Worked Hours
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Details
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Actions
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for pontaj in pagination %}
-                {% set queryParams = app.request.query.all %}
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <td class="px-6 py-4">
-                        {{ pontaj.getTimeStart|date("D, d.M.Y") }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ pontaj.getTimeStart|date("H:i") }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ pontaj.getTimeEnd|date("H:i") }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {% set difference = date(pontaj.getTimeEnd).diff(date(pontaj.getTimeStart)) %}
-
-                        {% if difference|date("%d") %}
-                            {{ difference|date("%d") }} days {{ difference|date("%h") }} hours {{ difference|date("%i") }} minutes
-                        {% elseif not difference|date("%h") %}
-                            {{ difference|date("%i") }} minutes
-                        {% elseif not difference|date("%i") %}
-                            {{ difference|date("%h") }} hours
-                        {% else %}
-                            {{ difference|date("%h") }} hours {{ difference|date("%i") }} minutes
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ pontaj.details }}
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="{{ path('app_pontaj_update', {id: pontaj.id}) }}"
-                           class="text-blue-600 hover:underline hover:text-blue-500">Modify</a>
-                        <br>
-                        <a href="{{ path('app_pontaj_delete', {id: pontaj.id}) }}"
-                           class="text-red-600 hover:underline hover:text-red-500"
-                           onclick="return confirm('Are you sure you want to delete?')">Delete</a>
-                    </td>
+            <div class="text-white">Number of records: {{ entryNumber }}</div>
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Day
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        From
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        To
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Worked Hours
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Details
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Actions
+                    </th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <div class="dark:text-white text-center bg-white text-gray-500 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white">
-            {{ knp_pagination_render(pagination, '@KnpPaginator/Pagination/sliding.html.twig') }}
-        </div>
+                </thead>
+                <tbody>
+                {% for pontaj in pagination %}
+                    {% set queryParams = app.request.query.all %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="px-6 py-4">
+                            {{ pontaj.getTimeStart|date("D, d.M.Y") }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ pontaj.getTimeStart|date("H:i") }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ pontaj.getTimeEnd|date("H:i") }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% set difference = date(pontaj.getTimeEnd).diff(date(pontaj.getTimeStart)) %}
+
+                            {% if difference|date("%d") %}
+                                {{ difference|date("%d") }} days {{ difference|date("%h") }} hours {{ difference|date("%i") }} minutes
+                            {% elseif not difference|date("%h") %}
+                                {{ difference|date("%i") }} minutes
+                            {% elseif not difference|date("%i") %}
+                                {{ difference|date("%h") }} hours
+                            {% else %}
+                                {{ difference|date("%h") }} hours {{ difference|date("%i") }} minutes
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ pontaj.details }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="{{ path('app_pontaj_update', {id: pontaj.id}) }}"
+                               class="text-blue-600 hover:underline hover:text-blue-500">Modify</a>
+                            <br>
+                            <a href="{{ path('app_pontaj_delete', {id: pontaj.id}) }}"
+                               class="text-red-600 hover:underline hover:text-red-500"
+                               onclick="return confirm('Are you sure you want to delete?')">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="dark:text-white text-center bg-white text-gray-500 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white">
+                {{ knp_pagination_render(pagination, '@KnpPaginator/Pagination/sliding.html.twig') }}
+            </div>
         </div>
     {% else %}
 
-        <div class="text-white">You have no records.</div>
+        <div class="text-center mt-4 text-red-500">You have no records.</div>
 
     {% endif %}
 {% endblock %}
