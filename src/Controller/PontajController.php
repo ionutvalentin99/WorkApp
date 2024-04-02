@@ -10,8 +10,6 @@ use App\Form\PontajeType;
 use App\Repository\PontajeRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
-use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,84 +33,6 @@ class PontajController extends AbstractController
         ]);
     }
 
-    /**
-     * @throws Exception
-     */
-    #[Route('/pontaje/new', name: 'app_pontaj_new')]
-    public function addPontaj(Request $request, PontajeRepository $repository): Response
-    {
-        $form = $this->createForm(PontajeType::class);
-        $form->handleRequest($request);
-        /** @var User $user */
-        $user = $this->getUser();
-        $date = new DateTime();
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $time_start = $form["time_start"]->getData();
-            $time_end = $form["time_end"]->getData();
-            $details = $form["details"]->getData();
-
-            if ($time_start < $time_end) {
-                $pontaj = new Pontaje();
-                $pontaj->setUser($user);
-                $pontaj->setTimeStart($time_start);
-                $pontaj->setDate($time_start);
-                $pontaj->setTimeEnd($time_end);
-                $pontaj->setCreated(new DateTime());
-                $pontaj->setDetails($details);
-
-                $repository->save($pontaj, true);
-                $this->addFlash('success', 'Work has been confirmed!');
-                $this->redirectToRoute('app_pontaj');
-            } else {
-                $this->addFlash('danger', 'Start date must be lower than end date!');
-                $this->redirectToRoute('app_pontaj_new');
-            }
-        }
-
-        $pontaje = $repository->getActivePontaje($user);
-
-        return $this->render('pontaj/new.html.twig', [
-            'form' => $form->createView(),
-            'date' => $date->format('d-M-Y'),
-            'pontaje' => $pontaje,
-        ]);
-    }
-
-    #[Route('/pontaje/update/{id}', name: 'app_pontaj_update')]
-    public function edit(Request $request, Pontaje $pontaje, EntityManagerInterface $entityManager): Response
-    {
-        try {
-            $form = $this->createForm(PontajeType::class, $pontaje);
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $time_end = $form["time_end"]->getData();
-                $time_start = $form["time_start"]->getData();
-                $details = $form["details"]->getData();
-                $pontaje->setTimeStart($time_start);
-                $pontaje->setTimeEnd($time_end);
-                $pontaje->setDate($time_start);
-                $pontaje->setDetails($details);
-                $pontaje->setUpdated(new DateTime());
-
-                $entityManager->flush();
-
-                $this->addFlash('success', 'Record has been updated!');
-                return $this->redirectToRoute('app_pontaj');
-            }
-        } catch (Exception $e) {
-            dd($e);
-        }
-
-        return $this->render('pontaj/edit.html.twig', [
-            'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @throws Exception
-     */
     #[Route('/pontaje/all', name: 'app_pontaj_showAll')]
     public function showAll(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
     {
@@ -147,6 +67,76 @@ class PontajController extends AbstractController
             'formMonth' => $formMonth->createView(),
             'entryNumber' => $totalCount,
             'pagination' => $pagination,
+        ]);
+    }
+
+    #[Route('/pontaje/new', name: 'app_pontaj_new')]
+    public function addPontaj(Request $request, PontajeRepository $repository): Response
+    {
+        $form = $this->createForm(PontajeType::class);
+        $form->handleRequest($request);
+        /** @var User $user */
+        $user = $this->getUser();
+        $date = new DateTime();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $time_start = $form["time_start"]->getData();
+            $time_end = $form["time_end"]->getData();
+            $details = $form["details"]->getData();
+
+            if ($time_start < $time_end) {
+                $pontaj = new Pontaje();
+                $pontaj->setUser($user);
+                $pontaj->setTimeStart($time_start);
+                $pontaj->setDate($time_start);
+                $pontaj->setTimeEnd($time_end);
+                $pontaj->setCreated(new DateTime());
+                $pontaj->setDetails($details);
+
+                $repository->save($pontaj, true);
+                $this->addFlash('success', 'Work has been confirmed!');
+
+                return $this->redirectToRoute('app_pontaj');
+            } else {
+                $this->addFlash('danger', 'Start date must be lower than end date!');
+
+                return $this->redirectToRoute('app_pontaj_new');
+            }
+        }
+
+        $pontaje = $repository->getActivePontaje($user);
+
+        return $this->render('pontaj/new.html.twig', [
+            'form' => $form->createView(),
+            'date' => $date->format('d-M-Y'),
+            'pontaje' => $pontaje,
+        ]);
+    }
+
+    #[Route('/pontaje/update/{id}', name: 'app_pontaj_update')]
+    public function edit(Request $request, Pontaje $pontaje, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(PontajeType::class, $pontaje);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $time_end = $form["time_end"]->getData();
+            $time_start = $form["time_start"]->getData();
+            $details = $form["details"]->getData();
+            $pontaje->setTimeStart($time_start);
+            $pontaje->setTimeEnd($time_end);
+            $pontaje->setDate($time_start);
+            $pontaje->setDetails($details);
+            $pontaje->setUpdated(new DateTime());
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Record has been updated!');
+            return $this->redirectToRoute('app_pontaj');
+        }
+
+        return $this->render('pontaj/edit.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 
