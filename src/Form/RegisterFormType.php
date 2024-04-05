@@ -21,7 +21,6 @@ class RegisterFormType extends AbstractType
                     'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
                 ],
             ])
-
             ->add('firstname', TextType::class, [
                 'label' => 'First Name:',
                 'attr' => [
@@ -29,7 +28,6 @@ class RegisterFormType extends AbstractType
 
                 ],
             ])
-
             ->add('lastname', TextType::class, [
                 'label' => 'Last Name:',
                 'attr' => [
@@ -37,7 +35,6 @@ class RegisterFormType extends AbstractType
                     'label' => 'Last Name: '
                 ],
             ])
-
             ->add('email', EmailType::class, [
                 'label' => 'Email:',
                 'attr' => [
@@ -54,8 +51,7 @@ class RegisterFormType extends AbstractType
                 'attr' => [
                     'class' => "block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2"
                 ]
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

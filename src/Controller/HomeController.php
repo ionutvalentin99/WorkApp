@@ -25,7 +25,7 @@ class HomeController extends AbstractController
         $isVerified = $user?->isVerified();
 
         return $this->render('home/index.html.twig', [
-        'user' => $user,
+            'user' => $user,
             'isVerified' => $isVerified
         ]);
     }

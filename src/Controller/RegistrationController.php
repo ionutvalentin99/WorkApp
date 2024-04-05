@@ -41,6 +41,7 @@ class RegistrationController extends AbstractController
             $user->setFirstName($data['firstname']);
             $user->setLastName($data['lastname']);
             $user->setCreated(new DateTime());
+            $user->setRoles(["ROLE_USER"]);
             $plainPassword = ($data['password']);
             $data['password'] = $passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($data['password']);
