@@ -18,13 +18,15 @@ class RegisterFormType extends AbstractType
             ->add('username', TextType::class, [
                 'label' => 'Username:',
                 'attr' => [
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
+                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2',
+                    'placeholder' => 'Username...',
                 ],
             ])
             ->add('firstname', TextType::class, [
                 'label' => 'First Name:',
                 'attr' => [
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
+                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2',
+                    'placeholder' => 'First name...'
 
                 ],
             ])
@@ -32,19 +34,22 @@ class RegisterFormType extends AbstractType
                 'label' => 'Last Name:',
                 'attr' => [
                     'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2',
-                    'label' => 'Last Name: '
+                    'label' => 'Last Name: ',
+                    'placeholder' => 'Last name...'
                 ],
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email:',
                 'attr' => [
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
+                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2',
+                    'placeholder' => 'Email...'
                 ],
             ])
             ->add('password', PasswordType::class, [
                 'label' => 'Password:',
                 'attr' => [
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
+                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2',
+                    'placeholder' => 'Password...'
                 ],
             ])
             ->add('Submit', SubmitType::class, [
