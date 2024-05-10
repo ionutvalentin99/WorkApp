@@ -8,6 +8,7 @@ use App\Form\DailyWorkSearchType;
 use App\Form\IntervalWorkSearchType;
 use App\Form\PontajeType;
 use App\Repository\PontajeRepository;
+use App\Service\UuidService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -71,13 +72,12 @@ class PontajController extends AbstractController
     }
 
     #[Route('/pontaje/new', name: 'app_pontaj_new')]
-    public function addPontaj(Request $request, PontajeRepository $repository): Response
+    public function addPontaj(Request $request, PontajeRepository $repository, UuidService $uuid): Response
     {
         $form = $this->createForm(PontajeType::class);
         $form->handleRequest($request);
         /** @var User $user */
         $user = $this->getUser();
-        $date = new DateTime();
 
         if ($form->isSubmitted() && $form->isValid()) {
             $time_start = $form["time_start"]->getData();
@@ -92,6 +92,7 @@ class PontajController extends AbstractController
                 $pontaj->setTimeEnd($time_end);
                 $pontaj->setCreated(new DateTime());
                 $pontaj->setDetails($details);
+                $pontaj->setRecordId($uuid->getUuid());
 
                 $repository->save($pontaj, true);
                 $this->addFlash('success', 'Work has been confirmed!');
@@ -103,12 +104,11 @@ class PontajController extends AbstractController
                 return $this->redirectToRoute('app_pontaj_new');
             }
         }
-
         $pontaje = $repository->getActivePontaje($user);
 
         return $this->render('pontaj/new.html.twig', [
             'form' => $form->createView(),
-            'date' => $date->format('d-M-Y'),
+            'date' => (new DateTime('now'))->format('d-M-Y'),
             'pontaje' => $pontaje,
         ]);
     }
