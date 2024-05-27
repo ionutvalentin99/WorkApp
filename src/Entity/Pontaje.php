@@ -36,6 +36,9 @@ class Pontaje
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $record_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -122,6 +125,18 @@ class Pontaje
     public function setDate(?\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getRecordId(): ?string
+    {
+        return $this->record_id;
+    }
+
+    public function setRecordId(string $record_id): static
+    {
+        $this->record_id = $record_id;
 
         return $this;
     }

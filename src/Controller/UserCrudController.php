@@ -45,7 +45,7 @@ class UserCrudController extends AbstractController
             }
 
             return $this->render('user_crud/new.html.twig', [
-                'form' => $form,
+                'form' => $form->createView(),
             ]);
         }
     }
@@ -77,7 +77,7 @@ class UserCrudController extends AbstractController
 
         return $this->render('user_crud/edit.html.twig', [
             'user' => $user,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
