@@ -14,8 +14,7 @@ class UuidService
     {
         $uuid = Uuid::uuid4();
         $uuidString = $uuid->toString();
-        $uppercaseUuid = substr(str_replace('-', '', $uuidString),0, 9);
 
-        return strtoupper($uppercaseUuid);
+        return substr(str_replace('-', '', $uuidString),0, 9);
     }
 }
