@@ -1,11 +1,8 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {% if app.user %}
-    Salut, {{ app.user.username }}
-    {% else %}
-    Welcome!
-    {% endif %}
+    Work App | Home
 {% endblock %}
 {% block body %}
+    <div id="root"></div>
 {% endblock %}
