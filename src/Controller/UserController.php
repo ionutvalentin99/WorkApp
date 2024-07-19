@@ -50,8 +50,12 @@ class UserController extends AbstractController
         $user = $this->getUser();
         $currentPassword = $request->request->get('current-password');
         $newPassword = $request->request->get('new-password');
-        if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
-            throw new BadRequestHttpException('Wrong current password.');
+        if ($newPassword) {
+            if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                throw new BadRequestHttpException('Wrong current password.');
+            }
+        } else {
+            return $this->redirectToRoute('app_account_settings');
         }
 
         $encodedPassword = $passwordHasher->hashPassword($user, $newPassword);
