@@ -2,65 +2,12 @@
 {% block title %}Work App | Settings{% endblock %}
 
 {% block body %}
-    {#    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> #}
-    {#    <script> #}
-    {#        $(document).ready(function() { #}
-    {#            $('#reset-password-button').on('click', function(event) { #}
-    {#                event.preventDefault(); #}
-
-    {#                const currentPassword = $('#current-password').val(); #}
-    {#                const confirmPassword = $('#confirm-password').val(); #}
-
-    {#                if (currentPassword && confirmPassword) { #}
-    {#                    $.ajax({ #}
-    {#                        url: '{{ path('app_reset_password_ajax') }}', #}
-    {#                        type: 'POST', #}
-    {#                        contentType: 'application/json', #}
-    {#                        data: JSON.stringify({ #}
-    {#                            'current-password': currentPassword, #}
-    {#                            'confirm-password': confirmPassword #}
-    {#                        }), #}
-    {#                        success: function(response) { #}
-    {#                            alert('Password reset successful!'); #}
-    {#                        }, #}
-    {#                        error: function(jqXHR, textStatus, errorThrown) { #}
-    {#                            alert('Error resetting password: ' + errorThrown); #}
-    {#                        } #}
-    {#                    }); #}
-    {#                } else { #}
-    {#                    alert('Please enter both password fields.'); #}
-    {#                } #}
-    {#            }); #}
-    {#        }); #}
-    {#    </script> #}
-
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
           rel="stylesheet"/>
 
     <div class="mx-4 min-h-screen max-w-screen-xl sm:mx-8 xl:mx-auto">
         <h1 class="border-b py-6 text-4xl font-semibold">Settings</h1>
         <div class="grid grid-cols-8 pt-3 sm:grid-cols-10">
-            <div class="relative my-4 w-56 sm:hidden">
-                <input class="peer hidden" type="checkbox" name="select-1" id="select-1"/>
-                <label for="select-1"
-                       class="flex w-full cursor-pointer select-none rounded-lg border p-2 px-3 text-sm text-gray-700 ring-blue-700 peer-checked:ring">Accounts</label>
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="pointer-events-none absolute right-0 top-3 ml-auto mr-5 h-4 text-slate-700 transition peer-checked:rotate-180"
-                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
-                </svg>
-                <ul class="max-h-0 select-none flex-col overflow-hidden rounded-b-lg shadow-md transition-all duration-300 peer-checked:max-h-56 peer-checked:py-3">
-                    <li class="cursor-pointer px-3 py-2 text-sm text-slate-600 hover:bg-blue-700 hover:text-white">
-                        Accounts
-                    </li>
-                    <li class="cursor-pointer px-3 py-2 text-sm text-slate-600 hover:bg-blue-700 hover:text-white">
-                        Team
-                    </li>
-                    <li class="cursor-pointer px-3 py-2 text-sm text-slate-600 hover:bg-blue-700 hover:text-white">
-                        Others
-                    </li>
-                </ul>
-            </div>
             <div class="col-span-2 hidden sm:block">
                 <a href="{{ path('app_account_settings') }}"
                    class="block mt-5 cursor-pointer border-l-2 border-l-blue-700 px-2 py-2 font-semibold text-blue-700 transition hover:border-l-blue-700 hover:text-blue-700">Account</a>
@@ -68,17 +15,16 @@
                    class="block mt-5 cursor-pointer border-l-2 border-transparent px-2 py-2 font-semibold transition hover:border-l-blue-700 hover:text-blue-700">Profile</a>
             </div>
             <div class="col-span-8 overflow-hidden rounded-xl sm:bg-gray-50 sm:px-8 sm:shadow text-gray-900">
-                <div class="pt-4">
-                    <h1 class="py-2 text-2xl font-semibold">Account settings</h1>
-                    <!-- <p class="font- text-slate-600">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p> -->
+                <div class="pt-2">
+                    <h1 class="py-2 text-2xl font-semibold">Account</h1>
                 </div>
-                <hr class="mt-4 mb-8"/>
+                <hr class="mt-4 mb-2"/>
                 <p class="py-2 text-xl font-semibold">Email Address</p>
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <p class="text-gray-600">Your email address is <strong>{{ userEmail }}</strong></p>
-                    <button class="inline-flex text-sm font-semibold text-blue-600">Change</button>
+                    <a href="{{ path('app_change_email') }}" class="inline-flex text-sm font-semibold text-blue-600">Change</a>
                 </div>
-                <hr class="mt-4 mb-8"/>
+                <hr class="mt-4 mb-2"/>
 
                 <!-- CHANGE PASSWORD FORM -->
                 <form action="{{ path('app_change_password') }}" method="post">
@@ -109,7 +55,7 @@
                 </form>
                 <!-- END CHANGE PASSWORD FORM -->
 
-                <hr class="mt-4 mb-8"/>
+                <hr class="mt-4 mb-2"/>
 
                 <div class="mb-10">
                     <p class="py-2 text-xl font-semibold">Delete Account</p>
@@ -125,13 +71,15 @@
                     <p class="mt-2">Make sure you have taken backup of your account in case you ever need to get access
                         to your data. We will completely wipe your data. There is no way to access your account after
                         this action.</p>
-                    <button class="ml-auto text-sm font-semibold text-rose-600 underline decoration-2"
-                            onclick="return confirm('Are you sure?')">Continue with deletion
-                    </button>
+                    <form action="{{ path('app_delete_account') }}"
+                          method="post"
+                          class="ml-auto text-sm font-semibold text-rose-600 underline decoration-2"
+                          onsubmit="return confirm('Are you sure you want to delete your account?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete-user') }}">
+                        <button type="submit" class="btn btn-danger">Delete Account</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-
 {% endblock %}
