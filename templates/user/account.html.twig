@@ -19,6 +19,40 @@
                     <h1 class="py-2 text-2xl font-semibold">Account</h1>
                 </div>
                 <hr class="mt-4 mb-2"/>
+
+                <p class="py-2 text-xl font-semibold">Name</p>
+                <p class="text-gray-600">Your name is <strong>{{ app.user.firstName }} {{ app.user.lastName }}</strong></p>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+
+                    <form action="{{ path('app_change_name') }}" method="post">
+                        <div class="flex items-center">
+                            <div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3">
+                                <label for="first-name">
+                                    <span class="text-sm text-gray-500">First Name</span>
+                                    <div class="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
+                                        <input type="text" name="first-name" required
+                                               class="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
+                                               placeholder="Your first name..."/>
+                                    </div>
+                                </label>
+                                <label for="last-name">
+                                    <span class="text-sm text-gray-500">Last Name</span>
+                                    <div class="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
+                                        <input type="text" name="last-name" required
+                                               class="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
+                                               placeholder="Your last name..."/>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white"
+                                id="reset-password-button">Change Name
+                        </button>
+                    </form>
+
+                </div>
+                <hr class="mt-4 mb-2"/>
+
                 <p class="py-2 text-xl font-semibold">Email Address</p>
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <p class="text-gray-600">Your email address is <strong>{{ userEmail }}</strong></p>

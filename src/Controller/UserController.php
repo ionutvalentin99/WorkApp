@@ -96,6 +96,28 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_account_settings');
     }
 
+    #[Route('/change-name', name: 'app_change_name')]
+    public function changeName(
+        Request                $request,
+        EntityManagerInterface $entityManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($request->getMethod() === 'POST') {
+            $firstName = $request->request->get('first-name');
+            $lastName = $request->request->get('last-name');
+            if (!$firstName || !$lastName) {
+                throw new BadRequestHttpException('First name and last name are required.');
+            }
+            $user->setFirstName($firstName);
+            $user->setLastName($lastName);
+
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_account_settings');
+    }
+
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
