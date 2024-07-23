@@ -4,11 +4,15 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -40,18 +44,49 @@ class UserController extends AbstractController
         return $this->render('user/profile.html.twig');
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
+    #[Route('/change-email', name: 'app_change_email')]
+    public function changeEmail(Request $request, EntityManagerInterface $entityManager, EmailVerificationService $emailVerificationService): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($request->getMethod() === 'POST') {
+            $newEmail = $request->request->get('new-email');
+            $confirmEmail = $request->request->get('confirm-email');
+            if ($newEmail !== $confirmEmail) {
+                throw new BadRequestHttpException('New email does not match confirm email');
+            }
+            $user->setEmail($newEmail);
+            $user->setIsVerified(0);
+            $entityManager->flush();
+
+            $emailVerificationService->sendEmail($user);
+
+            return $this->redirectToRoute('app_account_settings');
+        }
+
+        return $this->render('user/changeEmail.html.twig');
+    }
+
     #[Route('/change-password', name: 'app_change_password')]
     public function changePassword(
-        Request $request,
+        Request                     $request,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager): Response
+        EntityManagerInterface      $entityManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $currentPassword = $request->request->get('current-password');
         $newPassword = $request->request->get('new-password');
-        if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
-            throw new BadRequestHttpException('Wrong current password.');
+        if ($newPassword) {
+            if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                throw new BadRequestHttpException('Wrong current password.');
+            }
+        } else {
+            return $this->redirectToRoute('app_account_settings');
         }
 
         $encodedPassword = $passwordHasher->hashPassword($user, $newPassword);
@@ -59,5 +94,27 @@ class UserController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('app_account_settings');
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[Route('/delete-account', name: 'app_delete_account', methods: ['POST'])]
+    public function deleteAccount(Request $request, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete-user', $request->request->get('_token'))) {
+            $user = $this->getUser();
+
+            $em->remove($user);
+            $em->flush();
+
+            $this->container->get('security.token_storage')->setToken();
+            $request->getSession()->invalidate();
+
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->redirectToRoute('app_account_settings', ['error' => 'Invalid CSRF token']);
     }
 }
