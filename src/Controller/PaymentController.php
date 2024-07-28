@@ -32,7 +32,7 @@ class PaymentController extends AbstractController
                     'product_data' => [
                         'name' => 'Company',
                     ],
-                    'unit_amount' => 2000,
+                    'unit_amount' => 2500,
                 ],
                 'quantity' => 1,
             ]],
