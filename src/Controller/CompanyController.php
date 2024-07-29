@@ -17,6 +17,12 @@ class CompanyController extends AbstractController
     #[Route('/', name: 'app_company')]
     public function index(): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (null === $user->getCompany()) {
+            return $this->redirectToRoute('app_home');
+        }
+
         return $this->render('company/index.html.twig');
     }
 
@@ -29,15 +35,16 @@ class CompanyController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
         $company = new Company();
-        $company->setOwner($user);
         $form = $this->createForm(CompanyType::class, $company);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $company->setOwner($user);
+            $company->setIsPaid(false);
             $user->setCompany($company);
             $companyRepository->save($company, true);
 
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_stripe_checkout');
         }
 
         return $this->render('company/new.html.twig', [

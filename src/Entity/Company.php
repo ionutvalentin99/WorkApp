@@ -36,6 +36,9 @@ class Company
     #[ORM\Column(length: 75)]
     private ?string $city = null;
 
+    #[ORM\Column]
+    private ?bool $is_paid = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -144,6 +147,18 @@ class Company
     public function setCity(string $city): static
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    public function isPaid(): ?bool
+    {
+        return $this->is_paid;
+    }
+
+    public function setIsPaid(bool $is_paid): static
+    {
+        $this->is_paid = $is_paid;
 
         return $this;
     }
