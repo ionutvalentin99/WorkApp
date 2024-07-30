@@ -126,8 +126,14 @@ class UserController extends AbstractController
     public function deleteAccount(Request $request, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete-user', $request->request->get('_token'))) {
+            /** @var User $user */
             $user = $this->getUser();
-
+            $company = $user->getCompany() !== null ? $user->getCompany() : null;
+            if ($company->getOwner() !== null && $company->getOwner() === $user) {
+                $user->setCompany(null);
+                $company->setOwner(null);
+            }
+            $user->setCompany(null);
             $em->remove($user);
             $em->flush();
 
