@@ -128,12 +128,11 @@ class UserController extends AbstractController
         if ($this->isCsrfTokenValid('delete-user', $request->request->get('_token'))) {
             /** @var User $user */
             $user = $this->getUser();
-            $company = $user->getCompany() !== null ? $user->getCompany() : null;
-            if ($company->getOwner() !== null && $company->getOwner() === $user) {
-                $user->setCompany(null);
-                $company->setOwner(null);
+            $company = $user->getCompany() ?? null;
+            if ($company->getOwner() === $user) {
+                return $this->redirectToRoute('app_account_settings', ['error' => 'You cannot delete your account, you are the owner of a company.']);
             }
-            $user->setCompany(null);
+
             $em->remove($user);
             $em->flush();
 
