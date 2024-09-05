@@ -18,23 +18,27 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PontajeRepository extends ServiceEntityRepository
 {
-    public function getSingleDaySearchResult($user, $date): array
+    public function getSingleDaySearchResult($user, $company, $date): array
     {
         return $this->createQueryBuilder('p')
             ->select('p')
             ->where('p.user = :user')
             ->setParameter('user', $user)
+            ->andWhere('p.company = :company')
+            ->setParameter('company', $company)
             ->andWhere('p.date = :date')
             ->setParameter('date', $date)
             ->getQuery()
             ->getResult();
     }
-    public function getIntervalSearchLessThan($user, $from, $to): array
+    public function getIntervalSearchLessThan($user, $company, $from, $to): array
     {
         return $this->createQueryBuilder('p')
             ->select('p')
             ->where('p.user = :user')
             ->setParameter('user', $user)
+            ->andWhere('p.company = :company')
+            ->setParameter('company', $company)
             ->andWhere('p.date >= :from')
             ->setParameter('from', $from)
             ->andWhere('p.date <= :to')
@@ -44,24 +48,28 @@ class PontajeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function getDefaultEntries($user): array
+    public function getDefaultEntries($user, $company): array
     {
         return $this->createQueryBuilder('p')
             ->select('p')
             ->where('p.user = :user')
             ->setParameter('user', $user)
+            ->andWhere('p.company = :company')
+            ->setParameter('company', $company)
             ->orderBy('p.date', Criteria::DESC)
             ->addOrderBy('p.time_end', Criteria::DESC)
             ->getQuery()
             ->getResult();
     }
-    public function getActivePontaje($userId): array
+    public function getActivePontaje($userId, $company): array
     {
         $date = new DateTime();
         return $this->createQueryBuilder('p')
             ->select('p')
             ->where('p.user = :user')
             ->setParameter('user', $userId)
+            ->andWhere('p.company = :company')
+            ->setParameter('company', $company)
             ->andWhere('p.time_end >= :time_end')
             ->setParameter('time_end', $date)
             ->orderBy('p.time_start', Criteria::ASC)

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\PontajeRepository;
 use App\Repository\UserRepository;
 use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -123,14 +124,18 @@ class UserController extends AbstractController
      * @throws NotFoundExceptionInterface
      */
     #[Route('/delete-account', name: 'app_delete_account', methods: ['POST'])]
-    public function deleteAccount(Request $request, EntityManagerInterface $em): Response
+    public function deleteAccount(Request $request, EntityManagerInterface $em, PontajeRepository $repository): Response
     {
         if ($this->isCsrfTokenValid('delete-user', $request->request->get('_token'))) {
             /** @var User $user */
             $user = $this->getUser();
             $company = $user->getCompany() ?? null;
+            $userWorkRecords = $repository->findBy(['user' => $user]);
             if ($company->getOwner() === $user) {
                 return $this->redirectToRoute('app_account_settings', ['error' => 'You cannot delete your account, you are the owner of a company.']);
+            }
+            foreach ($userWorkRecords as $pontaje) {
+                $em->remove($pontaje);
             }
 
             $em->remove($user);
