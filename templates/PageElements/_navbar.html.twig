@@ -35,10 +35,11 @@
                  id="company-dropdown-menu" role="menu" aria-orientation="vertical" aria-labelledby="company-dropdown"
                  tabindex="-1">
                 {% if app.user.company %}
-                <a href="{{ path('app_company') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
-                   tabindex="-1"
-                   id="user-menu-item-1">{{ app.user.company.name }}</a>
-                {% else %} <a href="{{ path('app_company_new') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                    <a href="{{ path('app_company') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                       tabindex="-1"
+                       id="user-menu-item-1">{{ app.user.company.name }}</a>
+                {% else %} <a href="{{ path('app_company_new') }}" class="block px-4 py-2 text-sm text-gray-700"
+                              role="menuitem"
                               tabindex="-1"
                               id="user-menu-item-1">Create New Company</a>
                 {% endif %}
@@ -66,19 +67,29 @@
     {% endif %}
 </nav>
 
-{% if app.user %}
-        <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 justify-center">
-            <li class="me-2">
-                <a href="{{ path('app_home') }}" class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Home</a>
-            </li>
-            <li class="me-2">
-                <a href="{{ path('app_pontaj') }}" class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Your Work</a>
-            </li>
-            <li class="me-2">
-                <a href="{{ path('app_concediu') }}" class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Holidays</a>
-            </li>
-            <li class="me-2">
-                <a href="{{ path('app_user_crud_index') }}" class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Admin</a>
-            </li>
-        </ul>
+{% if app.user and app.user.company %}
+    <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 justify-center">
+        <li class="me-2">
+            <a href="{{ path('app_home') }}"
+               class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Home</a>
+        </li>
+        <li class="me-2">
+            <a href="{{ path('app_pontaj') }}"
+               class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Your Work</a>
+        </li>
+        <li class="me-2">
+            <a href="{{ path('app_concediu') }}"
+               class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Holidays</a>
+        </li>
+        <li class="me-2">
+            <a href="{{ path('app_user_crud_index') }}"
+               class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Admin</a>
+        </li>
+    </ul>
+{% elseif app.user %}
+    <div class="mt-4 flex justify-center">
+        <span class="inline-block">You need to enroll to a company or create a new one</span>
+        <a class="inline-block ml-1 dark:text-blue-500" href="{{ path('app_company_new') }}">here</a>
+        <span class="inline-block">.</span>
+    </div>
 {% endif %}
