@@ -26,7 +26,7 @@ class PontajController extends AbstractController
         $date = new DateTime();
         /** @var User $user */
         $user = $this->getUser();
-        $pontaje = $repository->getActivePontaje($user);
+        $pontaje = $repository->getActivePontaje($user, $user->getCompany());
 
         return $this->render('pontaj/index.html.twig', [
             'pontaje' => $pontaje,
@@ -46,11 +46,11 @@ class PontajController extends AbstractController
         $formMonth->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $qbData = $repository->getSingleDaySearchResult($user, $form["date"]->getData());
+            $qbData = $repository->getSingleDaySearchResult($user, $user->getCompany(), $form["date"]->getData());
         } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["dateFrom"]->getData() <= $formMonth["dateTo"]->getData()) {
-            $qbData = $repository->getIntervalSearchLessThan($user, $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
+            $qbData = $repository->getIntervalSearchLessThan($user, $user->getCompany(), $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
         } else {
-            $qbData = $repository->getDefaultEntries($user);
+            $qbData = $repository->getDefaultEntries($user, $user->getCompany());
         }
 
         $totalCount = count($qbData);
@@ -93,6 +93,7 @@ class PontajController extends AbstractController
                 $pontaj->setCreated(new DateTime());
                 $pontaj->setDetails($details);
                 $pontaj->setRecordId($uuid->getUuid());
+                $pontaj->setCompany($user->getCompany());
 
                 $repository->save($pontaj, true);
                 $this->addFlash('success', 'Work has been confirmed!');
@@ -104,7 +105,7 @@ class PontajController extends AbstractController
                 return $this->redirectToRoute('app_pontaj_new');
             }
         }
-        $pontaje = $repository->getActivePontaje($user);
+        $pontaje = $repository->getActivePontaje($user, $user->getCompany());
 
         return $this->render('pontaj/new.html.twig', [
             'form' => $form->createView(),

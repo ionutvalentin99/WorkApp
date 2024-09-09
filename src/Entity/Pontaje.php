@@ -39,6 +39,9 @@ class Pontaje
     #[ORM\Column(length: 255)]
     private ?string $record_id = null;
 
+    #[ORM\ManyToOne(inversedBy: 'records')]
+    private ?Company $company = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -137,6 +140,18 @@ class Pontaje
     public function setRecordId(string $record_id): static
     {
         $this->record_id = $record_id;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
 
         return $this;
     }

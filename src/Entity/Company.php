@@ -39,9 +39,13 @@ class Company
     #[ORM\Column]
     private ?bool $is_paid = null;
 
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Pontaje::class)]
+    private Collection $records;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->records = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -159,6 +163,36 @@ class Company
     public function setIsPaid(bool $is_paid): static
     {
         $this->is_paid = $is_paid;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Pontaje>
+     */
+    public function getRecords(): Collection
+    {
+        return $this->records;
+    }
+
+    public function addRecord(Pontaje $record): static
+    {
+        if (!$this->records->contains($record)) {
+            $this->records->add($record);
+            $record->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecord(Pontaje $record): static
+    {
+        if ($this->records->removeElement($record)) {
+            // set the owning side to null (unless already changed)
+            if ($record->getCompany() === $this) {
+                $record->setCompany(null);
+            }
+        }
 
         return $this;
     }
