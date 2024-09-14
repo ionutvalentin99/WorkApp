@@ -39,7 +39,7 @@ class Company
     #[ORM\Column]
     private ?bool $is_paid = null;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Pontaje::class)]
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Pontaje::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $records;
 
     public function __construct()

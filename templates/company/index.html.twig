@@ -2,4 +2,79 @@
 
 {% block title %}Work App | {{ app.user.company.name }}{% endblock %}
 {% block body %}
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+          rel="stylesheet"/>
+
+    <div class="mx-4 min-h-screen max-w-screen-xl sm:mx-8 xl:mx-auto">
+        <h1 class="border-b py-6 text-4xl font-semibold">{{ company.name }}</h1>
+        <div class="grid grid-cols-8 pt-3 sm:grid-cols-10 mt-4">
+            <div class="col-span-2 hidden sm:block">
+                <a href="{{ path('app_account_settings') }}"
+                   class="block mt-5 cursor-pointer border-l-2 border-l-blue-700 px-2 py-2 font-semibold text-blue-700 transition hover:border-l-blue-700 hover:text-blue-700">Settings</a>
+                <a href="{{ path('app_profile') }}"
+                   class="block mt-5 cursor-pointer border-l-2 border-transparent px-2 py-2 font-semibold transition hover:border-l-blue-700 hover:text-blue-700">Settings</a>
+            </div>
+            <div class="col-span-8 overflow-hidden rounded-xl sm:bg-gray-50 sm:px-8 sm:shadow text-gray-900">
+                {% if app.request.query.get('error') %}
+                    <div class="mt-4 dark:text-red-500">{{ app.request.query.get('error') }}</div>
+                {% endif %}
+                <div class="pt-2">
+                    <h1 class="py-2 text-2xl font-semibold">Company Settings</h1>
+                </div>
+                <hr class="mt-4 mb-2"/>
+
+                <p class="py-2 text-xl font-semibold">Name</p>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+
+                    <form action="{{ path('app_company_change_name') }}" method="post">
+                        <div class="flex items-center">
+                            <div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3">
+                                <label for="company-name">
+                                    <span class="text-sm text-gray-500">Change Name:</span>
+                                    <div class="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
+                                        <input type="text" name="company-name" required
+                                               class="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
+                                               placeholder="{{ company.name }}"/>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white"
+                                id="reset-password-button">Change Name
+                        </button>
+                    </form>
+
+                </div>
+                <hr class="mt-4 mb-2"/>
+
+                <p class="py-2 text-xl font-semibold">Email Address</p>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-gray-600">Your email address is: <strong>{{ app.user.email }}</strong></p>
+                    <a href="{{ path('app_change_email') }}" class="inline-flex text-sm font-semibold text-blue-600">Change</a>
+                </div>
+
+                <hr class="mt-4 mb-2"/>
+
+                <div class="mb-10">
+                    <p class="py-2 text-xl font-semibold">Delete Account</p>
+                    <p class="inline-flex items-center rounded-full bg-rose-100 px-4 py-1 text-rose-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" viewBox="0 0 20 20"
+                             fill="currentColor">
+                            <path fill-rule="evenodd"
+                                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                  clip-rule="evenodd"></path>
+                        </svg>
+                        Proceed with caution
+                    </p>
+                    <p class="mt-2"> We will completely wipe your company with all the associated data, like work records, holidays etc. There is no way to access your company after this action.</p>
+                    <form action="{{ path('app_delete_company') }}"
+                          method="post"
+                          class="ml-auto text-sm font-semibold text-rose-600 underline decoration-2"
+                          onsubmit="return confirm('Are you sure you want to delete your company?');">
+                        <button type="submit" class="btn btn-danger">Delete Company</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
