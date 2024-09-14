@@ -94,7 +94,7 @@ class CompanyType extends AbstractType
                 'attr' => [
                     'class' => "block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2"
                 ],
-                'label' => 'Checkout 100 RON'
+                'label' => 'Checkout'
             ]);
     }
 

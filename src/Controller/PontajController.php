@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/user')]
+//#[IsGranted(CompanyEnrollmentVoter::IS_ENROLLED)]
 class PontajController extends AbstractController
 {
     #[Route('/pontaje', name: 'app_pontaj')]

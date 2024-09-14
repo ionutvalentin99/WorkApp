@@ -26,7 +26,7 @@ class CompanyController extends AbstractController
         return $this->render('company/index.html.twig');
     }
 
-    #[Route('/new', name: 'app_company_new')]
+    #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
     public function new(Request $request, CompanyRepository $companyRepository): Response
     {
         /** @var User $user */
