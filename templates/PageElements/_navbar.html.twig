@@ -47,7 +47,7 @@
 
             <!-- Profile Dropdown -->
             <button id="dropdownUserAvatarButton" data-dropdown-toggle="dropdownAvatarMenu"
-                    class="inline-block rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75"
+                    class="inline-block rounded-md border border-transparent bg-blue-700 hover:bg-blue-800 py-2 px-4 text-base font-medium text-white"
                     type="button">
                 {{ app.user.firstName }}
             </button>
@@ -81,10 +81,12 @@
             <a href="{{ path('app_concediu') }}"
                class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Holidays</a>
         </li>
+        {% if is_granted("ROLE_ADMIN") %}
         <li class="me-2">
             <a href="{{ path('app_user_crud_index') }}"
                class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Admin</a>
         </li>
+        {% endif %}
     </ul>
 {% elseif app.user %}
     <div class="mt-4 flex justify-center">

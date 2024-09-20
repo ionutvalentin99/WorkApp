@@ -39,7 +39,8 @@ class Pontaje
     #[ORM\Column(length: 255)]
     private ?string $record_id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'records')]
+    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'records')]
+    #[ORM\JoinColumn(name: 'company_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private ?Company $company = null;
 
     public function getId(): ?int
