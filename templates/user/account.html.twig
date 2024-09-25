@@ -11,12 +11,10 @@
             <div class="col-span-2 hidden sm:block">
                 <a href="{{ path('app_account_settings') }}"
                    class="block mt-5 cursor-pointer border-l-2 border-l-blue-700 px-2 py-2 font-semibold text-blue-700 transition hover:border-l-blue-700 hover:text-blue-700">Account</a>
-                <a href="{{ path('app_profile') }}"
-                   class="block mt-5 cursor-pointer border-l-2 border-transparent px-2 py-2 font-semibold transition hover:border-l-blue-700 hover:text-blue-700">Profile</a>
             </div>
             <div class="col-span-8 overflow-hidden rounded-xl sm:bg-gray-50 sm:px-8 sm:shadow text-gray-900">
                 {% if app.request.query.get('error') %}
-                <div class="mt-4 dark:text-red-500">{{ app.request.query.get('error') }}</div>
+                    <div class="mt-4 dark:text-red-500">{{ app.request.query.get('error') }}</div>
                 {% endif %}
                 <div class="pt-2">
                     <h1 class="py-2 text-2xl font-semibold">Account</h1>
@@ -24,7 +22,8 @@
                 <hr class="mt-4 mb-2"/>
 
                 <p class="py-2 text-xl font-semibold">Name</p>
-                <p class="text-gray-600">Your name is <strong>{{ app.user.firstName }} {{ app.user.lastName }}</strong></p>
+                <p class="text-gray-600">Your name is <strong>{{ app.user.firstName }} {{ app.user.lastName }}</strong>
+                </p>
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
 
                     <form action="{{ path('app_change_name') }}" method="post">

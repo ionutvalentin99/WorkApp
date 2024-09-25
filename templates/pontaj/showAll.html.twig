@@ -52,6 +52,9 @@
                         Record Id
                     </th>
                     <th scope="col" class="px-6 py-3">
+                        Company
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Actions
                     </th>
                 </tr>
@@ -87,6 +90,9 @@
                         </td>
                         <td class="px-6 py-4">
                             {{ pontaj.recordId }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ pontaj.company.name }}
                         </td>
                         <td class="px-6 py-4">
                             <a href="{{ path('app_pontaj_update', {id: pontaj.id}) }}"

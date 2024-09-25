@@ -5,4 +5,7 @@
 {% endblock %}
 {% block body %}
     <div id="root"></div>
+    {% if app.request.query.get('error') %}
+        <div class="mt-4 dark:text-red-500 text-center">{{ app.request.query.get('error') }}</div>
+    {% endif %}
 {% endblock %}
