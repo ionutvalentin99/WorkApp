@@ -88,4 +88,22 @@ class CompanyController extends AbstractController
 
         return $this->redirectToRoute('app_home');
     }
+
+    #[Route('/leave-company', name: 'app_leave_company', methods: ['POST'])]
+    public function leaveCompany(EntityManagerInterface $em): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $company = $user->getCompany();
+        if ($company->getOwner() !== $user) {
+            $user->setCompany(null);
+            $em->flush();
+
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->redirectToRoute('app_home', [
+            "error" => "You can't leave this company, you are the owner! You can remove the company instead.",
+        ]);
+    }
 }

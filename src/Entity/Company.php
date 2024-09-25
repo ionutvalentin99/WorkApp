@@ -18,7 +18,7 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
     private Collection $users;
 
-    #[ORM\OneToOne(inversedBy: 'company', cascade: ['persist'])]
+    #[ORM\OneToOne(inversedBy: 'company', cascade: ['persist'], fetch: "EAGER")]
     private ?User $owner = null;
 
     #[ORM\Column(length: 100)]
