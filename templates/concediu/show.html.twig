@@ -55,7 +55,7 @@
                                 <div class="text-red-400">{{ concediu.getDetails }}</div>
                             {% elseif concediu.status == 'approved' %}
                                 <div class="text-green-400">Approved
-                                    at {{ concediu.getUpdated|date('d.m.Y H:i:s') }}</div>
+                                    at {{ concediu.getApprovedAt|date('d.m.Y H:i:s') }}</div>
                             {% endif %}
                         </td>
                     </tr>

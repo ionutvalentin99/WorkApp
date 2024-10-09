@@ -4,13 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Concedii;
 use App\Repository\ConcediiRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/concedii')]
-class PendingController extends AbstractController
+class AdminHolidaysController extends AbstractController
 {
     public function __construct(private readonly EntityManagerInterface $entityManager, private readonly ConcediiRepository $concediiRepository)
     {
@@ -40,6 +41,8 @@ class PendingController extends AbstractController
     public function approved(Concedii $concedii): Response
     {
         $concedii->setStatus('approved');
+        $concedii->setApprovedAt(new DateTime());
+        $concedii->setUpdated(new DateTime());
         $this->entityManager->flush();
 
         return $this->redirectToRoute('app_pending_concedii');
