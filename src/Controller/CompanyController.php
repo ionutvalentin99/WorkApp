@@ -81,7 +81,6 @@ class CompanyController extends AbstractController
         $company = $user->getCompany();
         if ($company) {
             $user->setCompany(null);
-
             $em->remove($company);
             $em->flush();
         }
