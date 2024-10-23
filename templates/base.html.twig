@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="dark" lang="">
+<html class="{{ app.session.get('darkMode') ? 'dark' : '' }}" lang="en">
 <head>
     {% block head %}
         <meta charset="UTF-8">
@@ -26,6 +26,27 @@
 
     {% block javascripts %}
         {{ encore_entry_script_tags('app') }}
+        <script>
+            // Function to toggle dark mode with server-side session persistence
+            function toggleDarkMode() {
+                fetch('{{ path('app_dark_mode') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.darkMode) {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                    });
+            }
+
+        </script>
     {% endblock %}
 </head>
 

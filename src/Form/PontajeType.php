@@ -33,36 +33,39 @@ class PontajeType extends AbstractType
         $builder
             ->add('time_start', DateTimeType::class, [
                 'mapped' => true,
-                'label' => 'Start at: ',
+                'label' => 'Start at:',
                 'widget' => 'single_text',
                 'data' => new DateTime($date->format('d.m.Y H:i')),
                 'attr' => [
-                    'class' => 'block dark:text-black rounded-full',
+                    'class' => 'w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-blue-500 focus:bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:bg-gray-800 dark:focus:border-blue-500 transition-all duration-300',
+                    'placeholder' => 'Select start time',
                     'name' => 'time_start'
                 ]
             ])
             ->add('time_end', DateTimeType::class, [
                 'mapped' => true,
-                'label' => 'End at: ',
+                'label' => 'End at:',
                 'widget' => 'single_text',
                 'data' => new DateTime($date->format('d.m.Y H:i')),
                 'attr' => [
-                    'class' => 'block dark:text-black rounded-full',
+                    'class' => 'w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-blue-500 focus:bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:bg-gray-800 dark:focus:border-blue-500 transition-all duration-300',
+                    'placeholder' => 'Select end time',
                     'name' => 'time_end'
                 ]
             ])
             ->add('details', TextType::class, [
-                'label' => 'Details: ',
+                'label' => 'Details:',
                 'attr' => [
-                    'class' => 'block w-auto rounded-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2',
+                    'class' => 'w-full p-3 rounded-lg shadow-sm border-2 border-gray-300 focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:bg-gray-800 dark:focus:border-blue-500 transition-all duration-300',
                     'placeholder' => 'Record details...',
                 ]
             ])
-            ->add('Trimite', SubmitType::class, [
+            ->add('Add', SubmitType::class, [
                 'attr' => [
-                    'class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
+                    'class' => 'w-full text-white mt-4 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 transition-all duration-300 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-800'
                 ],
             ]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
