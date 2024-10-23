@@ -39,6 +39,12 @@ class UserController extends AbstractController
         ]);
     }
 
+    #[Route('/appearance', name: 'app_settings_appearance')]
+    public function appearance(): Response
+    {
+        return $this->render('user/appearance.html.twig');
+    }
+
     /**
      * @throws TransportExceptionInterface
      */

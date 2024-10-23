@@ -59,7 +59,7 @@ class ConcediuController extends AbstractController
 
     }
 
-    #[Route('/concedii/concediile-tale', name: 'app_concediu_showconcedii')]
+    #[Route('/concedii/concediile-tale', name: 'app_concediu_showconcedii', methods: ['GET'])]
     public function showConcedii(
         ConcediiRepository $repository,
         PaginatorInterface $paginator,
@@ -83,7 +83,7 @@ class ConcediuController extends AbstractController
         ]);
     }
 
-    #[Route('concedii/{id}/response', name: 'app_concediu_detailed')]
+    #[Route('concedii/{id}/response', name: 'app_concediu_detailed', methods: ['GET'])]
     public function concediuDetailed(Concedii $id): Response
     {
         return $this->render('concediu/concediuDetailed.html.twig', [
