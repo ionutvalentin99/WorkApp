@@ -34,7 +34,8 @@ class IntervalWorkSearchType extends AbstractType
             ->add('save', SubmitType::class, [
                 'label' => 'Search',
                 'attr' => ['class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800']
-            ]);
+            ])
+            ->setMethod('GET');
     }
 
     public function validate($value, ExecutionContextInterface $context): void
@@ -56,7 +57,7 @@ class IntervalWorkSearchType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Pontaje::class,
             'constraints' => [
-                new Callback([$this, 'validate'])
+                new Callback($this->validate(...))
             ]
         ]);
     }
