@@ -27,7 +27,6 @@
     {% block javascripts %}
         {{ encore_entry_script_tags('app') }}
         <script>
-            // Function to toggle dark mode with server-side session persistence
             function toggleDarkMode() {
                 fetch('{{ path('app_dark_mode') }}', {
                     method: 'POST',
@@ -45,7 +44,6 @@
                         }
                     });
             }
-
         </script>
     {% endblock %}
 </head>
