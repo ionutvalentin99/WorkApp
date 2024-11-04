@@ -14,24 +14,27 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/user')]
-//#[IsGranted(CompanyEnrollmentVoter::IS_ENROLLED)]
 class PontajController extends AbstractController
 {
     #[Route('/pontaje', name: 'app_pontaj')]
     public function index(PontajeRepository $repository): Response
     {
-        $date = new DateTime();
         /** @var User $user */
         $user = $this->getUser();
+        if (!$user->isEnrolled()) {
+            return $this->redirectToRoute('app_company_new');
+        }
+
         $pontaje = $repository->getActivePontaje($user, $user->getCompany());
 
         return $this->render('pontaj/index.html.twig', [
             'pontaje' => $pontaje,
-            'date' => $date->format('d-M-Y'),
+            'date' => (new DateTime())->format('d-M-Y'),
         ]);
     }
 
@@ -40,6 +43,9 @@ class PontajController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
+        if (!$user->isEnrolled()) {
+            return $this->redirectToRoute('app_company_new');
+        }
         $form = $this->createForm(DailyWorkSearchType::class);
         $formMonth = $this->createForm(IntervalWorkSearchType::class);
 
@@ -75,10 +81,13 @@ class PontajController extends AbstractController
     #[Route('/pontaje/new', name: 'app_pontaj_new')]
     public function addPontaj(Request $request, PontajeRepository $repository, UuidService $uuid): Response
     {
-        $form = $this->createForm(PontajeType::class);
-        $form->handleRequest($request);
         /** @var User $user */
         $user = $this->getUser();
+        if (!$user->isEnrolled()) {
+            return $this->redirectToRoute('app_company_new');
+        }
+        $form = $this->createForm(PontajeType::class);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $time_start = $form["time_start"]->getData();
@@ -116,8 +125,18 @@ class PontajController extends AbstractController
     }
 
     #[Route('/pontaje/update/{id}', name: 'app_pontaj_update')]
-    public function edit(Request $request, Pontaje $pontaje, EntityManagerInterface $entityManager): Response
+    public function edit($id, Request $request, Pontaje $pontaje, EntityManagerInterface $entityManager, PontajeRepository $workRepository): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user->isEnrolled()) {
+            return $this->redirectToRoute('app_company_new');
+        }
+        $work = $workRepository->find($id);
+        if ($work->getUser()->getId() !== $user->getId()) {
+            throw new NotFoundHttpException('Access denied.');
+        }
+
         $form = $this->createForm(PontajeType::class, $pontaje);
         $form->handleRequest($request);
 
@@ -143,12 +162,19 @@ class PontajController extends AbstractController
     }
 
     #[Route('/pontaje/delete/{id}', name: 'app_pontaj_delete')]
-    public function delete(Pontaje $pontaje, PontajeRepository $repository): Response
+    public function delete($id, Pontaje $pontaje, PontajeRepository $workRepository): Response
     {
-        $repository->remove($pontaje, true);
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $work = $workRepository->find($id);
+        if ($work->getUser()->getId() !== $user->getId()) {
+            throw new NotFoundHttpException('Access denied.');
+        }
+
+        $workRepository->remove($pontaje, true);
         $this->addFlash('danger', 'Record has been deleted!');
 
         return $this->redirectToRoute('app_pontaj');
     }
-
 }

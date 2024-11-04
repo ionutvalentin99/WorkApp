@@ -280,4 +280,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function isEnrolled(): bool
+    {
+        return (bool)$this->getCompany();
+    }
 }
