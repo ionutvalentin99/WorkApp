@@ -89,8 +89,7 @@ class PontajeAdminController extends AbstractController
             $time_start = $form["time_start"]->getData();
             $time_end = $form["time_end"]->getData();
             $details = $form["details"]->getData();
-            $date = $form["date"]->getData();
-            $pontaje->setDate($date);
+            $pontaje->setDate($time_start);
             $pontaje->setTimeStart($time_start);
             $pontaje->setTimeEnd($time_end);
             $pontaje->setUpdated(new DateTime());
