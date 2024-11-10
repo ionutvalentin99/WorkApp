@@ -4,28 +4,30 @@
 
 {% block body %}
 
-    <div class="flex justify-center relative top-3">
+    <div class="flex justify-center space-x-4 relative top-3 max-w-lg mx-auto">
         <a href="{{ path('app_pontaj_new') }}"
-           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center w-40 transition duration-200 ease-in-out">
             Add
         </a>
         <a href="{{ path('app_pontaj_showAll') }}"
-           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center w-40 transition duration-200 ease-in-out">
             Show All
         </a>
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_pontaje_admin') }}"
-               class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Admin - Users Records</a>
+               class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center w-60 transition duration-200 ease-in-out">
+                Admin - Users Records
+            </a>
         {% endif %}
     </div>
 
     {% if pontaje %}
         <div class="rounded relative top-5">
-            <div class="text-green-500">Active records today, {{ date }}:</div>
+            <div class="text-green-500 text-center mt-1 mb-2">Active records today, {{ date }}:</div>
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
+                <tr class="text-center">
                     <th scope="col" class="px-6 py-3">
                         Day
                     </th>
@@ -49,7 +51,7 @@
                     </th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-center">
                 {% for pontaj in pontaje %}
 
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
@@ -85,10 +87,9 @@
                         </td>
                         <td class="px-6 py-4">
                             <a href="{{ path('app_pontaj_update', {id: pontaj.id}) }}"
-                               class="text-blue-600 hover:underline hover:text-blue-500">Modify</a>
-                            <br>
+                               class="text-blue-500 border-2 border-blue-600 rounded-lg px-2 py-1 mr-1">Edit</a>
                             <a href="{{ path('app_pontaj_delete', {id: pontaj.id}) }}"
-                               class="text-red-600 hover:underline hover:text-red-500"
+                               class="text-red-500 border-2 border-red-600 rounded-lg px-2 py-1"
                                onclick="return confirm('Are you sure you want to delete?')">Delete</a>
                         </td>
                     </tr>
@@ -99,7 +100,7 @@
 
     {% else %}
 
-        <p class="dark:text-white flex justify-center relative top-4">Today, {{ date }}, you have no active records.</p>
+        <p class="dark:text-white flex justify-center relative top-8">Today, {{ date }}, you have no active records.</p>
 
     {% endif %}
 
