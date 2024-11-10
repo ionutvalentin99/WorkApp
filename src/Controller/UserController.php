@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -117,6 +118,34 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_account_settings');
+    }
+
+    #[Route('/change-username', name: 'app_change_username')]
+    public function changeUsername(
+        Request                $request,
+        EntityManagerInterface $entityManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($request->getMethod() === 'POST') {
+            $username = $request->request->get('username');
+            $user->setUsername($username);
+
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_account_settings');
+    }
+
+    #[Route('/check-username', name: 'app_check_username', methods: "GET")]
+    public function checkUsername(
+        Request                $request,
+        EntityManagerInterface $entityManager): JsonResponse
+    {
+        $username = $request->query->get('username');
+        $user = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        return new JsonResponse(['available' => $user === null]);
     }
 
     /**
