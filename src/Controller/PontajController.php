@@ -52,12 +52,11 @@ class PontajController extends AbstractController
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
+        $qbData = $repository->getDefaultEntries($user, $user->getCompany());
         if ($form->isSubmitted() && $form->isValid()) {
             $qbData = $repository->getSingleDaySearchResult($user, $user->getCompany(), $form["date"]->getData());
         } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["dateFrom"]->getData() <= $formMonth["dateTo"]->getData()) {
             $qbData = $repository->getIntervalSearchLessThan($user, $user->getCompany(), $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
-        } else {
-            $qbData = $repository->getDefaultEntries($user, $user->getCompany());
         }
 
         $totalCount = count($qbData);
