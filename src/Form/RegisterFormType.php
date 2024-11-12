@@ -9,6 +9,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RegisterFormType extends AbstractType
 {
@@ -16,6 +18,12 @@ class RegisterFormType extends AbstractType
     {
         $builder
             ->add('username', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please insert username',
+                    ]),
+                    new Length(['min' => 3, 'max' => 180]),
+                ],
                 'label' => 'Username:',
                 'attr' => [
                     'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2',
