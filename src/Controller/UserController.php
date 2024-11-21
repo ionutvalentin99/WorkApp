@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\PontajeRepository;
 use App\Repository\UserRepository;
 use App\Service\EmailVerificationService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -63,6 +64,7 @@ class UserController extends AbstractController
             }
             $user->setEmail($newEmail);
             $user->setIsVerified(0);
+            $user->setUpdated(new DateTime('now'));
             $entityManager->flush();
 
             $emailVerificationService->sendEmail($user);
@@ -93,6 +95,7 @@ class UserController extends AbstractController
 
         $encodedPassword = $passwordHasher->hashPassword($user, $newPassword);
         $user->setPassword($encodedPassword);
+        $user->setUpdated(new DateTime('now'));
         $entityManager->flush();
 
         return $this->redirectToRoute('app_account_settings');
@@ -113,6 +116,7 @@ class UserController extends AbstractController
             }
             $user->setFirstName($firstName);
             $user->setLastName($lastName);
+            $user->setUpdated(new DateTime('now'));
 
             $entityManager->flush();
         }
@@ -130,6 +134,7 @@ class UserController extends AbstractController
         if ($request->getMethod() === 'POST') {
             $username = $request->request->get('username');
             $user->setUsername($username);
+            $user->setUpdated(new DateTime('now'));
 
             $entityManager->flush();
         }

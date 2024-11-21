@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/concedii')]
+#[Route('/admin/holidays')]
 class AdminHolidaysController extends AbstractController
 {
     public function __construct(private readonly EntityManagerInterface $entityManager, private readonly ConcediiRepository $concediiRepository)

@@ -28,11 +28,14 @@
 
     {% if pontaje %}
 
-        <div class="rounded relative top-5">
-            <div class="text-white">Number of records: {{ entryNumber }}</div>
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <div class="rounded relative top-1 text-center">
+            <div class="text-white text-center bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-full py-2 px-4 shadow-md inline-block">Number of records: {{ entryNumber }}</div>
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mt-4">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
+                <tr class="text-center">
+                    <th scope="col" class="px-6 py-3">
+                        Employee
+                    </th>
                     <th scope="col" class="px-6 py-3">
                         Day
                     </th>
@@ -59,10 +62,13 @@
                     </th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-center">
                 {% for pontaj in pagination %}
                     {% set queryParams = app.request.query.all %}
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="px-6 py-4">
+                            {{ pontaj.getUser.getFirstName }} {{ pontaj.getUser.getLastName }}
+                        </td>
                         <td class="px-6 py-4">
                             {{ pontaj.getTimeStart|date("D, d.M.Y") }}
                         </td>
@@ -95,24 +101,27 @@
                             {{ pontaj.company.name }}
                         </td>
                         <td class="px-6 py-4">
+                            {% if app.user == pontaj.getUser %}
                             <a href="{{ path('app_pontaj_update', {id: pontaj.id}) }}"
-                               class="text-blue-600 hover:underline hover:text-blue-500">Modify</a>
-                            <br>
+                               class="text-blue-500 border-2 border-blue-600 rounded-lg px-2 py-1 mr-1">Modify</a>
                             <a href="{{ path('app_pontaj_delete', {id: pontaj.id}) }}"
-                               class="text-red-600 hover:underline hover:text-red-500"
+                               class="text-red-500 border-2 border-red-600 rounded-lg px-2 py-1"
                                onclick="return confirm('Are you sure you want to delete?')">Delete</a>
+                            {% else %} <p>No actions available</p> {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <div class="dark:text-white text-center bg-white text-gray-500 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white">
+            <div class="dark:text-white text-center bg-white text-gray-500 ml-0 mt-2 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white">
                 {{ knp_pagination_render(pagination, '@KnpPaginator/Pagination/sliding.html.twig') }}
             </div>
         </div>
     {% else %}
 
-        <div class="text-center mt-4 text-red-500">You have no records.</div>
+        <div class="rounded relative top-1 text-center">
+            <div class="text-white text-center bg-gradient-to-r from-red-400 via-red-500 to-red-600 rounded-full py-2 px-4 shadow-md inline-block">You have no records.</div>
+        </div>
 
     {% endif %}
 {% endblock %}
