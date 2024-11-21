@@ -197,7 +197,7 @@ class PontajController extends AbstractController
     }
 
     #[Route('/pontaje/delete/{id}', name: 'app_pontaj_delete')]
-    public function delete($id, Pontaje $pontaje, PontajeRepository $workRepository): Response
+    public function delete($id, Pontaje $pontaje, PontajeRepository $workRepository, Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -209,6 +209,11 @@ class PontajController extends AbstractController
 
         $workRepository->remove($pontaje, true);
         $this->addFlash('danger', 'Record has been deleted!');
+
+        $previousRoute = $request->headers->get('referer');
+        if ($previousRoute) {
+            return $this->redirect($previousRoute);
+        }
 
         return $this->redirectToRoute('app_pontaj');
     }
