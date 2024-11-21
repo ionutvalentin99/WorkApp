@@ -4,14 +4,18 @@
 
 {% block body %}
 
-    <div class="flex justify-center space-x-4 relative top-3 max-w-lg mx-auto">
+    <div class="flex justify-center space-x-4 relative top-3 mx-auto">
         <a href="{{ path('app_pontaj_new') }}"
            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center w-40 transition duration-200 ease-in-out">
             Add
         </a>
-        <a href="{{ path('app_pontaj_showAll') }}"
+        <a href="{{ path('app_pontaj_your_records') }}"
            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center w-40 transition duration-200 ease-in-out">
-            Show All
+            Your Records
+        </a>
+        <a href="{{ path('app_pontaj_company_records') }}"
+           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center w-40 transition duration-200 ease-in-out">
+            All Users Records
         </a>
 
         {% if is_granted('ROLE_ADMIN') %}

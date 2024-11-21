@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\PontajeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PontajeRepository::class)]
 class Pontaje
@@ -15,7 +14,7 @@ class Pontaje
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'pontaje')]
+    #[ORM\ManyToOne(fetch: "EAGER", inversedBy: 'pontaje')]
     private ?User $user = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

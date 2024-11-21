@@ -38,8 +38,8 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/pontaje/all', name: 'app_pontaj_showAll')]
-    public function showAll(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
+    #[Route('/pontaje/your-work', name: 'app_pontaj_your_records')]
+    public function showYourWork(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -52,30 +52,66 @@ class PontajController extends AbstractController
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
-        $qbData = $repository->getDefaultEntries($user, $user->getCompany());
+        $qbData = $repository->getCompanyRecords($user->getCompany(), $user);
         if ($form->isSubmitted() && $form->isValid()) {
-            $qbData = $repository->getSingleDaySearchResult($user, $user->getCompany(), $form["date"]->getData());
+            $qbData = $repository->getCompanyRecords($user->getCompany(), $user, $form["date"]->getData());
         } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["dateFrom"]->getData() <= $formMonth["dateTo"]->getData()) {
-            $qbData = $repository->getIntervalSearchLessThan($user, $user->getCompany(), $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
+            $qbData = $repository->getCompanyRecords($user->getCompany(), $user, $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
         }
-
-        $totalCount = count($qbData);
-        $perPage = 5;
 
         $pagination = $paginator->paginate(
             $qbData,
             $request->query->getInt('page', 1),
-            $perPage,
+            5 //items per page
         );
 
         return $this->render('pontaj/showAll.html.twig', [
             'pontaje' => $qbData,
             'form' => $form->createView(),
             'formMonth' => $formMonth->createView(),
-            'entryNumber' => $totalCount,
+            'entryNumber' => $pagination->getTotalItemCount(),
             'pagination' => $pagination,
         ]);
     }
+
+    #[Route('/pontaje/company-records', name: 'app_pontaj_company_records')]
+    public function showCompanyWork(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user->isEnrolled()) {
+            return $this->redirectToRoute('app_company_new');
+        }
+
+        $form = $this->createForm(DailyWorkSearchType::class);
+        $formMonth = $this->createForm(IntervalWorkSearchType::class);
+
+        $form->handleRequest($request);
+        $formMonth->handleRequest($request);
+
+        $qbData = $repository->getCompanyRecords($user->getCompany());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $qbData = $repository->getCompanyRecords($user->getCompany(), null, $form['date']->getData());
+        } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth['dateFrom']->getData() <= $formMonth['dateTo']->getData()) {
+            $qbData = $repository->getCompanyRecords($user->getCompany(), null,  $formMonth['dateFrom']->getData(), $formMonth['dateTo']->getData());
+        }
+
+        $pagination = $paginator->paginate(
+            $qbData,
+            $request->query->getInt('page', 1),
+            5 //items per page
+        );
+
+        return $this->render('pontaj/showAll.html.twig', [
+            'pontaje' => $pagination->getItems(),
+            'form' => $form->createView(),
+            'formMonth' => $formMonth->createView(),
+            'entryNumber' => $pagination->getTotalItemCount(),
+            'pagination' => $pagination,
+        ]);
+    }
+
 
     #[Route('/pontaje/new', name: 'app_pontaj_new')]
     public function addPontaj(Request $request, PontajeRepository $repository, UuidService $uuid): Response
