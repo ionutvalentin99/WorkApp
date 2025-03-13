@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PontajeAdminController extends AbstractController
 {
-    #[Route('/admin/pontaje', name: 'app_pontaje_admin')]
+    #[Route('/admin/work', name: 'app_pontaje_admin')]
     public function showPontaje(EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator): Response
     {
         $form = $this->createFormBuilder()
@@ -70,7 +70,7 @@ class PontajeAdminController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/pontaje/delete/{id}', name: 'app_pontaj_admin_delete')]
+    #[Route('/admin/work/delete/{id}', name: 'app_pontaj_admin_delete')]
     public function deletePontaj(Pontaje $pontaje, PontajeRepository $repository): Response
     {
         $repository->remove($pontaje, true);

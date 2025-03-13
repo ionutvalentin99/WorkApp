@@ -21,7 +21,7 @@ use Knp\Component\Pager\PaginatorInterface;
 #[Route('/user')]
 class PontajController extends AbstractController
 {
-    #[Route('/pontaje', name: 'app_pontaj')]
+    #[Route('/work', name: 'app_pontaj')]
     public function index(PontajeRepository $repository): Response
     {
         /** @var User $user */
@@ -38,7 +38,7 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/pontaje/your-work', name: 'app_pontaj_your_records')]
+    #[Route('/work/your-work', name: 'app_pontaj_your_records')]
     public function showYourWork(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
     {
         /** @var User $user */
@@ -74,7 +74,7 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/pontaje/company-records', name: 'app_pontaj_company_records')]
+    #[Route('/work/company-records', name: 'app_pontaj_company_records')]
     public function showCompanyWork(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
     {
         /** @var User $user */
@@ -113,7 +113,7 @@ class PontajController extends AbstractController
     }
 
 
-    #[Route('/pontaje/new', name: 'app_pontaj_new')]
+    #[Route('/work/new', name: 'app_pontaj_new')]
     public function addPontaj(Request $request, PontajeRepository $repository, UuidService $uuid): Response
     {
         /** @var User $user */
@@ -159,7 +159,7 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/pontaje/update/{id}', name: 'app_pontaj_update')]
+    #[Route('/work/update/{id}', name: 'app_pontaj_update')]
     public function edit($id, Request $request, Pontaje $pontaje, EntityManagerInterface $entityManager, PontajeRepository $workRepository): Response
     {
         /** @var User $user */
@@ -196,7 +196,7 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/pontaje/delete/{id}', name: 'app_pontaj_delete')]
+    #[Route('/work/delete/{id}', name: 'app_pontaj_delete')]
     public function delete($id, Pontaje $pontaje, PontajeRepository $workRepository, Request $request): Response
     {
         /** @var User $user */
