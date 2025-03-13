@@ -16,13 +16,13 @@ use DateTime;
 #[Route('/user')]
 class ConcediuController extends AbstractController
 {
-    #[Route('/concedii', name: 'app_concediu', methods: ['GET'])]
+    #[Route('/vacation', name: 'app_concediu', methods: ['GET'])]
     public function index(): Response
     {
         return $this->render('concediu/index.html.twig');
     }
 
-    #[Route('/concedii/new', name: 'app_concediu_new', methods: ['GET', 'POST'])]
+    #[Route('/vacation/new-vacation', name: 'app_concediu_new', methods: ['GET', 'POST'])]
     public function addConcediu(
         Request            $request,
         ConcediiRepository $repository,
@@ -59,7 +59,7 @@ class ConcediuController extends AbstractController
 
     }
 
-    #[Route('/concedii/concediile-tale', name: 'app_concediu_showconcedii', methods: ['GET'])]
+    #[Route('/vacation/history', name: 'app_concediu_showconcedii', methods: ['GET'])]
     public function showConcedii(
         ConcediiRepository $repository,
         PaginatorInterface $paginator,
@@ -83,7 +83,7 @@ class ConcediuController extends AbstractController
         ]);
     }
 
-    #[Route('concedii/{id}/response', name: 'app_concediu_detailed', methods: ['GET'])]
+    #[Route('vacation/{id}/response', name: 'app_concediu_detailed', methods: ['GET'])]
     public function concediuDetailed(Concedii $id): Response
     {
         return $this->render('concediu/concediuDetailed.html.twig', [
