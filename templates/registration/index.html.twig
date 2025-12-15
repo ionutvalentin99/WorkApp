@@ -2,16 +2,29 @@
 
 {% block title %}Register{% endblock %}
 
-{% block body %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 
-    <section class="bg-gray-50 dark:bg-gray-800 pt-10">
-        <div class="flex flex-col items-center justify-top px-6 py-8 mx-auto md:h-screen lg:py-0">
-            <div class="ring ring-blue-300 w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                    {{ form(form) }}
+{% block body %}
+    {# Added my-5 for better vertical spacing on larger screens #}
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            {# Increased column size for a wider, more modern look #}
+            <div class="col-12 col-md-8 col-lg-6">
+
+                {# Added border-primary for a touch of color #}
+                <div class="card shadow-lg border-0 border-top border-primary border-5 rounded-3">
+                    <div class="card-body p-5">
+
+                        <h3 class="text-center mb-4 text-primary">
+                            <i class="fas fa-user-plus me-2"></i>Creează un cont
+                        </h3>
+
+                        {{ form(form) }}
+
+                    </div>
                 </div>
+
             </div>
         </div>
-    </section>
-
+    </div>
 {% endblock %}
