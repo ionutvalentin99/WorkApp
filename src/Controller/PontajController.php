@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\Pontaje;
+use App\Entity\Work;
 use App\Entity\User;
 use App\Form\DailyWorkSearchType;
 use App\Form\IntervalWorkSearchType;
 use App\Form\PontajeType;
-use App\Repository\PontajeRepository;
+use App\Repository\WorkRepository;
 use App\Service\UuidService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,7 +22,7 @@ use Knp\Component\Pager\PaginatorInterface;
 class PontajController extends AbstractController
 {
     #[Route('/work', name: 'app_pontaj')]
-    public function index(PontajeRepository $repository): Response
+    public function index(WorkRepository $repository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -39,7 +39,7 @@ class PontajController extends AbstractController
     }
 
     #[Route('/work/your-work', name: 'app_pontaj_your_records')]
-    public function showYourWork(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
+    public function showYourWork(Request $request, PaginatorInterface $paginator, WorkRepository $repository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -75,7 +75,7 @@ class PontajController extends AbstractController
     }
 
     #[Route('/work/company-records', name: 'app_pontaj_company_records')]
-    public function showCompanyWork(Request $request, PaginatorInterface $paginator, PontajeRepository $repository): Response
+    public function showCompanyWork(Request $request, PaginatorInterface $paginator, WorkRepository $repository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -114,7 +114,7 @@ class PontajController extends AbstractController
 
 
     #[Route('/work/new', name: 'app_pontaj_new')]
-    public function addPontaj(Request $request, PontajeRepository $repository, UuidService $uuid): Response
+    public function addPontaj(Request $request, WorkRepository $repository, UuidService $uuid): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -130,7 +130,7 @@ class PontajController extends AbstractController
             $details = $form["details"]->getData();
 
             if ($time_start < $time_end) {
-                $pontaj = new Pontaje();
+                $pontaj = new Work();
                 $pontaj->setUser($user);
                 $pontaj->setTimeStart($time_start);
                 $pontaj->setDate($time_start);
@@ -160,7 +160,7 @@ class PontajController extends AbstractController
     }
 
     #[Route('/work/update/{id}', name: 'app_pontaj_update')]
-    public function edit($id, Request $request, Pontaje $pontaje, EntityManagerInterface $entityManager, PontajeRepository $workRepository): Response
+    public function edit($id, Request $request, Work $pontaje, EntityManagerInterface $entityManager, WorkRepository $workRepository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -197,7 +197,7 @@ class PontajController extends AbstractController
     }
 
     #[Route('/work/delete/{id}', name: 'app_pontaj_delete')]
-    public function delete($id, Pontaje $pontaje, PontajeRepository $workRepository, Request $request): Response
+    public function delete($id, Work $pontaje, WorkRepository $workRepository, Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();

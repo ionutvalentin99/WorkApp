@@ -24,23 +24,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $username = null;
 
-    #[ORM\Column]
-    private array $roles = [];
-
-    /**
-     * @var string The hashed password
-     */
-    #[ORM\Column]
-    private ?string $password = null;
-
     #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
-
-    #[ORM\Column(type: 'boolean')]
-    private bool $isVerified = false;
-
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Concedii::class)]
-    private Collection $concedii;
 
     #[ORM\Column(length: 255)]
     private ?string $firstName = null;
@@ -48,13 +33,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
+    #[ORM\Column]
+    private ?string $password = null;
+
+    #[ORM\Column]
+    private array $roles = [];
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Holiday::class)]
+    private Collection $concedii;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $created = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updated = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Pontaje::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Work::class)]
     private Collection $pontaje;
 
     #[ORM\ManyToOne(targetEntity: Company::class, fetch: 'EAGER', inversedBy: 'users')]
@@ -150,14 +147,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Concedii>
+     * @return Collection<int, Holiday>
      */
     public function getConcedii(): Collection
     {
         return $this->concedii;
     }
 
-    public function addConcedii(Concedii $concedii): self
+    public function addConcedii(Holiday $concedii): self
     {
         if (!$this->concedii->contains($concedii)) {
             $this->concedii->add($concedii);
@@ -167,7 +164,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeConcedii(Concedii $concedii): self
+    public function removeConcedii(Holiday $concedii): self
     {
         if ($this->concedii->removeElement($concedii)) {
             // set the owning side to null (unless already changed)
@@ -240,14 +237,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Pontaje>
+     * @return Collection<int, Work>
      */
     public function getPontajes(): Collection
     {
         return $this->pontaje;
     }
 
-    public function addPontaje(Pontaje $pontaje): self
+    public function addPontaje(Work $pontaje): self
     {
         if (!$this->pontaje->contains($pontaje)) {
             $this->pontaje->add($pontaje);
@@ -257,7 +254,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removePontaje(Pontaje $pontaje): self
+    public function removePontaje(Work $pontaje): self
     {
         if ($this->pontaje->removeElement($pontaje)) {
             // set the owning side to null (unless already changed)

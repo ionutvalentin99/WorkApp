@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\PontajeRepository;
+use App\Repository\WorkRepository;
 use App\Repository\UserRepository;
 use App\Service\EmailVerificationService;
 use DateTime;
@@ -158,7 +158,7 @@ class UserController extends AbstractController
      * @throws NotFoundExceptionInterface
      */
     #[Route('/delete-account', name: 'app_delete_account', methods: ['POST'])]
-    public function deleteAccount(Request $request, EntityManagerInterface $em, PontajeRepository $repository): Response
+    public function deleteAccount(Request $request, EntityManagerInterface $em, WorkRepository $repository): Response
     {
         if ($this->isCsrfTokenValid('delete-user', $request->request->get('_token'))) {
             /** @var User $user */
@@ -182,5 +182,24 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_account_settings', ['error' => 'Invalid CSRF token']);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    #[Route('/email/sendVerification', name: 'app_send_email_verification')]
+    public function secondVerifyEmail(EmailVerificationService $emailVerification): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($user->isVerified() === true) {
+            $this->addFlash('danger', 'Adresa ta de email este deja verificată!');
+            return $this->redirectToRoute('app_home');
+        }
+
+        $emailVerification->sendEmail($user);
+        $this->addFlash('success', 'An email confirmation has been sent!');
+
+        return $this->redirectToRoute('app_home');
     }
 }

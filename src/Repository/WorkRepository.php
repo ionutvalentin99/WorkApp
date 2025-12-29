@@ -2,22 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\Pontaje;
+use App\Entity\Work;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Pontaje>
+ * @extends ServiceEntityRepository<Work>
  *
- * @method Pontaje|null find($id, $lockMode = null, $lockVersion = null)
- * @method Pontaje|null findOneBy(array $criteria, array $orderBy = null)
- * @method Pontaje[]    findAll()
- * @method Pontaje[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Work|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Work|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Work[]    findAll()
+ * @method Work[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PontajeRepository extends ServiceEntityRepository
+class WorkRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Work::class);
+    }
+
     public function getActivePontaje($userId, $company): array
     {
         $date = new DateTime();
@@ -29,7 +33,7 @@ class PontajeRepository extends ServiceEntityRepository
             ->setParameter('company', $company)
             ->andWhere('p.time_end >= :time_end')
             ->setParameter('time_end', $date)
-            ->orderBy('p.time_start', Criteria::ASC)
+            ->orderBy('p.time_start', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -40,7 +44,7 @@ class PontajeRepository extends ServiceEntityRepository
             ->select('p.time_end')
             ->where('p.user = :user')
             ->setParameter('user', $userId)
-            ->addOrderBy('p.time_end', Criteria::DESC)
+            ->addOrderBy('p.time_end', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getResult();
@@ -52,8 +56,8 @@ class PontajeRepository extends ServiceEntityRepository
             ->select('p')
             ->andWhere('p.company = :company')
             ->setParameter('company', $company)
-            ->orderBy('p.date', Criteria::DESC)
-            ->addOrderBy('p.time_end', Criteria::DESC);
+            ->orderBy('p.date', 'DESC')
+            ->addOrderBy('p.time_end', 'DESC');
 
         if ($user !== null) {
             $qb->andWhere('p.user = :user')
@@ -80,19 +84,14 @@ class PontajeRepository extends ServiceEntityRepository
             ->select('p')
             ->where('p.user = :user')
             ->setParameter('user', $userId)
-            ->orderBy('p.date', Criteria::DESC)
-            ->addOrderBy('p.time_end', Criteria::DESC)
+            ->orderBy('p.date', 'DESC')
+            ->addOrderBy('p.time_end', 'DESC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
 
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Pontaje::class);
-    }
-
-    public function save(Pontaje $entity, bool $flush = false): void
+    public function save(Work $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -101,7 +100,7 @@ class PontajeRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Pontaje $entity, bool $flush = false): void
+    public function remove(Work $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -109,29 +108,4 @@ class PontajeRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-//    /**
-//     * @return Pontaje[] Returns an array of Pontaje objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Pontaje
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

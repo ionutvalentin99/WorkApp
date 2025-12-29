@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Pontaje;
+use App\Entity\Work;
 use App\Form\PontajeType;
-use App\Repository\PontajeRepository;
+use App\Repository\WorkRepository;
 use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,7 +40,7 @@ class PontajeAdminController extends AbstractController
         if($form->isSubmitted() && $form->isValid()) {
             $qb = $entityManager->createQueryBuilder();
             $qb->select('p')
-                ->from('App:Pontaje', 'p')
+                ->from('Work.php', 'p')
                 ->where('p.date = :date')
                 ->setParameter('date', $form["date"]->getData());
 
@@ -49,7 +49,7 @@ class PontajeAdminController extends AbstractController
         else {
             $queryBuilder = $entityManager->createQueryBuilder();
             $queryBuilder->select('pontaje')
-                ->from('App:Pontaje', 'pontaje')
+                ->from('Work.php', 'pontaje')
                 ->orderBy('pontaje.date', Criteria::DESC)
                 ->addOrderBy('pontaje.time_end', Criteria::DESC);
 
@@ -71,7 +71,7 @@ class PontajeAdminController extends AbstractController
     }
 
     #[Route('/admin/work/delete/{id}', name: 'app_pontaj_admin_delete')]
-    public function deletePontaj(Pontaje $pontaje, PontajeRepository $repository): Response
+    public function deletePontaj(Work $pontaje, WorkRepository $repository): Response
     {
         $repository->remove($pontaje, true);
 
@@ -80,7 +80,7 @@ class PontajeAdminController extends AbstractController
     }
 
     #[Route('/admin/pontaje/update/{id}', name: 'app_pontaje_admin_edit')]
-    public function edit(Request $request, Pontaje $pontaje, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Work $pontaje, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(PontajeType::class, $pontaje);
         $form->handleRequest($request);

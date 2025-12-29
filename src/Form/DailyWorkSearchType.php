@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Pontaje;
+use App\Entity\Work;
 use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -31,7 +31,7 @@ class DailyWorkSearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Pontaje::class,
+            'data_class' => Work::class,
         ]);
     }
 }

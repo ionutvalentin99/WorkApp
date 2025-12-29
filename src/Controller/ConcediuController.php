@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\Concedii;
+use App\Entity\Holiday;
 use App\Entity\User;
 use App\Form\ConcediiType;
-use App\Repository\ConcediiRepository;
+use App\Repository\HolidayRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,19 +24,19 @@ class ConcediuController extends AbstractController
 
     #[Route('/vacation/new-vacation', name: 'app_concediu_new', methods: ['GET', 'POST'])]
     public function addConcediu(
-        Request            $request,
-        ConcediiRepository $repository,
+        Request           $request,
+        HolidayRepository $repository,
     ): Response
     {
         $form = $this->createForm(ConcediiType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var Concedii $concediu */
+            /** @var Holiday $concediu */
             /** @var User $user */
             $user = $this->getUser();
 
-            $concediu = new Concedii();
+            $concediu = new Holiday();
             $concediu->setUserId($user);
             $startDate = $form["startDate"]->getData();
             $endDate = $form["endDate"]->getData();
@@ -61,7 +61,7 @@ class ConcediuController extends AbstractController
 
     #[Route('/vacation/history', name: 'app_concediu_showconcedii', methods: ['GET'])]
     public function showConcedii(
-        ConcediiRepository $repository,
+        HolidayRepository  $repository,
         PaginatorInterface $paginator,
         Request            $request,
     ): Response
@@ -84,7 +84,7 @@ class ConcediuController extends AbstractController
     }
 
     #[Route('vacation/{id}/response', name: 'app_concediu_detailed', methods: ['GET'])]
-    public function concediuDetailed(Concedii $id): Response
+    public function concediuDetailed(Holiday $id): Response
     {
         return $this->render('concediu/concediuDetailed.html.twig', [
             'concedii' => $id

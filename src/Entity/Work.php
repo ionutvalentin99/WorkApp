@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\PontajeRepository;
+use App\Repository\WorkRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PontajeRepository::class)]
-class Pontaje
+#[ORM\Entity(repositoryClass: WorkRepository::class)]
+class Work
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

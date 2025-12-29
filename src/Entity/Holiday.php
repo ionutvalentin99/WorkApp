@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ConcediiRepository;
+use App\Repository\HolidayRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-#[ORM\Entity(repositoryClass: ConcediiRepository::class)]
-class Concedii
+#[ORM\Entity(repositoryClass: HolidayRepository::class)]
+class Holiday
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

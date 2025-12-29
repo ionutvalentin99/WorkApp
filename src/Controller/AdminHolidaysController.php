@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Concedii;
-use App\Repository\ConcediiRepository;
+use App\Entity\Holiday;
+use App\Repository\HolidayRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/admin/vacations')]
 class AdminHolidaysController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly ConcediiRepository $concediiRepository)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly HolidayRepository $concediiRepository)
     {
     }
 
@@ -30,7 +30,7 @@ class AdminHolidaysController extends AbstractController
     }
 
     #[Route('/{id}/response', name: 'app_pending_show_concediu')]
-    public function showOne(Concedii $id): Response
+    public function showOne(Holiday $id): Response
     {
         return $this->render('concediu/showOne.html.twig', [
             'concedii' => $id
@@ -38,7 +38,7 @@ class AdminHolidaysController extends AbstractController
     }
 
     #[Route('/{id}/response/approved', name: 'app_pending_approved')]
-    public function approved(Concedii $concedii): Response
+    public function approved(Holiday $concedii): Response
     {
         $concedii->setStatus('approved');
         $concedii->setApprovedAt(new DateTime());
@@ -49,7 +49,7 @@ class AdminHolidaysController extends AbstractController
     }
 
     #[Route('/{id}/response/deny', name: 'app_pending_denied')]
-    public function deny(Concedii $concedii): Response
+    public function deny(Holiday $concedii): Response
     {
         $details = $_POST['deny'];
         $concedii->setDetails($details);
