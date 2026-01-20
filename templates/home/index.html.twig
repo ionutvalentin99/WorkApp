@@ -30,10 +30,14 @@
                             {% if hour < 12 %}Good morning,{% elseif hour < 18 %}Good afternoon,{% else %}Good evening,{% endif %}
                             {{ app.user.firstName }}!
                         {% else %}
-                            Welcome to Work App
+                            Welcome to ePontaj
                         {% endif %}
                     </h1>
+                    {% if app.user %}
                     <p class="lead text-white text-opacity-75 mb-0">Here is what's happening today.</p>
+                    {% else %}
+                    <p class="lead text-white text-opacity-75 mb-0">Please log in to start</p>
+                    {% endif %}
                 </div>
 
                 {% if app.user and app.user.company %}
