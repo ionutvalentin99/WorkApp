@@ -1,0 +1,14 @@
+{% set current_route = app.request.attributes.get('_route') %}
+
+{# Define styles for active vs inactive states to keep code clean #}
+{% set active_classes = 'active bg-primary-subtle text-primary fw-bold border-start border-4 border-primary rounded-end' %}
+{% set inactive_classes = 'text-secondary fw-semibold hover-bg-light' %}
+
+<div class="col-lg-3 d-none d-md-block mb-4">
+    <nav class="nav flex-column nav-pills gap-2">
+        <a href="{{ path('app_account_settings') }}"
+           class="nav-link {{ current_route == 'app_account_settings' ? active_classes : inactive_classes }}">
+            Account
+        </a>
+    </nav>
+</div>

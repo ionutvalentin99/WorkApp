@@ -1,84 +1,260 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="{{ path('app_home') }}">
-            <img src="https://flowbite.com/docs/images/logo.svg" alt="Flowbite Logo" height="32" class="me-2">
-            <span class="fs-4 fw-semibold">Work App</span>
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
+    <div class="container-xl">
+        <a class="navbar-brand d-flex align-items-center me-4" href="{{ path('app_home') }}">
+            <img src="{{ asset('assets/client/images/epontaj.jpg') }}" alt="Logo" height="32"
+                 class="me-2 object-fit-contain">
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-            {% if not app.user %}
-                <div class="d-flex gap-2">
-                    <a href="{{ path('app_login') }}" class="btn btn-primary">Sign in</a>
-                    <a href="{{ path('app_registration') }}" class="btn btn-outline-primary">
-                        <span class="d-md-none">Sign up</span>
-                        <span class="d-none d-md-inline d-lg-none">Create account</span>
-                        <span class="d-none d-lg-inline">Create an account</span>
-                    </a>
-                </div>
-            {% endif %}
-
-            {% if app.user and not app.user.isVerified %}
-                <a href="{{ path('app_send_email_verification') }}"
-                   class="btn btn-warning btn-sm rounded-pill d-flex align-items-center gap-2 me-2">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <span class="d-none d-md-inline">Email neconfirmat</span>
-                    <span class="d-inline d-md-none">Confirmă</span>
-                </a>
-            {% endif %}
-
+        <div class="collapse navbar-collapse pb-3 pb-lg-0" id="navbarContent">
 
             {% if app.user %}
-                <ul class="navbar-nav ms-3">
-                    <!-- Company Dropdown -->
-                    <li class="nav-item dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" id="companyDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Company
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="companyDropdown">
-                            {% if app.user.company %}
-                                <li><a class="dropdown-item" href="{{ path('app_company') }}">{{ app.user.company.name }}</a></li>
-                            {% else %}
-                                <li><a class="dropdown-item" href="{{ path('app_company_new') }}">Create New Company</a></li>
-                            {% endif %}
-                        </ul>
+                {% set current_route = app.request.attributes.get('_route') %}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-medium">
+                    <li class="nav-item">
+                        <a class="nav-link {{ current_route == 'app_home' ? 'active text-primary fw-bold' : '' }}"
+                           href="{{ path('app_home') }}">Dashboard</a>
                     </li>
-
-                    <!-- Profile Dropdown -->
-                    <li class="nav-item dropdown ms-2">
-                        <button class="btn btn-primary dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ app.user.firstName }}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" href="{{ path('app_account_settings') }}">Settings</a></li>
-                            <li><a class="dropdown-item" href="{{ path('app_logout') }}">Sign out</a></li>
-                        </ul>
-                    </li>
+                    {% if app.user.company is not null %}
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'pontaj' in current_route ? 'active text-primary fw-bold' : '' }}"
+                               href="{{ path('app_pontaj') }}">Work Records</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'concediu' in current_route ? 'active text-primary fw-bold' : '' }}"
+                               href="{{ path('app_concediu') }}">Holidays</a>
+                        </li>
+                    {% endif %}
+                    {# Admin Nav #}
+                    {% if is_granted("ROLE_ADMIN") %}
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'crud' in current_route ? 'active text-primary fw-bold' : '' }}"
+                               href="{{ path('app_user_crud_index') }}">Admin Panel</a>
+                        </li>
+                    {% endif %}
                 </ul>
             {% endif %}
+
+            <div class="d-none d-lg-flex align-items-center gap-3 ms-auto">
+                {% if not app.user %}
+                    <a href="{{ path('app_login') }}" class="btn btn-link text-decoration-none text-dark fw-bold px-3">Sign
+                        in</a>
+                    <a href="{{ path('app_registration') }}"
+                       class="btn btn-primary rounded-pill px-4 fw-medium shadow-sm">Get Started</a>
+                {% else %}
+                    {# Email Verification #}
+                    {% if not app.user.isVerified %}
+                        <a href="{{ path('app_send_email_verification') }}"
+                           class="btn btn-warning btn-sm rounded-circle text-white"
+                           style="width: 32px; height: 32px; display:grid; place-items:center;" data-bs-toggle="tooltip"
+                           title="Confirm email"><i class="bi bi-exclamation-triangle-fill"></i></a>
+                    {% endif %}
+
+                    <div class="dropdown dropdown-hover">
+                        <button class="btn btn-light bg-light-subtle border-0 rounded-pill dropdown-toggle d-flex align-items-center gap-2 px-3 py-2"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false" style="outline: none; box-shadow: none;">
+                            <span class="small fw-bold text-truncate text-dark"
+                                  style="max-width: 120px;">{{ app.user.company ? app.user.company.name : 'No Company' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-1 rounded-3">
+                            <li><h6 class="dropdown-header text-uppercase fs-xs fw-bold text-muted spacing-1">Active
+                                    Workspace</h6></li>
+                            {% if app.user.company %}
+                                <li><a class="dropdown-item rounded active"
+                                       href="{{ path('app_company') }}">{{ app.user.company.name }}</a></li>
+                                <li>
+                                    <hr class="dropdown-divider my-1">
+                                </li>
+                            {% endif %}
+                            <li><a class="dropdown-item rounded" href="{{ path('app_company_new') }}"><i
+                                            class="bi bi-plus-circle me-2 text-primary"></i>Create New Company</a></li>
+                        </ul>
+                    </div>
+
+                    {# Desktop Profile #}
+                    <div class="dropdown dropdown-hover">
+                        <a href="#" class="d-block link-dark text-decoration-none no-arrow" id="profileDropdown"
+                           data-bs-toggle="dropdown" aria-expanded="false"
+                           style="outline: none; box-shadow: none;">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm border border-2 border-white"
+                                 style="width: 42px; height: 42px; font-size: 16px;">
+                                {{ app.user.firstName|first|upper }}{{ app.user.lastName ? app.user.lastName|first|upper : '' }}
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-2 rounded-3"
+                            aria-labelledby="profileDropdown" style="min-width: 220px;">
+                            <li>
+                                <div class="px-3 py-2">
+                                    <div class="fw-bold text-dark">{{ app.user.firstName }} {{ app.user.lastName }}</div>
+                                    <div class="text-muted small text-truncate">{{ app.user.email }}</div>
+                                </div>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider my-1">
+                            </li>
+                            <li><a class="dropdown-item rounded py-2" href="{{ path('app_account_settings') }}"><i
+                                            class="bi bi-gear me-2 text-muted"></i>Settings</a></li>
+                            <li><a class="dropdown-item rounded py-2 text-danger" href="{{ path('app_logout') }}"><i
+                                            class="bi bi-box-arrow-right me-2"></i>Sign out</a></li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="d-lg-none mt-3">
+                {% if not app.user %}
+                    <div class="d-grid gap-2">
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-dark fw-bold">Sign in</a>
+                        <a href="{{ path('app_registration') }}" class="btn btn-primary fw-bold">Get Started</a>
+                    </div>
+                {% else %}
+                    <hr class="text-secondary opacity-25 my-3">
+
+                    <div class="d-flex align-items-center px-2 mb-4">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold me-3"
+                             style="width: 48px; height: 48px; font-size: 18px;">
+                            {{ app.user.firstName|first|upper }}{{ app.user.lastName ? app.user.lastName|first|upper : '' }}
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="fw-bold text-dark">{{ app.user.firstName }} {{ app.user.lastName }}</div>
+                            <div class="small text-muted text-truncate">{{ app.user.email }}</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-light rounded-3 p-3 mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Active
+                                Workspace</small>
+                            {% if app.user.company %}
+                                <a href="{{ path('app_company') }}"
+                                   class="text-decoration-none small fw-bold">Manage</a>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="fw-bold text-dark">{{ app.user.company ? app.user.company.name : 'No Company Selected' }}</span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a href="{{ path('app_company_new') }}"
+                               class="btn btn-sm btn-white border shadow-sm text-start">
+                                <i class="bi bi-plus-circle me-2 text-success"></i> Create New Company
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {% if not app.user.isVerified %}
+                            <a href="{{ path('app_send_email_verification') }}"
+                               class="btn btn-warning btn-sm text-white fw-bold"><i
+                                        class="bi bi-exclamation-triangle-fill me-2"></i> Verify Email</a>
+                        {% endif %}
+
+                        <a href="{{ path('app_account_settings') }}"
+                           class="btn btn-link text-decoration-none text-dark text-start px-0 py-2 border-bottom">
+                            <i class="bi bi-gear me-3 text-muted fs-5"></i> Account Settings
+                        </a>
+                        <a href="{{ path('app_logout') }}"
+                           class="btn btn-link text-decoration-none text-danger text-start px-0 py-2">
+                            <i class="bi bi-box-arrow-right me-3 fs-5"></i> Sign out
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
         </div>
     </div>
 </nav>
 
-{% if app.user and app.user.company %}
-    <ul class="nav nav-tabs justify-content-center mt-3 border-bottom">
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('app_home') }}">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('app_pontaj') }}">Work Records</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('app_concediu') }}">Holidays</a>
-        </li>
-        {% if is_granted("ROLE_ADMIN") %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_user_crud_index') }}">Admin</a>
-            </li>
-        {% endif %}
-    </ul>
-{% endif %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const canHover = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 992px)');
+        if (!canHover.matches) return;
+
+        document.querySelectorAll('.dropdown-hover').forEach((dd) => {
+            const toggle = dd.querySelector('[data-bs-toggle="dropdown"]');
+            const menu = dd.querySelector('.dropdown-menu');
+            if (!toggle || !menu) return;
+
+            const instance = bootstrap.Dropdown.getOrCreateInstance(toggle);
+            let hideTimer = null;
+
+            // Funcție pentru deschidere
+            const showMenu = () => {
+                clearTimeout(hideTimer);
+                instance.show();
+                toggle.setAttribute('aria-expanded', 'true');
+            };
+
+            // Funcție pentru închidere cu delay (permite selecția textului)
+            const hideMenu = () => {
+                hideTimer = setTimeout(() => {
+                    instance.hide();
+                    toggle.setAttribute('aria-expanded', 'false');
+                }, 300); // 300ms delay - destul timp să selectezi text
+            };
+
+            // 1. Evenimente Mouse
+            dd.addEventListener('mouseenter', showMenu);
+            dd.addEventListener('mouseleave', hideMenu);
+
+            // 2. REZOLVARE CLICK: Dacă e deja deschis, nu lăsa click-ul să-l închidă
+            toggle.addEventListener('click', (e) => {
+                if (menu.classList.contains('show')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Opțional: putem să-l redeschidem forțat just in case
+                    instance.show();
+                }
+            });
+
+            // Dacă dăm click pe meniu (selectăm text), oprim închiderea
+            menu.addEventListener('click', (e) => {
+                e.stopPropagation(); // Previne propagarea care ar putea închide meniul
+                clearTimeout(hideTimer); // Anulează timerul de închidere
+            });
+        });
+    });
+</script>
+<style>
+    @media (min-width: 992px) {
+        /* Setări de bază pentru animație */
+        .dropdown-hover .dropdown-menu {
+            display: block !important; /* Previne dispariția instantanee */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, visibility 0.3s;
+        }
+
+        /* Starea vizibilă */
+        .dropdown-hover .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Fix poziție dreapta */
+        .dropdown-hover .dropdown-menu-end {
+            right: 0 !important;
+            left: auto !important;
+        }
+
+        /* --- TRUCUL MAGIC: PODUL INVIZIBIL --- */
+        /* Această parte umple spațiul dintre buton și meniu */
+        .dropdown-hover .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -15px; /* Se ridică deasupra meniului */
+            left: 0;
+            width: 100%;
+            height: 20px; /* Înălțimea podului invizibil */
+            background: transparent; /* Este invizibil */
+            z-index: -1;
+        }
+    }
+</style>

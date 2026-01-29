@@ -23,6 +23,7 @@
                     display: flex;
                     flex-direction: column;
                 }
+
             </style>
         {% endblock %}
     {% endblock %}
@@ -34,7 +35,7 @@
     {% include 'PageElements/_navbar.html.twig' %}
 {% endblock %}
 
-<div class="container mt-3">
+<div class="container">
     {% for message in app.flashes('success') %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
