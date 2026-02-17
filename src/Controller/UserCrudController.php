@@ -11,22 +11,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use DateTime;
 
-#[Route('/admin/crud')]
 class UserCrudController extends AbstractController
 {
-    #[Route('/', name: 'app_user_crud_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function __construct(private readonly UserRepository $userRepository,
+                                private readonly UserPasswordHasherInterface $passwordHasher)
+    {
+    }
+    #[Route('/admin/crud/', name: 'app_user_crud_index', methods: ['GET'])]
+    public function index(): Response
     {
         return $this->render('user_crud/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $this->userRepository->findAll(),
         ]);
     }
-
-    #[Route('/new', name: 'app_user_crud_new')]
-    public function new(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+    #[Route('/admin/crud/new', name: 'app_user_crud_new')]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         {
             $user = new User();
@@ -34,7 +36,7 @@ class UserCrudController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $hashedPassword = $passwordHasher->hashPassword($user, $form->getData()->getPassword());
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $form->getData()->getPassword());
                 $user->setPassword($hashedPassword);
                 $user->setCreated(new DateTime());
 
@@ -49,8 +51,7 @@ class UserCrudController extends AbstractController
             ]);
         }
     }
-
-    #[Route('/{id}/edit', name: 'app_user_crud_edit', methods: ['GET', 'POST'])]
+    #[Route('/admin/crud/{id}/edit', name: 'app_user_crud_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         $userCurrentEmail = $user->getEmail();
@@ -72,8 +73,7 @@ class UserCrudController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
-    #[Route('/{id}', name: 'app_user_crud_delete', methods: ['POST'])]
+    #[Route('/admin/crud/{id}', name: 'app_user_crud_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {

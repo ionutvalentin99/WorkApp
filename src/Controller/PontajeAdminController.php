@@ -14,12 +14,17 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class PontajeAdminController extends AbstractController
 {
+    public function __construct(
+        private readonly PaginatorInterface $paginator,
+        private readonly WorkRepository $repository)
+    {
+    }
     #[Route('/admin/work', name: 'app_pontaje_admin')]
-    public function showPontaje(EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator): Response
+    public function showPontaje(EntityManagerInterface $entityManager, Request $request): Response
     {
         $form = $this->createFormBuilder()
             ->add('date', DateType::class, [
@@ -32,7 +37,7 @@ class PontajeAdminController extends AbstractController
                 'label' => 'Căutare',
                 'attr' => ['class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800']
             ])
-            ->setMethod('GET')
+            ->setMethod(\Symfony\Component\HttpFoundation\Request::METHOD_GET)
             ->getForm();
 
         $form->handleRequest($request);
@@ -57,7 +62,7 @@ class PontajeAdminController extends AbstractController
         }
 
         $itemsPerPage = 10;
-        $paginate = $paginator->paginate(
+        $paginate = $this->paginator->paginate(
             $qbData,
             $request->query->getInt('page', 1),
             $itemsPerPage
@@ -71,9 +76,9 @@ class PontajeAdminController extends AbstractController
     }
 
     #[Route('/admin/work/delete/{id}', name: 'app_pontaj_admin_delete')]
-    public function deletePontaj(Work $pontaje, WorkRepository $repository): Response
+    public function deletePontaj(Work $pontaje): Response
     {
-        $repository->remove($pontaje, true);
+        $this->repository->remove($pontaje, true);
 
         $this->addFlash('danger', 'Pontajul a fost sters!');
         return $this->redirectToRoute('app_pontaje_admin');

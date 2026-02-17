@@ -17,20 +17,28 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/user')]
 class UserController extends AbstractController
 {
-    #[Route('/', name: 'app_user', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function __construct(
+        private readonly UserRepository              $userRepository,
+        private readonly EmailVerificationService    $emailVerificationService,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly WorkRepository              $repository,
+        private readonly EmailVerificationService    $emailVerification)
+    {
+    }
+
+    #[Route('/user/', name: 'app_user', methods: ['GET'])]
+    public function index(): Response
     {
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $this->userRepository->findAll(),
         ]);
     }
 
-    #[Route('/account', name: 'app_account_settings')]
+    #[Route('/user/account', name: 'app_account_settings')]
     public function account(): Response
     {
         /** @var User $user */
@@ -41,17 +49,11 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/appearance', name: 'app_settings_appearance')]
-    public function appearance(): Response
-    {
-        return $this->render('user/appearance.html.twig');
-    }
-
     /**
      * @throws TransportExceptionInterface
      */
-    #[Route('/change-email', name: 'app_change_email')]
-    public function changeEmail(Request $request, EntityManagerInterface $entityManager, EmailVerificationService $emailVerificationService): Response
+    #[Route('/user/change-email', name: 'app_change_email')]
+    public function changeEmail(Request $request, EntityManagerInterface $entityManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -67,7 +69,7 @@ class UserController extends AbstractController
             $user->setUpdated(new DateTime('now'));
             $entityManager->flush();
 
-            $emailVerificationService->sendEmail($user);
+            $this->emailVerificationService->sendEmail($user);
 
             return $this->redirectToRoute('app_account_settings');
         }
@@ -75,25 +77,24 @@ class UserController extends AbstractController
         return $this->render('user/changeEmail.html.twig');
     }
 
-    #[Route('/change-password', name: 'app_change_password')]
+    #[Route('/user/change-password', name: 'app_change_password')]
     public function changePassword(
-        Request                     $request,
-        UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface      $entityManager): Response
+        Request                $request,
+        EntityManagerInterface $entityManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $currentPassword = $request->request->get('current-password');
         $newPassword = $request->request->get('new-password');
         if ($newPassword) {
-            if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+            if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
                 throw new BadRequestHttpException('Wrong current password.');
             }
         } else {
             return $this->redirectToRoute('app_account_settings');
         }
 
-        $encodedPassword = $passwordHasher->hashPassword($user, $newPassword);
+        $encodedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
         $user->setPassword($encodedPassword);
         $user->setUpdated(new DateTime('now'));
         $entityManager->flush();
@@ -101,7 +102,7 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_account_settings');
     }
 
-    #[Route('/change-name', name: 'app_change_name')]
+    #[Route('/user/change-name', name: 'app_change_name')]
     public function changeName(
         Request                $request,
         EntityManagerInterface $entityManager): Response
@@ -124,7 +125,7 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_account_settings');
     }
 
-    #[Route('/change-username', name: 'app_change_username')]
+    #[Route('/user/change-username', name: 'app_change_username')]
     public function changeUsername(
         Request                $request,
         EntityManagerInterface $entityManager): Response
@@ -142,7 +143,7 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_account_settings');
     }
 
-    #[Route('/check-username', name: 'app_check_username', methods: "GET")]
+    #[Route('/user/check-username', name: 'app_check_username', methods: "GET")]
     public function checkUsername(
         Request                $request,
         EntityManagerInterface $entityManager): JsonResponse
@@ -157,14 +158,14 @@ class UserController extends AbstractController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[Route('/delete-account', name: 'app_delete_account', methods: ['POST'])]
-    public function deleteAccount(Request $request, EntityManagerInterface $em, WorkRepository $repository): Response
+    #[Route('/user/delete-account', name: 'app_delete_account', methods: ['POST'])]
+    public function deleteAccount(Request $request, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete-user', $request->request->get('_token'))) {
             /** @var User $user */
             $user = $this->getUser();
             $company = $user->getCompany() ?? null;
-            $userWorkRecords = $repository->findBy(['user' => $user]);
+            $userWorkRecords = $this->repository->findBy(['user' => $user]);
             if ($company->getOwner() === $user) {
                 return $this->redirectToRoute('app_account_settings', ['error' => 'You cannot delete your account, you are the owner of a company.']);
             }
@@ -187,8 +188,8 @@ class UserController extends AbstractController
     /**
      * @throws TransportExceptionInterface
      */
-    #[Route('/email/sendVerification', name: 'app_send_email_verification')]
-    public function secondVerifyEmail(EmailVerificationService $emailVerification): Response
+    #[Route('/user/email/sendVerification', name: 'app_send_email_verification')]
+    public function secondVerifyEmail(): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -196,10 +197,8 @@ class UserController extends AbstractController
             $this->addFlash('danger', 'Adresa ta de email este deja verificată!');
             return $this->redirectToRoute('app_home');
         }
-
-        $emailVerification->sendEmail($user);
+        $this->emailVerification->sendEmail($user);
         $this->addFlash('success', 'An email confirmation has been sent!');
-
         return $this->redirectToRoute('app_home');
     }
 }

@@ -15,31 +15,36 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
 
-#[Route('/user')]
 class PontajController extends AbstractController
 {
-    #[Route('/work', name: 'app_pontaj')]
-    public function index(WorkRepository $repository): Response
+    public function __construct(
+        private readonly WorkRepository $repository,
+        private readonly PaginatorInterface $paginator,
+        private readonly UuidService $uuid,
+        private readonly WorkRepository $workRepository)
+    {
+    }
+
+    #[Route('/user/work', name: 'app_pontaj')]
+    public function index(): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         if (!$user->isEnrolled()) {
             return $this->redirectToRoute('app_company_new');
         }
-
-        $pontaje = $repository->getActivePontaje($user, $user->getCompany());
-
+        $pontaje = $this->repository->getActivePontaje($user, $user->getCompany());
         return $this->render('pontaj/index.html.twig', [
             'pontaje' => $pontaje,
             'date' => (new DateTime())->format('d-M-Y'),
         ]);
     }
 
-    #[Route('/work/your-work', name: 'app_pontaj_your_records')]
-    public function showYourWork(Request $request, PaginatorInterface $paginator, WorkRepository $repository): Response
+    #[Route('/user/work/your-work', name: 'app_pontaj_your_records')]
+    public function showYourWork(Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -52,14 +57,14 @@ class PontajController extends AbstractController
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
-        $qbData = $repository->getCompanyRecords($user->getCompany(), $user);
+        $qbData = $this->repository->getCompanyRecords($user->getCompany(), $user);
         if ($form->isSubmitted() && $form->isValid()) {
-            $qbData = $repository->getCompanyRecords($user->getCompany(), $user, $form["date"]->getData());
+            $qbData = $this->repository->getCompanyRecords($user->getCompany(), $user, $form["date"]->getData());
         } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["dateFrom"]->getData() <= $formMonth["dateTo"]->getData()) {
-            $qbData = $repository->getCompanyRecords($user->getCompany(), $user, $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
+            $qbData = $this->repository->getCompanyRecords($user->getCompany(), $user, $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
         }
 
-        $pagination = $paginator->paginate(
+        $pagination = $this->paginator->paginate(
             $qbData,
             $request->query->getInt('page', 1),
             5 //items per page
@@ -74,8 +79,8 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/work/company-records', name: 'app_pontaj_company_records')]
-    public function showCompanyWork(Request $request, PaginatorInterface $paginator, WorkRepository $repository): Response
+    #[Route('/user/work/company-records', name: 'app_pontaj_company_records')]
+    public function showCompanyWork(Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -89,15 +94,15 @@ class PontajController extends AbstractController
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
-        $qbData = $repository->getCompanyRecords($user->getCompany());
+        $qbData = $this->repository->getCompanyRecords($user->getCompany());
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $qbData = $repository->getCompanyRecords($user->getCompany(), null, $form['date']->getData());
+            $qbData = $this->repository->getCompanyRecords($user->getCompany(), null, $form['date']->getData());
         } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth['dateFrom']->getData() <= $formMonth['dateTo']->getData()) {
-            $qbData = $repository->getCompanyRecords($user->getCompany(), null,  $formMonth['dateFrom']->getData(), $formMonth['dateTo']->getData());
+            $qbData = $this->repository->getCompanyRecords($user->getCompany(), null, $formMonth['dateFrom']->getData(), $formMonth['dateTo']->getData());
         }
 
-        $pagination = $paginator->paginate(
+        $pagination = $this->paginator->paginate(
             $qbData,
             $request->query->getInt('page', 1),
             5 //items per page
@@ -112,9 +117,8 @@ class PontajController extends AbstractController
         ]);
     }
 
-
-    #[Route('/work/new', name: 'app_pontaj_new')]
-    public function addPontaj(Request $request, WorkRepository $repository, UuidService $uuid): Response
+    #[Route('/user/work/new', name: 'app_pontaj_new')]
+    public function addPontaj(Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -137,10 +141,10 @@ class PontajController extends AbstractController
                 $pontaj->setTimeEnd($time_end);
                 $pontaj->setCreated(new DateTime());
                 $pontaj->setDetails($details);
-                $pontaj->setRecordId($uuid->getUuid());
+                $pontaj->setRecordId($this->uuid->getUuid());
                 $pontaj->setCompany($user->getCompany());
 
-                $repository->save($pontaj, true);
+                $this->repository->save($pontaj, true);
                 $this->addFlash('success', 'Work has been confirmed!');
 
                 return $this->redirectToRoute('app_pontaj');
@@ -150,7 +154,7 @@ class PontajController extends AbstractController
                 return $this->redirectToRoute('app_pontaj_new');
             }
         }
-        $pontaje = $repository->getActivePontaje($user, $user->getCompany());
+        $pontaje = $this->repository->getActivePontaje($user, $user->getCompany());
 
         return $this->render('pontaj/new.html.twig', [
             'form' => $form->createView(),
@@ -159,15 +163,15 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/work/update/{id}', name: 'app_pontaj_update')]
-    public function edit($id, Request $request, Work $pontaje, EntityManagerInterface $entityManager, WorkRepository $workRepository): Response
+    #[Route('/user/work/update/{id}', name: 'app_pontaj_update')]
+    public function edit($id, Request $request, Work $pontaje, EntityManagerInterface $entityManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         if (!$user->isEnrolled()) {
             return $this->redirectToRoute('app_company_new');
         }
-        $work = $workRepository->find($id);
+        $work = $this->workRepository->find($id);
         if ($work->getUser()->getId() !== $user->getId()) {
             throw new NotFoundHttpException('Access denied.');
         }
@@ -196,18 +200,18 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/work/delete/{id}', name: 'app_pontaj_delete')]
-    public function delete($id, Work $pontaje, WorkRepository $workRepository, Request $request): Response
+    #[Route('/user/work/delete/{id}', name: 'app_pontaj_delete')]
+    public function delete($id, Work $pontaje, Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
-        $work = $workRepository->find($id);
+        $work = $this->workRepository->find($id);
         if ($work->getUser()->getId() !== $user->getId()) {
             throw new NotFoundHttpException('Access denied.');
         }
 
-        $workRepository->remove($pontaje, true);
+        $this->workRepository->remove($pontaje, true);
         $this->addFlash('danger', 'Record has been deleted!');
 
         $previousRoute = $request->headers->get('referer');
