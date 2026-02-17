@@ -1,166 +1,150 @@
 {% extends 'base.html.twig' %}
+
 {% block title %}Work App | Settings{% endblock %}
 
 {% block body %}
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
-          rel="stylesheet"/>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-10">
+                <h1 class="h2 fw-bold mb-4">Settings</h1>
 
-    <div class="mx-4 min-h-screen max-w-screen-xl sm:mx-8 xl:mx-auto">
-        <h1 class="py-8 text-4xl font-semibold inline-block">Settings</h1>
-        <div class="grid grid-cols-8 pt-3 sm:grid-cols-10">
-            <!-- Left menu: Account and Appearance -->
-            <div class="col-span-2 hidden sm:block">
-                <nav class="mt-5 space-y-2">
-                    <a href="{{ path('app_account_settings') }}"
-                       class="block cursor-pointer rounded-lg px-3 py-2 font-semibold text-blue-700 transition hover:bg-blue-50 hover:text-blue-900 border-l-4 border-l-blue-700">
-                        Account
-                    </a>
-                    <a href="{{ path('app_settings_appearance') }}"
-                       class="block cursor-pointer rounded-lg px-3 py-2 font-semibold text-gray-700 transition hover:bg-blue-50 hover:text-blue-900 border-l-4 border-transparent hover:border-l-blue-700">
-                        Appearance
-                    </a>
-                </nav>
-            </div>
+                <div class="row">
+                    {% include 'PageElements/_account_sidebar.html.twig' %}
 
-            <!-- Right content: Account settings and forms -->
-            <div class="col-span-8 overflow-hidden rounded-xl sm:bg-gray-50 sm:px-8 sm:shadow text-gray-900">
-                {% if app.request.query.get('error') %}
-                    <div class="mt-4 text-red-500">{{ app.request.query.get('error') }}</div>
-                {% endif %}
-                <div class="pt-2">
-                    <h1 class="py-2 text-2xl font-semibold">Account</h1>
-                </div>
-                <hr class="mt-4 mb-2"/>
+                    <div class="col-12 col-lg-9">
+                        <div class="card border-0 shadow-sm bg-light">
+                            <div class="card-body p-4 p-md-5">
 
-                <!-- NAME SECTION -->
+                                {% if app.request.query.get('error') %}
+                                    <div class="alert alert-danger">{{ app.request.query.get('error') }}</div>
+                                {% endif %}
 
-                <p class="py-2 text-xl font-semibold">Name</p>
-                <p class="text-gray-600">Your name is <strong>{{ app.user.firstName }} {{ app.user.lastName }}</strong>
-                </p>
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <form action="{{ path('app_change_name') }}" method="post">
-                        <div class="flex items-center">
-                            <div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3">
-                                <label for="first-name">
-                                    <span class="text-sm text-gray-500">First Name</span>
-                                    <div class="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
-                                        <input type="text" name="first-name" required
-                                               class="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
-                                               placeholder="Your first name..."/>
-                                    </div>
-                                </label>
-                                <label for="last-name">
-                                    <span class="text-sm text-gray-500">Last Name</span>
-                                    <div class="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
-                                        <input type="text" name="last-name" required
-                                               class="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
-                                               placeholder="Your last name..."/>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white"
-                                id="reset-password-button">Change Name
-                        </button>
-                    </form>
-                </div>
-                <hr class="mt-4 mb-2"/>
+                                <h2 class="h4 fw-bold mb-3">Account</h2>
+                                <hr class="mb-4 text-secondary opacity-25">
 
-                <!-- Username -->
+                                <div class="mb-4">
+                                    <h5 class="fw-bold">Name</h5>
+                                    <p class="text-muted mb-3">Your name is <strong>{{ app.user.firstName }} {{ app.user.lastName }}</strong></p>
 
-                <p class="py-2 text-xl font-semibold">Username</p>
-                <p class="text-gray-600">Your username is <strong>{{ app.user.username }}</strong></p>
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <form action="{{ path('app_change_username') }}" method="post">
-                        <div class="flex items-center">
-                            <div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3">
-                                <label for="username">
-                                    <span id="username-availability"
-                                          class="text-sm text-gray-500">Change your username:</span>
-                                    <div class="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
-                                        <input type="text" name="username" id="username" required minlength="3"
-                                               class="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
-                                               placeholder="New username..."/>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <input type="hidden" name="is_username_available" id="is_username_available" value="false">
-                        <button type="submit" class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white"
-                                id="change-username-button">Change Username
-                        </button>
-                    </form>
-                </div>
-                <hr class="mt-4 mb-2"/>
-
-                <!-- Email Address -->
-                <p class="py-2 text-xl font-semibold">Email Address</p>
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <p class="text-gray-600">Your email address is <strong>{{ userEmail }}</strong></p>
-                    <a href="{{ path('app_change_email') }}" class="inline-flex text-sm font-semibold text-blue-600">Change</a>
-                </div>
-                <hr class="mt-4 mb-2"/>
-
-                <!-- Change Password -->
-                <form action="{{ path('app_change_password') }}" method="post">
-                    <p class="py-2 text-xl font-semibold">Password</p>
-                    <div class="flex items-center">
-                        <div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3">
-                            <label for="current-password">
-                                <span class="text-sm text-gray-500">Current Password</span>
-                                <div class="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
-                                    <input type="password" name="current-password" required
-                                           class="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
-                                           placeholder="***********"/>
+                                    <form action="{{ path('app_change_name') }}" method="post">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="first-name" class="form-label small text-muted">First Name</label>
+                                                <input type="text" name="first-name" id="first-name" required
+                                                       class="form-control"
+                                                       placeholder="Your first name...">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="last-name" class="form-label small text-muted">Last Name</label>
+                                                <input type="text" name="last-name" id="last-name" required
+                                                       class="form-control"
+                                                       placeholder="Your last name...">
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <button type="submit" class="btn btn-primary">Change Name</button>
+                                        </div>
+                                    </form>
                                 </div>
-                            </label>
-                            <label for="new-password">
-                                <span class="text-sm text-gray-500">New Password</span>
-                                <div class="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
-                                    <input type="password" name="new-password" required
-                                           class="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
-                                           placeholder="***********"/>
+
+                                <hr class="my-4 text-secondary opacity-25">
+
+                                <div class="mb-4">
+                                    <h5 class="fw-bold">Username</h5>
+                                    <p class="text-muted mb-3">Your username is <strong>{{ app.user.username }}</strong></p>
+
+                                    <form action="{{ path('app_change_username') }}" method="post">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="username" class="form-label small text-muted" id="username-availability">
+                                                    Change your username:
+                                                </label>
+                                                <input type="text" name="username" id="username" required minlength="3"
+                                                       class="form-control"
+                                                       placeholder="New username...">
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" name="is_username_available" id="is_username_available" value="false">
+                                        <div class="mt-3">
+                                            <button type="submit" class="btn btn-primary" id="change-username-button">
+                                                Change Username
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-                            </label>
+
+                                <hr class="my-4 text-secondary opacity-25">
+
+                                <div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div>
+                                        <h5 class="fw-bold mb-1">Email Address</h5>
+                                        <p class="text-muted mb-0">Your email address is <strong>{{ userEmail }}</strong></p>
+                                    </div>
+                                    <a href="{{ path('app_change_email') }}" class="btn btn-link fw-bold text-decoration-none px-0">
+                                        Change
+                                    </a>
+                                </div>
+
+                                <hr class="my-4 text-secondary opacity-25">
+
+                                <div class="mb-4">
+                                    <form action="{{ path('app_change_password') }}" method="post">
+                                        <h5 class="fw-bold mb-3">Password</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="current-password" class="form-label small text-muted">Current Password</label>
+                                                <input type="password" name="current-password" id="current-password" required
+                                                       class="form-control"
+                                                       placeholder="***********">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="new-password" class="form-label small text-muted">New Password</label>
+                                                <input type="password" name="new-password" id="new-password" required
+                                                       class="form-control"
+                                                       placeholder="***********">
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <button type="submit" class="btn btn-primary" id="reset-password-button">Save Password</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <hr class="my-4 text-secondary opacity-25">
+
+                                <div class="mb-2">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <h5 class="fw-bold mb-0">Delete Account</h5>
+                                        <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
+                                            Proceed with caution
+                                        </span>
+                                    </div>
+                                    <p class="text-muted small">
+                                        Make sure you have taken backup of your account in case you ever need to get access to your data.
+                                        We will completely wipe your data. There is no way to access your account after this action.
+                                    </p>
+
+                                    <form action="{{ path('app_delete_account') }}" method="post"
+                                          onsubmit="return confirm('Are you sure you want to delete your account?');"
+                                          class="d-flex justify-content-end mt-3">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete-user') }}">
+                                        <button type="submit" class="btn btn-outline-danger fw-bold btn-sm">
+                                            Delete Account
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
-                    <button type="submit" class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white"
-                            id="reset-password-button">Save Password
-                    </button>
-                </form>
-                <hr class="mt-4 mb-2"/>
-
-                <!-- Delete Account -->
-                <div class="mb-10">
-                    <p class="py-2 text-xl font-semibold">Delete Account</p>
-                    <p class="inline-flex items-center rounded-full bg-rose-100 px-4 py-1 text-rose-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" viewBox="0 0 20 20"
-                             fill="currentColor">
-                            <path fill-rule="evenodd"
-                                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 11-2 0 1 1 12 0zm-1-8a1 1 00-1 1v3a1 1 00 12 0V6a1 1 00-1-1z"
-                                  clip-rule="evenodd"></path>
-                        </svg>
-                        Proceed with caution
-                    </p>
-                    <p class="mt-2">Make sure you have taken backup of your account in case you ever need to get access
-                        to your data. We will completely wipe your data. There is no way to access your account after
-                        this action.</p>
-                    <form action="{{ path('app_delete_account') }}" method="post"
-                          class="ml-auto text-sm font-semibold text-rose-600 underline decoration-2"
-                          onsubmit="return confirm('Are you sure you want to delete your account?');">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete-user') }}">
-                        <button type="submit" class="btn btn-danger">Delete Account</button>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/username-check.js') }}"></script>
 {% endblock %}
-

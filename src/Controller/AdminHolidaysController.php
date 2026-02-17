@@ -2,22 +2,20 @@
 
 namespace App\Controller;
 
-use App\Entity\Concedii;
-use App\Repository\ConcediiRepository;
+use App\Entity\Holiday;
+use App\Repository\HolidayRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/vacations')]
 class AdminHolidaysController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly ConcediiRepository $concediiRepository)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly HolidayRepository $concediiRepository)
     {
     }
-
-    #[Route('/pending', name: 'app_pending_concedii')]
+    #[Route('/admin/vacations/pending', name: 'app_pending_concedii')]
     public function pendingConcedii(): Response
     {
         $pendingHolidays = $this->concediiRepository->getPendingHolidaysAsc();
@@ -28,17 +26,15 @@ class AdminHolidaysController extends AbstractController
             'count' => $count,
         ]);
     }
-
-    #[Route('/{id}/response', name: 'app_pending_show_concediu')]
-    public function showOne(Concedii $id): Response
+    #[Route('/admin/vacations/{id}/response', name: 'app_pending_show_concediu')]
+    public function showOne(Holiday $id): Response
     {
         return $this->render('concediu/showOne.html.twig', [
             'concedii' => $id
         ]);
     }
-
-    #[Route('/{id}/response/approved', name: 'app_pending_approved')]
-    public function approved(Concedii $concedii): Response
+    #[Route('/admin/vacations/{id}/response/approved', name: 'app_pending_approved')]
+    public function approved(Holiday $concedii): Response
     {
         $concedii->setStatus('approved');
         $concedii->setApprovedAt(new DateTime());
@@ -47,9 +43,8 @@ class AdminHolidaysController extends AbstractController
 
         return $this->redirectToRoute('app_pending_concedii');
     }
-
-    #[Route('/{id}/response/deny', name: 'app_pending_denied')]
-    public function deny(Concedii $concedii): Response
+    #[Route('/admin/vacations/{id}/response/deny', name: 'app_pending_denied')]
+    public function deny(Holiday $concedii): Response
     {
         $details = $_POST['deny'];
         $concedii->setDetails($details);
@@ -58,5 +53,4 @@ class AdminHolidaysController extends AbstractController
 
         return $this->redirectToRoute('app_pending_concedii');
     }
-
 }

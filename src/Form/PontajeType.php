@@ -2,8 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\Pontaje;
-use App\Repository\PontajeRepository;
+use App\Entity\Work;
+use App\Repository\WorkRepository;
 use DateTime;
 use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -16,7 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PontajeType extends AbstractType
 {
-    public function __construct(private readonly PontajeRepository $pontajeRepository, private readonly Security $security)
+    public function __construct(private readonly WorkRepository $pontajeRepository, private readonly Security $security)
     {
     }
 
@@ -71,7 +71,7 @@ class PontajeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Pontaje::class,
+            'data_class' => Work::class,
         ]);
     }
 }

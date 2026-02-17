@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class LoginFormType extends AbstractType
 {
@@ -15,18 +16,33 @@ class LoginFormType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
+                'label' => 'Email',
                 'attr' => [
-                    'class' => 'form-control w-full rounded-md shadow-sm dark:text-gray-700'
+                    'class' => 'form-control',
+                    'placeholder' => 'Introdu email-ul',
+                    'autocomplete' => 'email', // Ajută browserul să sugereze email-ul salvat
+                ],
+                'label_attr' => ['class' => 'form-label'],
+                'constraints' => [
+                    new NotBlank(['message' => 'Te rugăm să introduci email-ul.']),
                 ],
             ])
             ->add('password', PasswordType::class, [
+                'label' => 'Parolă',
                 'attr' => [
-                    'class' => 'form-control w-full rounded-md shadow-sm dark:text-gray-700'
+                    'class' => 'form-control',
+                    'placeholder' => 'Introdu parola',
+                    'autocomplete' => 'current-password', // Specific pentru login
+                ],
+                'label_attr' => ['class' => 'form-label'],
+                'constraints' => [
+                    new NotBlank(['message' => 'Te rugăm să introduci parola.']),
                 ],
             ])
             ->add('Submit', SubmitType::class, [
+                'label' => 'Autentificare',
                 'attr' => [
-                    'class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
+                    'class' => 'btn btn-primary btn-lg w-100'
                 ]
             ])
         ;
@@ -35,7 +51,10 @@ class LoginFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            // Configure your form options here
+            // Păstrăm setările implicite similare cu register
+            'attr' => [
+                'autocomplete' => 'off'
+            ]
         ]);
     }
 }

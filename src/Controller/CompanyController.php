@@ -11,12 +11,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/user/company')]
 class CompanyController extends AbstractController
 {
-    #[Route('/', name: 'app_company')]
+    public function __construct(private readonly \App\Repository\CompanyRepository $companyRepository)
+    {
+    }
+    #[Route('/user/company/', name: 'app_company')]
     public function index(): Response
     {
         /** @var User $user */
@@ -29,9 +31,8 @@ class CompanyController extends AbstractController
             'company' => $user->getCompany(),
         ]);
     }
-
-    #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CompanyRepository $companyRepository): Response
+    #[Route('/user/company/new', name: 'app_company_new', methods: ['GET', 'POST'])]
+    public function new(Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -46,7 +47,7 @@ class CompanyController extends AbstractController
             $company->setOwner($user);
             $company->setIsPaid(false);
             $user->setCompany($company);
-            $companyRepository->save($company, true);
+            $this->companyRepository->save($company, true);
 
             return $this->redirectToRoute('app_stripe_checkout');
         }
@@ -55,8 +56,7 @@ class CompanyController extends AbstractController
             'form' => $form
         ]);
     }
-
-    #[Route('/change-name', name: 'app_company_change_name', methods: ['GET', 'POST'])]
+    #[Route('/user/company/change-name', name: 'app_company_change_name', methods: ['GET', 'POST'])]
     public function changeName(Request $request, EntityManagerInterface $entityManager): Response
     {
         /** @var User $user */
@@ -72,8 +72,7 @@ class CompanyController extends AbstractController
 
         return $this->redirectToRoute('app_company');
     }
-
-    #[Route('/delete-account', name: 'app_delete_company', methods: ['POST'])]
+    #[Route('/user/company/delete-account', name: 'app_delete_company', methods: ['POST'])]
     public function deleteAccount(EntityManagerInterface $em): Response
     {
         /** @var User $user */
@@ -87,8 +86,7 @@ class CompanyController extends AbstractController
 
         return $this->redirectToRoute('app_home');
     }
-
-    #[Route('/leave-company', name: 'app_leave_company', methods: ['POST'])]
+    #[Route('/user/company/leave-company', name: 'app_leave_company', methods: ['POST'])]
     public function leaveCompany(EntityManagerInterface $em): Response
     {
         /** @var User $user */

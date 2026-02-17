@@ -18,7 +18,8 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
     private Collection $users;
 
-    #[ORM\OneToOne(inversedBy: 'company', cascade: ['persist'], fetch: "EAGER")]
+    #[ORM\OneToOne(inversedBy: 'ownedCompany', cascade: ['persist'], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
     #[ORM\Column(length: 100)]
@@ -39,7 +40,7 @@ class Company
     #[ORM\Column]
     private ?bool $is_paid = null;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Pontaje::class, cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Work::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $records;
 
     public function __construct()
@@ -168,14 +169,14 @@ class Company
     }
 
     /**
-     * @return Collection<int, Pontaje>
+     * @return Collection<int, Work>
      */
     public function getRecords(): Collection
     {
         return $this->records;
     }
 
-    public function addRecord(Pontaje $record): static
+    public function addRecord(Work $record): static
     {
         if (!$this->records->contains($record)) {
             $this->records->add($record);
@@ -185,7 +186,7 @@ class Company
         return $this;
     }
 
-    public function removeRecord(Pontaje $record): static
+    public function removeRecord(Work $record): static
     {
         if ($this->records->removeElement($record)) {
             // set the owning side to null (unless already changed)

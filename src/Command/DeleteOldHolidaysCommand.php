@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Repository\ConcediiRepository;
+use App\Repository\HolidayRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DeleteOldHolidaysCommand extends Command
 {
     public function __construct(
-        private readonly ConcediiRepository     $holidayRepository,
+        private readonly HolidayRepository      $holidayRepository,
         private readonly EntityManagerInterface $entityManager,
         string                                  $name = null
     )

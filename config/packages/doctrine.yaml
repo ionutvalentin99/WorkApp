@@ -9,7 +9,17 @@ doctrine:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+
+        # 1. Adaugă această linie pentru compatibilitatea cu ORM 3.0
+        report_fields_where_declared: true
+
+        # 2. Rezolvăm deprecările legate de auto_mapping din controllere
+        controller_resolver:
+            auto_mapping: false # Setăm pe false pentru a urma noua recomandare Symfony 7
+
+        # Această linie poate rămâne true pentru maparea generală a entităților
         auto_mapping: true
+
         mappings:
             App:
                 is_bundle: false

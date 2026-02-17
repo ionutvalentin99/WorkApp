@@ -2,12 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\Pontaje;
+use App\Entity\Work;
 use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -35,7 +36,7 @@ class IntervalWorkSearchType extends AbstractType
                 'label' => 'Search',
                 'attr' => ['class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800']
             ])
-            ->setMethod('GET');
+            ->setMethod(Request::METHOD_GET);
     }
 
     public function validate($value, ExecutionContextInterface $context): void
@@ -55,7 +56,7 @@ class IntervalWorkSearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Pontaje::class,
+            'data_class' => Work::class,
             'constraints' => [
                 new Callback($this->validate(...))
             ]

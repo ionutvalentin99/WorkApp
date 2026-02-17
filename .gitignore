@@ -7,7 +7,6 @@
 /public/bundles/
 /var/
 /vendor/
-###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
 /phpunit.xml
@@ -25,3 +24,7 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+
+.idea/
+*.iml
+.idea/*.xml

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use DateTime;
 use App\Security\EmailVerifier;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -20,7 +20,11 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private readonly EmailVerifier $emailVerifier)
+    public function __construct(
+        private readonly EmailVerifier $emailVerifier,
+        private readonly UserRepository $repository,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly TranslatorInterface $translator)
     {
     }
 
@@ -28,7 +32,7 @@ class RegistrationController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route('/register', name: 'app_registration')]
-    public function register(Request $request, UserRepository $repository, UserPasswordHasherInterface $passwordHasher): Response
+    public function register(Request $request): Response
     {
         $form = $this->createForm(RegisterFormType::class);
         $form->handleRequest($request);
@@ -43,10 +47,10 @@ class RegistrationController extends AbstractController
             $user->setCreated(new DateTime());
             $user->setRoles(["ROLE_USER"]);
             $plainPassword = ($data['password']);
-            $data['password'] = $passwordHasher->hashPassword($user, $plainPassword);
+            $data['password'] = $this->passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($data['password']);
 
-            $repository->add($user, true);
+            $this->repository->add($user, true);
             $this->addFlash('success', 'You are now registered!');
 
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
@@ -67,15 +71,14 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
+    public function verifyUserEmail(Request $request): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        // validate email confirmation link, sets User::isVerified=true and persists
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
         } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
+            $this->addFlash('verify_email_error', $this->translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
             return $this->redirectToRoute('app_home');
         }

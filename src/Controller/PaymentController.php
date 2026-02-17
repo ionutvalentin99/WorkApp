@@ -10,23 +10,23 @@ use Stripe\Exception\ApiErrorException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/payment')]
 class PaymentController extends AbstractController
 {
+    public function __construct(private readonly \App\Service\StripeService $stripeService, private readonly \App\Repository\CompanyRepository $repository)
+    {
+    }
     /**
      * @throws ApiErrorException
      */
-    #[Route('/checkout', name: 'app_stripe_checkout')]
-    public function checkout(StripeService $stripeService): Response
+    #[Route('/payment/checkout', name: 'app_stripe_checkout')]
+    public function checkout(): Response
     {
-        $checkout_session = $stripeService->checkout();
-
-        return $this->redirect($checkout_session->url, 303);
+        $checkout_session = $this->stripeService->checkout();
+        return $this->redirect($checkout_session->url, Response::HTTP_SEE_OTHER);
     }
-
-    #[Route('/success', name: 'app_stripe_success')]
+    #[Route('/payment/success', name: 'app_stripe_success')]
     public function success(EntityManagerInterface $manager, Request $request): Response
     {
         //TODO: on future implement stripe webhook
@@ -44,9 +44,8 @@ class PaymentController extends AbstractController
 
         return $this->redirectToRoute('app_stripe_failed');
     }
-
-    #[Route('/failed', name: 'app_stripe_failed')]
-    public function failed(CompanyRepository $repository): Response
+    #[Route('/payment/failed', name: 'app_stripe_failed')]
+    public function failed(): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -55,8 +54,7 @@ class PaymentController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
         $user->setCompany(null);
-        $repository->remove($company, true);
-
+        $this->repository->remove($company, true);
         return $this->render('payment/failed.html.twig');
     }
 }

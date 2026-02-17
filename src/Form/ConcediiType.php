@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Concedii;
+use App\Entity\Holiday;
 use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -58,7 +58,7 @@ class ConcediiType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Concedii::class,
+            'data_class' => Holiday::class,
         ]);
     }
 }
