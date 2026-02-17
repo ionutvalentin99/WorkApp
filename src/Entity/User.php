@@ -54,8 +54,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Work::class)]
     private Collection $pontaje;
 
-    #[ORM\ManyToOne(targetEntity: Company::class, fetch: 'EAGER', inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
     private ?Company $company = null;
+
+    #[ORM\OneToOne(mappedBy: 'owner', targetEntity: Company::class)]
+    private ?Company $ownedCompany = null;
 
     public function __construct()
     {
@@ -275,6 +278,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->company = $company;
 
+        return $this;
+    }
+
+    public function getOwnedCompany(): ?Company
+    {
+        return $this->ownedCompany;
+    }
+
+    public function setOwnedCompany(?Company $ownedCompany): self
+    {
+        $this->ownedCompany = $ownedCompany;
         return $this;
     }
 
