@@ -14,8 +14,9 @@
     {% endif %}
     {% set totalHours = (totalMinutes / 60)|round(1, 'floor') %}
 
+    {# Am actualizat gradientul pentru a folosi variabilele tale CSS: Primary (Steel Azure) și Secondary (Steel Blue) #}
     <div class="text-white pb-5 pt-4 shadow-lg"
-         style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);">
+         style="background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-secondary) 100%);">
 
         <div class="container pb-4">
             <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
@@ -33,9 +34,9 @@
                         {% endif %}
                     </h1>
                     {% if app.user %}
-                    <p class="lead text-white text-opacity-75 mb-0">Here is what's happening today.</p>
+                        <p class="lead text-white text-opacity-75 mb-0">Here is what's happening today.</p>
                     {% else %}
-                    <p class="lead text-white text-opacity-75 mb-0">Please log in to start</p>
+                        <p class="lead text-white text-opacity-75 mb-0">Please log in to start</p>
                     {% endif %}
                 </div>
 
@@ -72,8 +73,8 @@
             <div class="card border-0 shadow rounded-4 mb-4 text-center">
                 <div class="card-body p-5">
                     <div class="mb-4">
-                        {# Folosim o culoare inline pentru iconita mov, sau text-primary daca preferi albastru #}
-                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle p-4" style="color: #4F46E5">
+                        {# Am inlocuit culoarea inline cu text-primary pentru o integrare perfecta in tema #}
+                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle p-4 text-primary">
                             <i class="bi bi-buildings display-6"></i>
                         </div>
                     </div>
@@ -81,7 +82,8 @@
                     <p class="text-muted mb-4 mx-auto w-50">
                         Pentru a începe pontajul, trebuie să te alături unei echipe existente sau să creezi propria ta companie.
                     </p>
-                    <a href="{{ path('app_company_new') }}" class="btn btn-lg rounded-pill px-5 text-white" style="background-color: #4F46E5;">
+                    {# Am pus btn-primary in loc de style="background-color:..." #}
+                    <a href="{{ path('app_company_new') }}" class="btn btn-primary btn-lg rounded-pill px-5 text-white">
                         <i class="bi bi-plus-lg me-1"></i> Creează sau Caută Companie
                     </a>
                 </div>
@@ -97,14 +99,16 @@
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center mb-3">
-                                <div class="d-inline-flex align-items-center justify-content-center text-white rounded-3 p-3 me-3" style="background-color: #4F46E5;">
+                                {# Folosim bg-primary (10% accent - Steel Azure) #}
+                                <div class="d-inline-flex align-items-center justify-content-center text-white rounded-3 p-3 me-3 bg-primary">
                                     <i class="bi bi-clock-fill fs-5"></i>
                                 </div>
                                 <h5 class="fw-bold mb-0">Pontaj Rapid</h5>
                             </div>
                             <p class="text-muted small mb-4">Începe o sesiune de lucru sau adaugă ore manual.</p>
                             <div class="d-grid">
-                                <a href="{{ path('app_pontaj_new') }}" class="btn rounded-pill text-white" style="background-color: #4F46E5;">
+                                {# Buton Primary #}
+                                <a href="{{ path('app_pontaj_new') }}" class="btn btn-primary rounded-pill text-white">
                                     <i class="bi bi-play-circle me-2"></i> Adaugă Pontaj
                                 </a>
                             </div>
@@ -117,7 +121,8 @@
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center mb-3">
-                                <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-3 p-3 me-3">
+                                {# Am schimbat bg-success cu bg-secondary (30% - Steel Blue) pentru consistenta temei #}
+                                <div class="d-inline-flex align-items-center justify-content-center bg-secondary text-white rounded-3 p-3 me-3">
                                     <i class="bi bi-bar-chart-fill fs-5"></i>
                                 </div>
                                 <h5 class="fw-bold mb-0">Total Ore</h5>
@@ -135,6 +140,7 @@
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center mb-3">
+                                {# Folosim bg-secondary (30% - Steel Blue) #}
                                 <div class="d-inline-flex align-items-center justify-content-center bg-secondary text-white rounded-3 p-3 me-3">
                                     <i class="bi bi-archive-fill fs-5"></i>
                                 </div>
@@ -142,7 +148,7 @@
                             </div>
                             <p class="text-muted small mb-4">Vezi rapoarte detaliate și exportă date.</p>
                             <div class="d-grid">
-                                <a href="{{ path('app_pontaj') }}" class="btn btn-outline-secondary rounded-pill">
+                                <a href="{{ path('app_pontaj') }}" class="btn btn-primary rounded-pill">
                                     Vezi Tot
                                 </a>
                             </div>
@@ -177,7 +183,8 @@
                                 <tr>
                                     <td class="ps-4 py-3">
                                         <div class="d-flex align-items-center">
-                                            <div class="d-flex align-items-center justify-content-center bg-light rounded-circle me-3" style="width: 40px; height: 40px; color: #4F46E5;">
+                                            {# Eliminat inline style, folosit text-primary #}
+                                            <div class="d-flex align-items-center justify-content-center bg-light text-primary rounded-circle me-3" style="width: 40px; height: 40px;">
                                                 <span class="fw-bold small">{{ pontaj.timeStart|date('d') }}</span>
                                             </div>
                                             <div>
@@ -192,7 +199,8 @@
                                         <span class="badge bg-light text-dark border fw-normal">{{ pontaj.timeEnd|date('H:i') }}</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="fw-bold text-success">{{ diff|date('%h') }}h {{ diff|date('%i') }}m</span>
+                                        {# Modificat in text-primary pentru contrast cu tema #}
+                                        <span class="fw-bold text-primary">{{ diff|date('%h') }}h {{ diff|date('%i') }}m</span>
                                     </td>
                                     <td class="py-3 text-muted small">{{ pontaj.details|default('—') }}</td>
                                     <td class="text-end pe-4 py-3">
@@ -214,7 +222,8 @@
                             <div class="p-3 border-bottom">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div class="d-flex align-items-center">
-                                        <div class="bg-light rounded-3 text-center p-2 me-3" style="min-width: 45px; color: #4F46E5; border: 1px solid #eee;">
+                                        {# Inlocuit style color inline cu text-primary #}
+                                        <div class="bg-light text-primary rounded-3 text-center p-2 me-3" style="min-width: 45px; border: 1px solid #eee;">
                                             <div class="fw-bold lh-1">{{ pontaj.timeStart|date('d') }}</div>
                                             <small style="font-size: 0.7rem;" class="text-uppercase">{{ pontaj.timeStart|date('M') }}</small>
                                         </div>
