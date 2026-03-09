@@ -34,6 +34,9 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_registration')]
     public function register(Request $request): Response
     {
+        $this->addFlash('danger', 'Înregistrarea conturilor noi este momentan dezactivată.');
+        return $this->redirectToRoute('app_login');
+
         $form = $this->createForm(RegisterFormType::class);
         $form->handleRequest($request);
 
