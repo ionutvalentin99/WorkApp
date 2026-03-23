@@ -18,6 +18,9 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
     private Collection $users;
 
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: CompanyRequest::class, cascade: ['remove'], orphanRemoval: true)]
+    private Collection $requests;
+
     #[ORM\OneToOne(inversedBy: 'ownedCompany', cascade: ['persist'], fetch: "EAGER")]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
@@ -40,6 +43,9 @@ class Company
     #[ORM\Column]
     private ?bool $is_paid = null;
 
+    #[ORM\Column(options: ['default' => true])]
+    private ?bool $is_searchable = true;
+
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Work::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $records;
 
@@ -47,6 +53,7 @@ class Company
     {
         $this->users = new ArrayCollection();
         $this->records = new ArrayCollection();
+        $this->requests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -168,6 +175,18 @@ class Company
         return $this;
     }
 
+    public function isSearchable(): ?bool
+    {
+        return $this->is_searchable;
+    }
+
+    public function setIsSearchable(bool $is_searchable): static
+    {
+        $this->is_searchable = $is_searchable;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Work>
      */
@@ -192,6 +211,36 @@ class Company
             // set the owning side to null (unless already changed)
             if ($record->getCompany() === $this) {
                 $record->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CompanyRequest>
+     */
+    public function getRequests(): Collection
+    {
+        return $this->requests;
+    }
+
+    public function addRequest(CompanyRequest $request): static
+    {
+        if (!$this->requests->contains($request)) {
+            $this->requests->add($request);
+            $request->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequest(CompanyRequest $request): static
+    {
+        if ($this->requests->removeElement($request)) {
+            // set the owning side to null (unless already changed)
+            if ($request->getCompany() === $this) {
+                $request->setCompany(null);
             }
         }
 

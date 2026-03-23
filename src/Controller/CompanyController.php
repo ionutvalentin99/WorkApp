@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Company;
+use App\Entity\CompanyRequest;
 use App\Entity\User;
 use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
+use App\Repository\CompanyRequestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,15 +17,18 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class CompanyController extends AbstractController
 {
-    public function __construct(private readonly \App\Repository\CompanyRepository $companyRepository)
+    public function __construct(private readonly CompanyRepository $companyRepository)
     {
     }
+
     #[Route('/user/company/', name: 'app_company')]
     public function index(): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         if (null === $user->getCompany()) {
+            $this->addFlash('warning', 'Creați o companie sau înregistrați-vă într-una!');
+
             return $this->redirectToRoute('app_home');
         }
 
@@ -31,6 +36,7 @@ class CompanyController extends AbstractController
             'company' => $user->getCompany(),
         ]);
     }
+
     #[Route('/user/company/new', name: 'app_company_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
@@ -56,6 +62,7 @@ class CompanyController extends AbstractController
             'form' => $form
         ]);
     }
+
     #[Route('/user/company/change-name', name: 'app_company_change_name', methods: ['GET', 'POST'])]
     public function changeName(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -72,6 +79,7 @@ class CompanyController extends AbstractController
 
         return $this->redirectToRoute('app_company');
     }
+
     #[Route('/user/company/delete-account', name: 'app_delete_company', methods: ['POST'])]
     public function deleteAccount(EntityManagerInterface $em): Response
     {
@@ -86,6 +94,7 @@ class CompanyController extends AbstractController
 
         return $this->redirectToRoute('app_home');
     }
+
     #[Route('/user/company/leave-company', name: 'app_leave_company', methods: ['POST'])]
     public function leaveCompany(EntityManagerInterface $em): Response
     {
@@ -102,5 +111,69 @@ class CompanyController extends AbstractController
         return $this->redirectToRoute('app_home', [
             "error" => "You can't leave this company, you are the owner! You can remove the company instead.",
         ]);
+    }
+
+    #[Route('/user/company/search', name: 'app_company_search', methods: ['GET'])]
+    public function search(Request $request, CompanyRepository $companyRepo, CompanyRequestRepository $requestRepo): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $query = $request->query->get('q');
+        $companies = [];
+
+        if ($query) {
+            $companies = $companyRepo->createQueryBuilder('c')
+                ->where('c.name LIKE :query')
+                ->andWhere('c.is_searchable = true')
+                ->setParameter('query', '%' . $query . '%')
+                ->getQuery()
+                ->getResult();
+        }
+
+        // 1. Aflăm companiile unde a aplicat deja (Pending)
+        $pendingRequests = $requestRepo->findBy(['user' => $user, 'status' => 'PENDING']);
+        $requestedCompanyIds = array_map(fn($req) => $req->getCompany()->getId(), $pendingRequests);
+
+        // 2. Aflăm compania curentă a utilizatorului
+        $currentCompanyId = $user->getCompany()?->getId();
+
+        return $this->render('company/search.html.twig', [
+            'companies' => $companies,
+            'query' => $query,
+            'requestedCompanyIds' => $requestedCompanyIds,
+            'currentCompanyId' => $currentCompanyId // Trimitem ID-ul către Twig
+        ]);
+    }
+
+    #[Route('/user/company/join/{id}', name: 'app_company_join', methods: ['POST'])]
+    public function join(Company $company, EntityManagerInterface $em, CompanyRequestRepository $requestRepo): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Verificăm dacă nu cumva este deja fix în această companie
+        if ($user->getCompany() && $user->getCompany()->getId() === $company->getId()) {
+            $this->addFlash('info', 'Ești deja membru în această companie.');
+            return $this->redirectToRoute('app_company_search');
+        }
+
+        // Verificăm dacă are deja o cerere în așteptare
+        if ($requestRepo->hasPendingRequest($user, $company)) {
+            $this->addFlash('warning', 'Ai trimis deja o cerere către această companie.');
+            return $this->redirectToRoute('app_company_search');
+        }
+
+        // Creăm noua cerere
+        $joinRequest = new CompanyRequest();
+        $joinRequest->setUser($user);
+        $joinRequest->setCompany($company);
+        $joinRequest->setType('JOIN_REQUEST');
+
+        $em->persist($joinRequest);
+        $em->flush();
+
+        $this->addFlash('success', 'Cererea de alăturare către ' . $company->getName() . ' a fost trimisă cu succes!');
+        return $this->redirectToRoute('app_company_search');
     }
 }

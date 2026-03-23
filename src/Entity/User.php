@@ -45,6 +45,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Holiday::class)]
     private Collection $concedii;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: CompanyRequest::class, cascade: ['remove'], orphanRemoval: true)]
+    private Collection $companyRequests;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $created = null;
 
@@ -64,6 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->concedii = new ArrayCollection();
         $this->pontaje = new ArrayCollection();
+        $this->companyRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -295,5 +299,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isEnrolled(): bool
     {
         return (bool)$this->getCompany();
+    }
+
+    /**
+     * @return Collection<int, CompanyRequest>
+     */
+    public function getCompanyRequests(): Collection
+    {
+        return $this->companyRequests;
+    }
+
+    public function addCompanyRequest(CompanyRequest $companyRequest): static
+    {
+        if (!$this->companyRequests->contains($companyRequest)) {
+            $this->companyRequests->add($companyRequest);
+            $companyRequest->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompanyRequest(CompanyRequest $companyRequest): static
+    {
+        if ($this->companyRequests->removeElement($companyRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($companyRequest->getUser() === $this) {
+                $companyRequest->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
