@@ -4,8 +4,19 @@
     {% block head %}
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Work App{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        {% block meta %}
+            <meta name="description" content="ePontaje - Gestionare eficientă a timpului de lucru.">
+        {% endblock %}
+        <title>{% block title %}ePontaje{% endblock %}</title>
+
+        {# --- ÎNCEPUT MODIFICARE FAVICON --- #}
+        <link rel="icon" href="{{ asset('favicons/favicon.ico') }}" sizes="any">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicons/favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicons/favicon-16x16.png') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicons/apple-touch-icon.png') }}">
+        <link rel="manifest" href="{{ asset('favicons/site.webmanifest') }}">
+        <meta name="theme-color" content="#064789"> {# Am folosit albastrul tău primar definit în :root [cite: 4] #}
+        {# --- SFÂRȘIT MODIFICARE FAVICON --- #}
 
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -80,8 +91,6 @@
     {% include 'PageElements/_navbar.html.twig' %}
 {% endblock %}
 
-{# Containerul pentru alerte FARA margin-top. Am mutat clasa mt-4 pe fiecare alertă în parte #}
-{# Containerul fix pentru Toast-uri (Dreapta-Jos) #}
 <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3 mt-5" style="z-index: 1055;">
 
     {% for message in app.flashes('success') %}

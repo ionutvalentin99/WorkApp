@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ePontaje | Caută Companie{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+
+                <div class="text-center mb-5">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-light text-primary rounded-circle p-4 mb-3">
+                        <i class="bi bi-search display-6"></i>
+                    </div>
+                    <h2 class="fw-bold">Găsește-ți Echipa</h2>
+                    <p class="text-muted">Caută compania ta după nume și trimite o cerere de alăturare.</p>
+                </div>
+
+                {# Bara de Căutare #}
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <form action="{{ path('app_company_search') }}" method="GET" class="d-flex gap-2">
+                            <label>
+                                <input type="text" name="q" value="{{ query }}" class="form-control form-control-lg border-light-subtle rounded-3" placeholder="Ex: IT Solutions SRL" required>
+                            </label>
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3 px-4 shadow-sm">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {# Rezultatele Căutării #}
+                {% if query %}
+                    <h5 class="fw-bold mb-3 text-muted">Rezultate pentru "{{ query }}"</h5>
+
+                    {% if companies is empty %}
+                        <div class="alert alert-light border text-center py-4 rounded-4 shadow-sm" role="alert">
+                            <i class="bi bi-emoji-frown fs-3 text-muted d-block mb-2"></i>
+                            Nu am găsit nicio companie cu acest nume.
+                        </div>
+                    {% else %}
+                        <div class="list-group shadow-sm rounded-4 border-0">
+                            {% for comp in companies %}
+                                <div class="list-group-item border-light-subtle p-4 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="fw-bold mb-1">{{ comp.name }}</h5>
+                                        <small class="text-muted"><i class="bi bi-person-badge me-1"></i> Owner: {{ comp.owner.email }}</small>
+                                    </div>
+
+                                    {# Verificăm starea utilizatorului față de această companie #}
+                                    {% if comp.id == currentCompanyId %}
+                                        <button class="btn btn-success rounded-pill pe-none" disabled>
+                                            <i class="bi bi-check-circle-fill me-1"></i> Ești membru
+                                        </button>
+                                    {% elseif comp.id in requestedCompanyIds %}
+                                        <button class="btn btn-secondary rounded-pill pe-none" disabled>
+                                            <i class="bi bi-clock-history me-1"></i> În așteptare
+                                        </button>
+                                    {% else %}
+                                        <form action="{{ path('app_company_join', {id: comp.id}) }}" method="POST">
+                                            <button type="submit" class="btn btn-outline-primary rounded-pill px-4 shadow-sm" onclick="return confirm('Trimiteți o cerere de alăturare către {{ comp.name }}?')">
+                                                <i class="bi bi-send me-1"></i> Alătură-te
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                <div class="text-center mt-4">
+                    <a href="{{ path('app_home') }}" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i> Înapoi la Dashboard</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
