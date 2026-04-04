@@ -7,7 +7,6 @@ namespace App\Service;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -19,7 +18,6 @@ class StripeService
     public function __construct(
         private readonly ParameterBagInterface $params,
         private readonly RouterInterface       $router,
-        private readonly Security              $security,
     )
     {
         $this->setStripeClient();
@@ -35,9 +33,8 @@ class StripeService
     /**
      * @throws ApiErrorException
      */
-    public function checkout(): Session
+    public function checkout(?int $companyId): Session
     {
-        $companyId = $this->security->getUser()?->getCompany()?->getId();
         return $this->stripeClient->checkout->sessions->create([
             'line_items' => [[
                 'price_data' => [

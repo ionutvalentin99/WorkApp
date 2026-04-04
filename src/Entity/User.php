@@ -48,6 +48,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: CompanyRequest::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $companyRequests;
 
+    #[ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'users')]
+    #[ORM\JoinTable(name: 'user_company')]
+    private Collection $companies;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $created = null;
 
@@ -57,17 +61,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Work::class)]
     private Collection $pontaje;
 
-    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
-    private ?Company $company = null;
-
-    #[ORM\OneToOne(mappedBy: 'owner', targetEntity: Company::class)]
-    private ?Company $ownedCompany = null;
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
+    private Collection $ownedCompanies;
 
     public function __construct()
     {
         $this->concedii = new ArrayCollection();
         $this->pontaje = new ArrayCollection();
         $this->companyRequests = new ArrayCollection();
+        $this->companies = new ArrayCollection();
+        $this->ownedCompanies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -273,32 +276,63 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCompany(): ?Company
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getCompanies(): Collection
     {
-        return $this->company;
+        return $this->companies;
     }
 
-    public function setCompany(?Company $company): static
+    public function addCompany(Company $company): static
     {
-        $this->company = $company;
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
+        }
 
         return $this;
     }
 
-    public function getOwnedCompany(): ?Company
+    public function removeCompany(Company $company): static
     {
-        return $this->ownedCompany;
+        $this->companies->removeElement($company);
+
+        return $this;
     }
 
-    public function setOwnedCompany(?Company $ownedCompany): self
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getOwnedCompanies(): Collection
     {
-        $this->ownedCompany = $ownedCompany;
+        return $this->ownedCompanies;
+    }
+
+    public function addOwnedCompany(Company $ownedCompany): static
+    {
+        if (!$this->ownedCompanies->contains($ownedCompany)) {
+            $this->ownedCompanies->add($ownedCompany);
+            $ownedCompany->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOwnedCompany(Company $ownedCompany): static
+    {
+        if ($this->ownedCompanies->removeElement($ownedCompany)) {
+            // set the owning side to null (unless already changed)
+            if ($ownedCompany->getOwner() === $this) {
+                $ownedCompany->setOwner(null);
+            }
+        }
+
         return $this;
     }
 
     public function isEnrolled(): bool
     {
-        return (bool)$this->getCompany();
+        return !$this->companies->isEmpty();
     }
 
     /**

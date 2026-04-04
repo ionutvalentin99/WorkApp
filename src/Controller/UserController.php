@@ -164,13 +164,18 @@ class UserController extends AbstractController
         if ($this->isCsrfTokenValid('delete-user', $request->request->get('_token'))) {
             /** @var User $user */
             $user = $this->getUser();
-            $company = $user->getCompany() ?? null;
-            $userWorkRecords = $this->repository->findBy(['user' => $user]);
-            if ($company->getOwner() === $user) {
-                return $this->redirectToRoute('app_account_settings', ['error' => 'You cannot delete your account, you are the owner of a company.']);
+            if (!$user->getOwnedCompanies()->isEmpty()) {
+                $this->addFlash('danger', 'Nu poți șterge contul cât timp ești owner-ul unei companii. Șterge mai întâi companiile tale.');
+                return $this->redirectToRoute('app_account_settings');
             }
+
+            $userWorkRecords = $this->repository->findBy(['user' => $user]);
             foreach ($userWorkRecords as $pontaje) {
                 $em->remove($pontaje);
+            }
+
+            foreach ($user->getConcedii() as $concediu) {
+                $em->remove($concediu);
             }
 
             $em->remove($user);
