@@ -15,13 +15,13 @@ class Company
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'companies')]
     private Collection $users;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: CompanyRequest::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $requests;
 
-    #[ORM\OneToOne(inversedBy: 'ownedCompany', cascade: ['persist'], fetch: "EAGER")]
+    #[ORM\ManyToOne(cascade: ['persist'], fetch: "EAGER", inversedBy: 'ownedCompanies')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
@@ -73,7 +73,7 @@ class Company
     {
         if (!$this->users->contains($user)) {
             $this->users->add($user);
-            $user->setCompany($this);
+            $user->addCompany($this);
         }
 
         return $this;
@@ -82,10 +82,7 @@ class Company
     public function removeUser(User $user): static
     {
         if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getCompany() === $this) {
-                $user->setCompany(null);
-            }
+            $user->removeCompany($this);
         }
 
         return $this;

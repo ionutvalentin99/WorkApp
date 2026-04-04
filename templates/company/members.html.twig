@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ePontaje | Membri — {{ company.name }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9">
+
+            {# Breadcrumb #}
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb mb-0" style="font-size: 0.85rem;">
+                    <li class="breadcrumb-item">
+                        <a href="{{ path('app_company') }}" class="text-decoration-none text-muted fw-medium">
+                            <i class="bi bi-building me-1"></i>{{ company.name }}
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active fw-semibold text-dark" aria-current="page">Membri</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex align-items-center justify-content-between mb-4 gap-3">
+                <div>
+                    <h2 class="fw-bold mb-0">Membri</h2>
+                    <p class="text-muted small mb-0">{{ company.users|length }} {{ company.users|length == 1 ? 'persoană' : 'persoane' }}</p>
+                </div>
+                <a href="{{ path('app_company_invite') }}" class="btn btn-primary rounded-pill px-4 fw-medium flex-shrink-0">
+                    <i class="bi bi-person-plus me-2"></i>Invită membri
+                </a>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+                {% for member in company.users %}
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body d-flex align-items-center gap-3 p-3 px-4">
+
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0 text-white shadow-sm
+                                        {{ member == company.owner ? 'bg-primary' : 'bg-secondary' }}"
+                                 style="width: 44px; height: 44px; font-size: 15px;">
+                                {{ member.firstName|first|upper }}{{ member.lastName|first|upper }}
+                            </div>
+
+                            <div class="flex-grow-1 overflow-hidden">
+                                <div class="fw-semibold text-dark text-truncate">
+                                    {{ member.firstName }} {{ member.lastName }}
+                                    {% if member == company.owner %}
+                                        <span class="badge bg-primary-subtle text-primary rounded-pill px-2 py-1 ms-1 fw-medium" style="font-size: 0.7rem;">Owner</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-muted small text-truncate">{{ member.email }}</div>
+                            </div>
+
+                            <div class="flex-shrink-0">
+                                {% if member == company.owner %}
+                                    <span class="text-muted small"><i class="bi bi-shield-lock me-1"></i>Proprietar</span>
+                                {% else %}
+                                    <form action="{{ path('app_company_member_remove', {id: member.id}) }}" method="POST"
+                                          onsubmit="return confirm('Elimini pe {{ member.firstName }} {{ member.lastName }} din companie?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-medium">
+                                            <i class="bi bi-person-dash me-1"></i>Elimină
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

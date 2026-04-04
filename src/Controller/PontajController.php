@@ -8,6 +8,7 @@ use App\Form\DailyWorkSearchType;
 use App\Form\IntervalWorkSearchType;
 use App\Form\PontajeType;
 use App\Repository\WorkRepository;
+use App\Service\ActiveCompanyService;
 use App\Service\UuidService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,7 +25,8 @@ class PontajController extends AbstractController
         private readonly WorkRepository $repository,
         private readonly PaginatorInterface $paginator,
         private readonly UuidService $uuid,
-        private readonly WorkRepository $workRepository)
+        private readonly WorkRepository $workRepository,
+        private readonly ActiveCompanyService $activeCompanyService)
     {
     }
 
@@ -33,10 +35,11 @@ class PontajController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        if (!$user->isEnrolled()) {
+        $activeCompany = $this->activeCompanyService->getActiveCompany();
+        if (!$user->isEnrolled() || !$activeCompany) {
             return $this->redirectToRoute('app_company_new');
         }
-        $pontaje = $this->repository->getActivePontaje($user, $user->getCompany());
+        $pontaje = $this->repository->getActivePontaje($user, $activeCompany);
         return $this->render('pontaj/index.html.twig', [
             'pontaje' => $pontaje,
             'date' => (new DateTime())->format('d-M-Y'),
@@ -48,7 +51,8 @@ class PontajController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        if (!$user->isEnrolled()) {
+        $activeCompany = $this->activeCompanyService->getActiveCompany();
+        if (!$user->isEnrolled() || !$activeCompany) {
             return $this->redirectToRoute('app_company_new');
         }
         $form = $this->createForm(DailyWorkSearchType::class);
@@ -57,11 +61,11 @@ class PontajController extends AbstractController
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
-        $qbData = $this->repository->getCompanyRecords($user->getCompany(), $user);
+        $qbData = $this->repository->getCompanyRecords($activeCompany, $user);
         if ($form->isSubmitted() && $form->isValid()) {
-            $qbData = $this->repository->getCompanyRecords($user->getCompany(), $user, $form["date"]->getData());
+            $qbData = $this->repository->getCompanyRecords($activeCompany, $user, $form["date"]->getData());
         } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth["dateFrom"]->getData() <= $formMonth["dateTo"]->getData()) {
-            $qbData = $this->repository->getCompanyRecords($user->getCompany(), $user, $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
+            $qbData = $this->repository->getCompanyRecords($activeCompany, $user, $formMonth["dateFrom"]->getData(), $formMonth["dateTo"]->getData());
         }
 
         $pagination = $this->paginator->paginate(
@@ -84,7 +88,8 @@ class PontajController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        if (!$user->isEnrolled()) {
+        $activeCompany = $this->activeCompanyService->getActiveCompany();
+        if (!$user->isEnrolled() || !$activeCompany) {
             return $this->redirectToRoute('app_company_new');
         }
 
@@ -94,12 +99,12 @@ class PontajController extends AbstractController
         $form->handleRequest($request);
         $formMonth->handleRequest($request);
 
-        $qbData = $this->repository->getCompanyRecords($user->getCompany());
+        $qbData = $this->repository->getCompanyRecords($activeCompany);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $qbData = $this->repository->getCompanyRecords($user->getCompany(), null, $form['date']->getData());
+            $qbData = $this->repository->getCompanyRecords($activeCompany, null, $form['date']->getData());
         } elseif ($formMonth->isSubmitted() && $formMonth->isValid() && $formMonth['dateFrom']->getData() <= $formMonth['dateTo']->getData()) {
-            $qbData = $this->repository->getCompanyRecords($user->getCompany(), null, $formMonth['dateFrom']->getData(), $formMonth['dateTo']->getData());
+            $qbData = $this->repository->getCompanyRecords($activeCompany, null, $formMonth['dateFrom']->getData(), $formMonth['dateTo']->getData());
         }
 
         $pagination = $this->paginator->paginate(
@@ -122,7 +127,8 @@ class PontajController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        if (!$user->isEnrolled()) {
+        $activeCompany = $this->activeCompanyService->getActiveCompany();
+        if (!$user->isEnrolled() || !$activeCompany) {
             return $this->redirectToRoute('app_company_new');
         }
         $form = $this->createForm(PontajeType::class);
@@ -142,7 +148,7 @@ class PontajController extends AbstractController
                 $pontaj->setCreated(new DateTime());
                 $pontaj->setDetails($details);
                 $pontaj->setRecordId($this->uuid->getUuid());
-                $pontaj->setCompany($user->getCompany());
+                $pontaj->setCompany($activeCompany);
 
                 $this->repository->save($pontaj, true);
                 $this->addFlash('success', 'Work has been confirmed!');
@@ -154,7 +160,7 @@ class PontajController extends AbstractController
                 return $this->redirectToRoute('app_pontaj_new');
             }
         }
-        $pontaje = $this->repository->getActivePontaje($user, $user->getCompany());
+        $pontaje = $this->repository->getActivePontaje($user, $activeCompany);
 
         return $this->render('pontaj/new.html.twig', [
             'form' => $form->createView(),

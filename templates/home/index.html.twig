@@ -31,14 +31,15 @@
                         <p class="lead text-white text-opacity-75 mb-0">Iată activitatea ta de astăzi.</p>
                     </div>
 
-                    {% if app.user.company %}
+                    {% set _activeCompany = active_company() %}
+                    {% if _activeCompany %}
                         <div class="bg-white bg-opacity-10 rounded-3 p-3 d-flex align-items-center border border-white border-opacity-25">
                             <div class="d-flex align-items-center justify-content-center bg-white text-primary rounded-3 p-2 me-3" style="width: 48px; height: 48px;">
                                 <i class="bi bi-building fs-4"></i>
                             </div>
                             <div>
                                 <small class="d-block text-uppercase text-white text-opacity-75" style="font-size: 0.75rem;">Companie</small>
-                                <span class="fw-bold fs-5">{{ app.user.company.name }}</span>
+                                <span class="fw-bold fs-5">{{ _activeCompany.name }}</span>
                             </div>
                         </div>
                     {% endif %}
@@ -116,7 +117,7 @@
         {% endif %}
 
         {# ================= NO COMPANY STATE ================= #}
-        {% if app.user and not app.user.company %}
+        {% if app.user and not active_company() %}
             <div class="card border-0 shadow rounded-4 mb-4 text-center">
                 <div class="card-body p-5">
                     <div class="mb-4">
@@ -143,7 +144,7 @@
         {% endif %}
 
         {# ================= DASHBOARD GRID ================= #}
-        {% if app.user and app.user.company %}
+        {% if app.user and active_company() %}
             <div class="row g-4 mb-4">
 
                 {# --- CARD 1: PONTAJ RAPID --- #}

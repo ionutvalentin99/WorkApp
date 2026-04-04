@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ePontaje | Notificări{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="fw-bold mb-0">Notificări</h2>
+                <a href="{{ path('app_home') }}" class="btn btn-light rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-2"></i>Înapoi
+                </a>
+            </div>
+
+            {% if notifications is empty %}
+                <div class="card border-0 shadow-sm rounded-4 text-center py-5">
+                    <div class="card-body">
+                        <i class="bi bi-bell-slash fs-1 text-muted mb-3 d-block"></i>
+                        <h5 class="fw-semibold text-muted">Nicio notificare</h5>
+                    </div>
+                </div>
+            {% else %}
+                <div class="d-flex flex-column gap-2">
+                    {% for notif in notifications %}
+                        {% set iconClass = notif.type == 'success' ? 'bi-check-circle-fill text-success'
+                            : (notif.type == 'warning' ? 'bi-exclamation-circle-fill text-warning'
+                            : (notif.type == 'danger' ? 'bi-x-circle-fill text-danger'
+                            : 'bi-info-circle-fill text-primary')) %}
+                        <div class="card border-0 shadow-sm rounded-4 {{ not notif.isRead ? 'border-start border-primary border-3' : '' }}"
+                             style="{{ not notif.isRead ? 'border-left: 3px solid var(--bs-primary) !important;' : '' }}">
+                            <div class="card-body d-flex align-items-start gap-3 p-3">
+                                <i class="bi {{ iconClass }} fs-5 flex-shrink-0 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <div class="{{ not notif.isRead ? 'fw-semibold' : 'text-muted' }}">
+                                        {{ notif.message }}
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                        <i class="bi bi-clock me-1"></i>{{ notif.createdAt|date('d.m.Y H:i') }}
+                                    </div>
+                                </div>
+                                {% if notif.link %}
+                                    <a href="{{ notif.link }}" class="btn btn-sm btn-light rounded-pill px-3 flex-shrink-0">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                {% endif %}
+                                {% if not notif.isRead %}
+                                    <span class="rounded-circle bg-primary flex-shrink-0"
+                                          style="width: 8px; height: 8px; margin-top: 8px;"></span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

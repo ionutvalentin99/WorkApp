@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegisterFormType;
 use App\Repository\UserRepository;
+use App\Service\AppSettingService;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,9 +25,9 @@ class RegistrationController extends AbstractController
         private readonly EmailVerifier $emailVerifier,
         private readonly UserRepository $repository,
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly TranslatorInterface $translator)
-    {
-    }
+        private readonly TranslatorInterface $translator,
+        private readonly AppSettingService $settingService,
+    ) {}
 
     /**
      * @throws TransportExceptionInterface
@@ -34,8 +35,10 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_registration')]
     public function register(Request $request): Response
     {
-        $this->addFlash('danger', 'Înregistrarea conturilor noi este momentan dezactivată.');
-        return $this->redirectToRoute('app_login');
+        if (!$this->settingService->isRegistrationEnabled()) {
+            $this->addFlash('danger', 'Înregistrarea conturilor noi este momentan dezactivată.');
+            return $this->redirectToRoute('app_login');
+        }
 
         $form = $this->createForm(RegisterFormType::class);
         $form->handleRequest($request);

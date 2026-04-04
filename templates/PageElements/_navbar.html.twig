@@ -23,13 +23,20 @@
         </a>
 
         {# 4. TOGGLER MOBIL DREAPTA (Contul Utilizatorului) #}
-        <button class="navbar-toggler border-0 p-1 d-lg-none rounded-circle modern-hover" type="button" data-bs-toggle="offcanvas"
+        <button class="navbar-toggler border-0 p-1 d-lg-none rounded-circle modern-hover position-relative" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#mobileUserMenu" aria-controls="mobileUserMenu" aria-label="Toggle user menu">
             {% if app.user %}
                 <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm"
                      style="width: 36px; height: 36px; font-size: 14px;">
                     {{ app.user.firstName|first|upper }}{{ app.user.lastName ? app.user.lastName|first|upper : '' }}
                 </div>
+                {% set _mobileNotifCount = notification_count() %}
+                {% if _mobileNotifCount > 0 %}
+                    <span class="position-absolute top-0 end-0 badge rounded-pill bg-danger border border-white"
+                          style="font-size: 0.55rem; min-width: 16px; height: 16px; padding: 2px 4px; line-height: 1.2;">
+                        {{ _mobileNotifCount > 99 ? '99+' : _mobileNotifCount }}
+                    </span>
+                {% endif %}
             {% else %}
                 <i class="bi bi-person-circle fs-2 text-secondary"></i>
             {% endif %}
@@ -53,7 +60,7 @@
                             <a class="nav-link px-3 py-2 rounded-pill transition-all {{ current_route == 'app_home' ? 'bg-primary bg-opacity-10 text-primary fw-bold' : 'text-secondary modern-hover' }}"
                                href="{{ path('app_home') }}">Dashboard</a>
                         </li>
-                        {% if app.user.company is not null %}
+                        {% if active_company() is not null %}
                             <li class="nav-item">
                                 <a class="nav-link px-3 py-2 rounded-pill transition-all {{ 'pontaj' in current_route ? 'bg-primary bg-opacity-10 text-primary fw-bold' : 'text-secondary modern-hover' }}"
                                    href="{{ path('app_pontaj') }}">Work Records</a>
@@ -103,19 +110,87 @@
                                    title="Confirm email"><i class="bi bi-exclamation-triangle-fill"></i></a>
                             {% endif %}
 
+                            {# Clopotel notificări #}
+                            {% set _notifCount = notification_count() %}
+                            {% set _recentNotifs = recent_notifications() %}
+                            <div class="dropdown dropdown-hover position-relative">
+                                <button class="btn border-0 bg-transparent p-1 rounded-circle modern-hover position-relative"
+                                        type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                        style="width: 40px; height: 40px;">
+                                    <i class="bi bi-bell fs-5 text-secondary"></i>
+                                    {% if _notifCount > 0 %}
+                                        <span class="position-absolute top-0 end-0 badge rounded-pill bg-danger"
+                                              style="font-size: 0.6rem; min-width: 18px; padding: 3px 5px;">
+                                            {{ _notifCount > 99 ? '99+' : _notifCount }}
+                                        </span>
+                                    {% endif %}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 p-2 rounded-4" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                                    <li>
+                                        <div class="d-flex align-items-center justify-content-between px-2 py-1 mb-1">
+                                            <h6 class="text-uppercase fs-xs fw-bold text-muted mb-0" style="font-size: 0.7rem;">Notificări</h6>
+                                            {% if _notifCount > 0 %}
+                                                <a href="{{ path('app_notifications') }}" class="text-decoration-none small text-primary fw-medium">Vezi toate</a>
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                    {% if _recentNotifs is empty %}
+                                        <li><p class="text-muted small text-center py-3 mb-0">Nu ai notificări.</p></li>
+                                    {% else %}
+                                        {% for notif in _recentNotifs|slice(0, 5) %}
+                                            <li>
+                                                <form action="{{ path('app_notification_read', {id: notif.id}) }}" method="POST" class="m-0">
+                                                    <button type="submit"
+                                                            class="dropdown-item rounded-3 py-2 px-2 text-start w-100 {{ notif.isRead ? 'text-muted' : 'fw-medium' }}"
+                                                            style="white-space: normal;">
+                                                        <div class="d-flex gap-2 align-items-start">
+                                                            <i class="bi {{ notif.type == 'success' ? 'bi-check-circle-fill text-success' : (notif.type == 'warning' ? 'bi-exclamation-circle-fill text-warning' : (notif.type == 'danger' ? 'bi-x-circle-fill text-danger' : 'bi-info-circle-fill text-primary')) }} mt-1 flex-shrink-0"></i>
+                                                            <div>
+                                                                <div class="small">{{ notif.message }}</div>
+                                                                <div class="text-muted" style="font-size: 0.7rem;">{{ notif.createdAt|date('d.m.Y H:i') }}</div>
+                                                            </div>
+                                                            {% if not notif.isRead %}
+                                                                <span class="ms-auto flex-shrink-0 rounded-circle bg-primary" style="width: 8px; height: 8px; margin-top: 4px;"></span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        {% endfor %}
+                                        {% if _recentNotifs|length > 5 %}
+                                            <li><hr class="dropdown-divider my-1"></li>
+                                            <li><a class="dropdown-item rounded-3 text-center text-primary small fw-medium py-2" href="{{ path('app_notifications') }}">Vezi toate notificările</a></li>
+                                        {% endif %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+
                             <div class="dropdown dropdown-hover">
+                                {% set _activeCompany = active_company() %}
                                 <button class="btn bg-light modern-hover border-0 rounded-pill dropdown-toggle d-flex align-items-center gap-2 px-3 py-2 transition-all"
                                         type="button" data-bs-toggle="dropdown" aria-expanded="false" style="outline: none; box-shadow: none;">
                                     <span class="small fw-bold text-truncate text-dark"
-                                          style="max-width: 120px;">{{ app.user.company ? app.user.company.name : 'No Company' }}</span>
+                                          style="max-width: 120px;">{{ _activeCompany ? _activeCompany.name : 'No Company' }}</span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 p-2 rounded-4">
                                     <li><h6 class="dropdown-header text-uppercase fs-xs fw-bold text-muted px-2 py-1">Active Workspace</h6></li>
-                                    {% if app.user.company %}
-                                        <li><a class="dropdown-item rounded-3 active fw-medium py-2" href="{{ path('app_company') }}">{{ app.user.company.name }}</a></li>
-                                        <li><hr class="dropdown-divider my-2"></li>
+                                    {% if _activeCompany %}
+                                        <li><a class="dropdown-item rounded-3 active fw-medium py-2" href="{{ path('app_company') }}">{{ _activeCompany.name }}</a></li>
                                     {% endif %}
+                                    {% for company in app.user.companies %}
+                                        {% if not _activeCompany or company.id != _activeCompany.id %}
+                                            <li>
+                                                <form action="{{ path('app_company_switch', {id: company.id}) }}" method="POST" class="m-0">
+                                                    <button type="submit" class="dropdown-item rounded-3 fw-medium py-2 text-secondary">
+                                                        <i class="bi bi-arrow-repeat me-2"></i>{{ company.name }}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <li><hr class="dropdown-divider my-2"></li>
                                     <li><a class="dropdown-item rounded-3 fw-medium py-2 text-primary modern-hover" href="{{ path('app_company_new') }}"><i class="bi bi-plus-circle me-2"></i>Create New Company</a></li>
+                                    <li><a class="dropdown-item rounded-3 fw-medium py-2 text-primary modern-hover" href="{{ path('app_company_search') }}"><i class="bi bi-search me-2"></i>Search Company</a></li>
                                 </ul>
                             </div>
 
@@ -156,21 +231,74 @@
                             </div>
 
                             <div class="bg-light rounded-4 p-3 mb-4 border border-light">
+                                {% set _activeCompany = active_company() %}
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Active Workspace</small>
-                                    {% if app.user.company %}
+                                    {% if _activeCompany %}
                                         <a href="{{ path('app_company') }}" class="text-decoration-none small fw-bold text-primary">Manage</a>
                                     {% endif %}
                                 </div>
                                 <div class="d-flex align-items-center gap-2 mb-3">
-                                    <span class="fw-bold text-dark fs-6">{{ app.user.company ? app.user.company.name : 'No Company Selected' }}</span>
+                                    <span class="fw-bold text-dark fs-6">{{ _activeCompany ? _activeCompany.name : 'No Company Selected' }}</span>
                                 </div>
 
                                 <div class="d-grid gap-2">
+                                    {% for company in app.user.companies %}
+                                        {% if not _activeCompany or company.id != _activeCompany.id %}
+                                            <form action="{{ path('app_company_switch', {id: company.id}) }}" method="POST" class="m-0">
+                                                <button type="submit" class="btn btn-white bg-white border shadow-sm text-start w-100 rounded-pill py-2 fw-medium text-secondary">
+                                                    <i class="bi bi-arrow-repeat me-2"></i>{{ company.name }}
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    {% endfor %}
                                     <a href="{{ path('app_company_new') }}" class="btn btn-white bg-white border shadow-sm text-start rounded-pill py-2 fw-medium text-primary">
                                         <i class="bi bi-plus-circle me-2"></i> Create New Company
                                     </a>
                                 </div>
+                            </div>
+
+                            {# Notificări mobile #}
+                            {% set _mobileNotifs = recent_notifications() %}
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2 px-1">
+                                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">
+                                        <i class="bi bi-bell me-1"></i>Notificări
+                                        {% if _mobileNotifCount > 0 %}
+                                            <span class="badge bg-danger rounded-pill ms-1">{{ _mobileNotifCount }}</span>
+                                        {% endif %}
+                                    </small>
+                                    {% if _mobileNotifs is not empty %}
+                                        <a href="{{ path('app_notifications') }}" class="text-decoration-none small fw-bold text-primary">
+                                            Vezi toate
+                                        </a>
+                                    {% endif %}
+                                </div>
+
+                                {% if _mobileNotifs is empty %}
+                                    <p class="text-muted small text-center py-2 mb-0">Nicio notificare.</p>
+                                {% else %}
+                                    <div class="d-flex flex-column gap-1">
+                                        {% for notif in _mobileNotifs|slice(0, 4) %}
+                                            <form action="{{ path('app_notification_read', {id: notif.id}) }}" method="POST" class="m-0">
+                                                <button type="submit"
+                                                        class="btn w-100 text-start rounded-3 py-2 px-3 border-0 {{ notif.isRead ? 'bg-transparent text-muted' : 'bg-primary bg-opacity-10' }}"
+                                                        style="font-size: 0.82rem;">
+                                                    <div class="d-flex gap-2 align-items-start">
+                                                        <i class="bi {{ notif.type == 'success' ? 'bi-check-circle-fill text-success' : (notif.type == 'warning' ? 'bi-exclamation-circle-fill text-warning' : (notif.type == 'danger' ? 'bi-x-circle-fill text-danger' : 'bi-info-circle-fill text-primary')) }} mt-1 flex-shrink-0"></i>
+                                                        <div class="flex-grow-1 text-wrap" style="line-height: 1.3;">
+                                                            <span class="{{ not notif.isRead ? 'fw-semibold text-dark' : '' }}">{{ notif.message }}</span>
+                                                            <div class="text-muted mt-1" style="font-size: 0.72rem;">{{ notif.createdAt|date('d.m.Y H:i') }}</div>
+                                                        </div>
+                                                        {% if not notif.isRead %}
+                                                            <span class="rounded-circle bg-primary flex-shrink-0" style="width: 7px; height: 7px; margin-top: 5px;"></span>
+                                                        {% endif %}
+                                                    </div>
+                                                </button>
+                                            </form>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
 
                             <div class="d-grid gap-2">

@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ePontaje | Invitațiile mele{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="fw-bold mb-0">Invitațiile mele</h2>
+                <a href="{{ path('app_home') }}" class="btn btn-light rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-2"></i>Înapoi
+                </a>
+            </div>
+
+            {% if invitations is empty %}
+                <div class="card border-0 shadow-sm rounded-4 text-center py-5">
+                    <div class="card-body">
+                        <i class="bi bi-envelope-open fs-1 text-muted mb-3 d-block"></i>
+                        <h5 class="fw-semibold text-muted">Nu ai invitații pendinte</h5>
+                        <p class="text-muted small">Dacă un owner te invită într-o companie, invitația va apărea aici.</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="d-flex flex-column gap-3">
+                    {% for inv in invitations %}
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="card-body d-flex align-items-center gap-3 p-4">
+                                <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center flex-shrink-0"
+                                     style="width: 48px; height: 48px; font-size: 20px;">
+                                    <i class="bi bi-building"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold text-dark fs-5">{{ inv.company.name }}</div>
+                                    <div class="text-muted small">
+                                        Invitat de: <strong>{{ inv.company.owner.firstName }} {{ inv.company.owner.lastName }}</strong>
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                        <i class="bi bi-clock me-1"></i>{{ inv.createdAt|date('d.m.Y H:i') }}
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 flex-shrink-0">
+                                    <form action="{{ path('app_invitation_accept', {id: inv.id}) }}" method="POST">
+                                        <button type="submit" class="btn btn-success rounded-pill px-4 fw-medium">
+                                            <i class="bi bi-check-lg me-1"></i>Acceptă
+                                        </button>
+                                    </form>
+                                    <form action="{{ path('app_invitation_reject', {id: inv.id}) }}" method="POST">
+                                        <button type="submit" class="btn btn-outline-danger rounded-pill px-4 fw-medium">
+                                            <i class="bi bi-x-lg me-1"></i>Refuză
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

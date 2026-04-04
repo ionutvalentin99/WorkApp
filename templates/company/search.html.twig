@@ -48,7 +48,7 @@
                                     </div>
 
                                     {# Verificăm starea utilizatorului față de această companie #}
-                                    {% if comp.id == currentCompanyId %}
+                                    {% if comp.id in memberCompanyIds %}
                                         <button class="btn btn-success rounded-pill pe-none" disabled>
                                             <i class="bi bi-check-circle-fill me-1"></i> Ești membru
                                         </button>

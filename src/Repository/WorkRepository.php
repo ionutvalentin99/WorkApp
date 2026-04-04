@@ -78,12 +78,14 @@ class WorkRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getLastWorkRecords($userId)
+    public function getLastWorkRecords($userId, $companyId)
     {
         return $this->createQueryBuilder('p')
             ->select('p')
             ->where('p.user = :user')
             ->setParameter('user', $userId)
+            ->andWhere('p.company = :company')
+            ->setParameter('company', $companyId)
             ->orderBy('p.date', 'DESC')
             ->addOrderBy('p.time_end', 'DESC')
             ->setMaxResults(10)
