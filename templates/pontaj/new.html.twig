@@ -1,74 +1,74 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Work App | Add new record{% endblock %}
+{% block title %}ePontaje | Adaugă pontaj{% endblock %}
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 
 {% block body %}
+<div class="container py-4">
+    <div class="row g-4">
 
-<div class="flex justify-center">
-    {{ form(form) }}
+        {# ── Formular ── #}
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-semibold mb-4">
+                        <i class="bi bi-plus-circle me-2 text-primary"></i>Înregistrare nouă
+                    </h5>
+                    {{ form(form) }}
+                </div>
+            </div>
+        </div>
+
+        {# ── Pontaje azi ── #}
+        <div class="col-12 col-lg-7">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-semibold mb-4">
+                        <i class="bi bi-calendar-check me-2 text-primary"></i>Pontaje azi, {{ date }}
+                    </h5>
+
+                    {% if pontaje %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>De la</th>
+                                        <th>Până la</th>
+                                        <th>Ore lucrate</th>
+                                        <th>Detalii</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for pontaj in pontaje %}
+                                    <tr>
+                                        <td>{{ pontaj.timeStart|date("H:i") }}</td>
+                                        <td>{{ pontaj.timeEnd|date("H:i") }}</td>
+                                        <td>
+                                            {% set diff = date(pontaj.timeEnd).diff(date(pontaj.timeStart)) %}
+                                            {% if diff|date("%d") %}
+                                                {{ diff|date("%d") }}z {{ diff|date("%h") }}h {{ diff|date("%i") }}m
+                                            {% elseif not diff|date("%h") %}
+                                                {{ diff|date("%i") }} minute
+                                            {% elseif not diff|date("%i") %}
+                                                {{ diff|date("%h") }} ore
+                                            {% else %}
+                                                {{ diff|date("%h") }}h {{ diff|date("%i") }}m
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-muted">{{ pontaj.details }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Nu ai niciun pontaj înregistrat astăzi.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
-    {% if pontaje %}
-
-        <div class="block rounded relative top-5 left-auto">
-        <div class="text-green-500">Active records: </div>
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-6 py-3">
-                        Day
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        From
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        To
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Worked Hours
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Details
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for pontaj in pontaje %}
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                        <td class="px-6 py-4">
-                            {{ pontaj.getTimeStart|date("D, d.M.Y") }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ pontaj.getTimeStart|date("H:i")}}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ pontaj.getTimeEnd|date("H:i")}}
-                        </td>
-
-                        <td class="px-6 py-4">
-                            {% set difference = date(pontaj.getTimeEnd).diff(date(pontaj.getTimeStart)) %}
-
-                            {% if difference|date("%d")%}
-                                {{ difference|date("%d")}} zile  {{ difference|date("%h") }} ore {{ difference|date("%i") }} minute
-                            {% elseif not difference|date("%h") %}
-                                {{ difference|date("%i") }} minute
-                            {% elseif not difference|date("%i") %}
-                                {{ difference|date("%h") }} ore
-                            {% else %}
-                                {{ difference|date("%h") }} ore {{ difference|date("%i") }} minute
-                            {% endif %}
-                        </td>
-
-                        <td class="px-6 py-4">
-                            {{ pontaj.details }}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-    {% else %}
-
-        <p class="dark:text-white flex justify-center relative top-4">Today, {{ date }}, you have no active record. </p>
-
-    {% endif %}
-
 {% endblock %}

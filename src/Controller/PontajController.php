@@ -30,7 +30,7 @@ class PontajController extends AbstractController
     {
     }
 
-    #[Route('/user/work', name: 'app_pontaj')]
+    #[Route('/user/work/active', name: 'app_pontaj')]
     public function index(): Response
     {
         /** @var User $user */
@@ -46,7 +46,7 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/user/work/your-work', name: 'app_pontaj_your_records')]
+    #[Route('/user/work/my-work', name: 'app_pontaj_your_records')]
     public function showYourWork(Request $request): Response
     {
         /** @var User $user */
@@ -83,7 +83,7 @@ class PontajController extends AbstractController
         ]);
     }
 
-    #[Route('/user/work/company-records', name: 'app_pontaj_company_records')]
+    #[Route('/user/work/company-work', name: 'app_pontaj_company_records')]
     public function showCompanyWork(Request $request): Response
     {
         /** @var User $user */
@@ -130,6 +130,10 @@ class PontajController extends AbstractController
         $activeCompany = $this->activeCompanyService->getActiveCompany();
         if (!$user->isEnrolled() || !$activeCompany) {
             return $this->redirectToRoute('app_company_new');
+        }
+        if (!$activeCompany->isPaid()) {
+            $this->addFlash('warning', 'Compania nu este activată. Finalizează plata pentru a adăuga pontaje.');
+            return $this->redirectToRoute('app_company');
         }
         $form = $this->createForm(PontajeType::class);
         $form->handleRequest($request);
