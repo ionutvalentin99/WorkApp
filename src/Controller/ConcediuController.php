@@ -6,6 +6,8 @@ use App\Entity\Holiday;
 use App\Entity\User;
 use App\Form\ConcediiType;
 use App\Repository\HolidayRepository;
+use App\Service\ActiveCompanyService;
+use App\Service\NotificationService;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +17,13 @@ use DateTime;
 
 class ConcediuController extends AbstractController
 {
-    public function __construct(private readonly HolidayRepository $repository, private readonly PaginatorInterface $paginator)
-    {
-    }
+    public function __construct(
+        private readonly HolidayRepository   $repository,
+        private readonly PaginatorInterface  $paginator,
+        private readonly NotificationService $notificationService,
+        private readonly ActiveCompanyService $activeCompanyService,
+    ) {}
+
     #[Route('/user/vacation', name: 'app_concediu', methods: ['GET'])]
     public function index(): Response
     {
@@ -49,7 +55,25 @@ class ConcediuController extends AbstractController
 
             $this->repository->save($concediu, true);
 
-            $this->addFlash('success', 'Your request has been sent!');
+            $activeCompany = $this->activeCompanyService->getActiveCompany();
+            if ($activeCompany) {
+                $owner = $activeCompany->getOwner();
+                if ($owner && $owner !== $user) {
+                    $this->notificationService->notify(
+                        $owner,
+                        sprintf('%s %s a trimis o cerere de concediu (%s - %s).',
+                            $user->getFirstName(),
+                            $user->getLastName(),
+                            $startDate->format('d.m.Y'),
+                            $endDate->format('d.m.Y')
+                        ),
+                        'info',
+                        $this->generateUrl('app_pending_concedii')
+                    );
+                }
+            }
+
+            $this->addFlash('success', 'Cererea ta a fost trimisă cu succes!');
 
             return $this->redirectToRoute('app_concediu');
         }

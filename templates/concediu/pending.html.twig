@@ -1,63 +1,145 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Concedii in asteptare{% endblock %}
+{% block title %}ePontaje | Cereri în așteptare{% endblock %}
 
 {% block body %}
+<div class="container py-4">
 
-    {% if concedii %}
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="{{ path('app_concediu') }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i>
+            <span class="d-none d-sm-inline ms-1">Înapoi</span>
+        </a>
+    </div>
 
-        <div class="rounded relative top-5">
-            <div class="text-gray-400">Concedii in asteptare: {{ count }}</div>
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-6 py-3">
-                        Nume
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Prenume
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        De la
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Pana la
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Detalii
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for concediu in concedii %}
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-3 p-md-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h5 class="fw-semibold mb-0">
+                    <i class="bi bi-hourglass-split me-2 text-warning"></i>Cereri în așteptare
+                </h5>
+                {% if concedii %}
+                    <span class="badge bg-warning text-dark rounded-pill">{{ count }} cereri</span>
+                {% endif %}
+            </div>
 
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <td class="px-6 py-4">
-                            {{ concediu.userId.lastName }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ concediu.userId.firstName }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ concediu.getStartDate|date("d.M.Y") }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ concediu.getEndDate|date("d.M.Y") }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="{{ path('app_pending_show_concediu', {'id':concediu.id}) }}"
-                               class="dark:hover:underline">Vizualizeaza</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {% if concedii %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Angajat</th>
+                                <th>De la</th>
+                                <th>Până la</th>
+                                <th class="d-none d-md-table-cell">Zile</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for concediu in concedii %}
+                            <tr>
+                                <td class="fw-medium text-nowrap">
+                                    {{ concediu.userId.lastName }} {{ concediu.userId.firstName }}
+                                </td>
+                                <td class="text-nowrap">{{ concediu.startDate|date("d.M.Y") }}</td>
+                                <td class="text-nowrap">{{ concediu.endDate|date("d.M.Y") }}</td>
+                                <td class="d-none d-md-table-cell text-muted">
+                                    {{ concediu.startDate.diff(concediu.endDate).days + 1 }} zile
+                                </td>
+                                <td class="text-end">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-{{ concediu.id }}"
+                                            title="Vizualizează">
+                                        <i class="bi bi-eye"></i>
+                                        <span class="d-none d-md-inline ms-1">Vizualizează</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i>
+                    <p class="text-muted mt-3 mb-0">Nu există cereri în așteptare.</p>
+                </div>
+            {% endif %}
         </div>
+    </div>
 
-    {% else %}
+</div>
 
-        <p class="text-center mt-4">There are no pending holidays, all done. <a href="{{ path('app_concediu') }}" class="text-blue-500 hover:underline">Back.</a></p>
+{# ── Modaluri ── #}
+{% for concediu in concedii %}
+<div class="modal fade" id="modal-{{ concediu.id }}" tabindex="-1" aria-labelledby="modalLabel-{{ concediu.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-3">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-semibold" id="modalLabel-{{ concediu.id }}">
+                    <i class="bi bi-person-check me-2 text-primary"></i>Cerere concediu
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+            </div>
+            <div class="modal-body pt-3">
 
-    {% endif %}
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <p class="text-muted small mb-1">Angajat</p>
+                        <p class="fw-medium mb-0">{{ concediu.userId.lastName }} {{ concediu.userId.firstName }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-muted small mb-1">De la</p>
+                        <p class="fw-medium mb-0">{{ concediu.startDate|date("d.M.Y") }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-muted small mb-1">Până la</p>
+                        <p class="fw-medium mb-0">{{ concediu.endDate|date("d.M.Y") }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-muted small mb-1">Număr zile</p>
+                        <p class="fw-medium mb-0">{{ concediu.startDate.diff(concediu.endDate).days + 1 }} zile</p>
+                    </div>
+                    <div class="col-12">
+                        <p class="text-muted small mb-1">Detalii</p>
+                        <p class="mb-0">{{ concediu.details }}</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                {# Aprobare #}
+                <form method="post" action="{{ path('app_pending_approved', {id: concediu.id}) }}" class="mb-3">
+                    <button type="submit"
+                            class="btn btn-success w-100"
+                            onclick="return confirm('Ești sigur că vrei să aprobi această cerere?')">
+                        <i class="bi bi-check-circle me-1"></i>Aprobă cererea
+                    </button>
+                </form>
+
+                {# Respingere #}
+                <form method="post" action="{{ path('app_pending_denied', {id: concediu.id}) }}">
+                    <div class="mb-2">
+                        <label for="deny-{{ concediu.id }}" class="form-label small fw-medium text-danger">Motiv respingere</label>
+                        <textarea id="deny-{{ concediu.id }}"
+                                  name="deny"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Descrie motivul respingerii..."></textarea>
+                    </div>
+                    <button type="submit"
+                            class="btn btn-outline-danger w-100"
+                            onclick="return confirm('Ești sigur că vrei să respingi această cerere?')">
+                        <i class="bi bi-x-circle me-1"></i>Respinge cererea
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 {% endblock %}

@@ -61,6 +61,43 @@
                     -moz-osx-font-smoothing: grayscale;
                 }
 
+                /* ── Tabele moderne ── */
+                .table {
+                    --table-border: rgba(0, 0, 0, 0.06);
+                    border-collapse: separate;
+                    border-spacing: 0;
+                    font-size: .875rem;
+                }
+
+                .table > thead > tr > th {
+                    font-size: .7rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: .07em;
+                    color: #8a9bb0;
+                    background: transparent !important;
+                    border-bottom: 1px solid var(--table-border) !important;
+                    border-top: none !important;
+                    padding: .65rem 1rem;
+                    white-space: nowrap;
+                }
+
+                .table > tbody > tr > td {
+                    border-top: none !important;
+                    border-bottom: 1px solid var(--table-border) !important;
+                    padding: .85rem 1rem;
+                    vertical-align: middle;
+                    color: #344054;
+                }
+
+                .table > tbody > tr:last-child > td {
+                    border-bottom: none !important;
+                }
+
+                .table-hover > tbody > tr:hover > td {
+                    background-color: rgba(var(--bs-primary-rgb), .04) !important;
+                }
+
                 /* Suprascriem complet butoanele de tip primary */
                 .btn-primary {
                     /* Culoarea default (Steel Blue) */

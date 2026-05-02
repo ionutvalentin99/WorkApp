@@ -1,23 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Cerere Concediu{% endblock %}
+{% block title %}ePontaje | Cerere concediu{% endblock %}
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 
 {% block body %}
+<div class="container py-4">
 
-    <section class="flex justify-center">
+    {% set route = app.request.attributes.get('_route') %}
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="{{ path('app_concediu_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-sm-inline ms-1">Cerere nouă</span>
+        </a>
+        <a href="{{ path('app_concediu') }}" class="btn {{ route == 'app_concediu' ? 'btn-primary' : 'btn-outline-primary' }}">
+            <i class="bi bi-house"></i>
+            <span class="d-none d-sm-inline ms-1">Acasă</span>
+        </a>
+        <a href="{{ path('app_concediu_showconcedii') }}" class="btn {{ route == 'app_concediu_showconcedii' ? 'btn-primary' : 'btn-outline-primary' }}">
+            <i class="bi bi-clock-history"></i>
+            <span class="d-none d-sm-inline ms-1">Istoricul meu</span>
+        </a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_pending_concedii') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-shield-check"></i>
+                <span class="d-none d-sm-inline ms-1">Aprobare cereri</span>
+            </a>
+        {% endif %}
+    </div>
 
-    {{ form_start(form) }}
-    {{ form_label(form.startDate) }}
-    {{ form_widget(form.startDate) }}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-semibold mb-1">
+                        <i class="bi bi-umbrella me-2 text-primary"></i>Cerere concediu
+                    </h5>
+                    <p class="text-muted small mb-4">Completează datele și cererea va fi trimisă spre aprobare.</p>
 
-    {{ form_label(form.endDate) }}
-    {{ form_widget(form.endDate) }}
+                    {{ form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
 
-    {{ form_label(form.details) }}
-    {{ form_widget(form.details) }}
-
-    {{ form_widget(form.save) }}
-    {{ form_end(form) }}
-
-    </section>
+</div>
 {% endblock %}

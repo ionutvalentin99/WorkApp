@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Holiday;
 use App\Repository\HolidayRepository;
+use App\Service\NotificationService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,9 +13,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class AdminHolidaysController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly HolidayRepository $concediiRepository)
-    {
-    }
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly HolidayRepository     $concediiRepository,
+        private readonly NotificationService   $notificationService,
+    ) {}
     #[Route('/admin/vacations/pending', name: 'app_pending_concedii')]
     public function pendingConcedii(): Response
     {
@@ -41,8 +44,19 @@ class AdminHolidaysController extends AbstractController
         $concedii->setUpdated(new DateTime());
         $this->entityManager->flush();
 
+        $this->notificationService->notify(
+            $concedii->getUserId(),
+            sprintf('Cererea ta de concediu (%s - %s) a fost aprobată.',
+                $concedii->getStartDate()->format('d.m.Y'),
+                $concedii->getEndDate()->format('d.m.Y')
+            ),
+            'success',
+            $this->generateUrl('app_concediu_showconcedii')
+        );
+
         return $this->redirectToRoute('app_pending_concedii');
     }
+
     #[Route('/admin/vacations/{id}/response/deny', name: 'app_pending_denied')]
     public function deny(Holiday $concedii): Response
     {
@@ -50,6 +64,16 @@ class AdminHolidaysController extends AbstractController
         $concedii->setDetails($details);
         $concedii->setStatus('denied');
         $this->entityManager->flush();
+
+        $this->notificationService->notify(
+            $concedii->getUserId(),
+            sprintf('Cererea ta de concediu (%s - %s) a fost respinsă.',
+                $concedii->getStartDate()->format('d.m.Y'),
+                $concedii->getEndDate()->format('d.m.Y')
+            ),
+            'danger',
+            $this->generateUrl('app_concediu_showconcedii')
+        );
 
         return $this->redirectToRoute('app_pending_concedii');
     }
