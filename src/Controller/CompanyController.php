@@ -41,6 +41,16 @@ class CompanyController extends AbstractController
         ]);
     }
 
+    private function requirePaidCompany(): ?Response
+    {
+        $company = $this->activeCompanyService->getActiveCompany();
+        if ($company && !$company->isPaid()) {
+            $this->addFlash('warning', 'Compania nu este activată. Finalizează plata pentru a accesa această funcționalitate.');
+            return $this->redirectToRoute('app_company');
+        }
+        return null;
+    }
+
     #[Route('/user/company/new', name: 'app_company_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
@@ -69,6 +79,10 @@ class CompanyController extends AbstractController
     #[Route('/user/company/change-name', name: 'app_company_change_name', methods: ['GET', 'POST'])]
     public function changeName(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if ($redirect = $this->requirePaidCompany()) {
+            return $redirect;
+        }
+
         /** @var User $user */
         $user = $this->getUser();
         $company = $this->activeCompanyService->getActiveCompany();
@@ -208,6 +222,10 @@ class CompanyController extends AbstractController
     #[Route('/user/company/members', name: 'app_company_members', methods: ['GET'])]
     public function members(): Response
     {
+        if ($redirect = $this->requirePaidCompany()) {
+            return $redirect;
+        }
+
         /** @var User $user */
         $user = $this->getUser();
         $company = $this->activeCompanyService->getActiveCompany();
@@ -262,6 +280,10 @@ class CompanyController extends AbstractController
     #[Route('/user/company/requests', name: 'app_company_requests', methods: ['GET'])]
     public function requests(CompanyRequestRepository $requestRepo): Response
     {
+        if ($redirect = $this->requirePaidCompany()) {
+            return $redirect;
+        }
+
         /** @var User $user */
         $user = $this->getUser();
         $company = $this->activeCompanyService->getActiveCompany();
@@ -340,6 +362,10 @@ class CompanyController extends AbstractController
     #[Route('/user/company/invite', name: 'app_company_invite', methods: ['GET'])]
     public function invite(Request $request, UserRepository $userRepo, CompanyRequestRepository $requestRepo): Response
     {
+        if ($redirect = $this->requirePaidCompany()) {
+            return $redirect;
+        }
+
         /** @var User $user */
         $user = $this->getUser();
         $company = $this->activeCompanyService->getActiveCompany();

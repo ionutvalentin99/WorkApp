@@ -33,7 +33,7 @@ class StripeService
     /**
      * @throws ApiErrorException
      */
-    public function checkout(?int $companyId): Session
+    public function checkout(int $companyId): Session
     {
         return $this->stripeClient->checkout->sessions->create([
             'line_items' => [[
@@ -47,8 +47,20 @@ class StripeService
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => $this->router->generate('app_stripe_success', [], UrlGeneratorInterface::ABSOLUTE_URL) . '?session_id={CHECKOUT_SESSION_ID}&company_id=' . $companyId,
-            'cancel_url' => $this->router->generate('app_stripe_failed', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'metadata' => [
+                'company_id' => $companyId,
+            ],
+            'success_url' => $this->router->generate('app_stripe_success', [], UrlGeneratorInterface::ABSOLUTE_URL) . '?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => $this->router->generate('app_stripe_failed', [], UrlGeneratorInterface::ABSOLUTE_URL) . '?session_id={CHECKOUT_SESSION_ID}',
         ]);
     }
+
+    /**
+     * @throws ApiErrorException
+     */
+    public function retrieveSession(string $sessionId): Session
+    {
+        return $this->stripeClient->checkout->sessions->retrieve($sessionId);
+    }
+
 }

@@ -16,85 +16,73 @@ class CompanyType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
+                'label' => 'Nume companie',
                 'attr' => [
-                    'placeholder' => 'Company name',
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
+                    'placeholder' => 'ex: Acme SRL',
+                    'class' => 'form-control',
                 ],
+                'label_attr' => ['class' => 'form-label'],
                 'required' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please insert company name',
-                    ]),
-                    new Length([
-                        'max' => 100,
-                    ]),
+                    new NotBlank(['message' => 'Introduceți numele companiei.']),
+                    new Length(['max' => 100]),
                 ],
             ])
             ->add('phone_number', TextType::class, [
+                'label' => 'Telefon',
                 'attr' => [
-                    'placeholder' => 'Phone number',
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
+                    'placeholder' => 'ex: 0721 000 000',
+                    'class' => 'form-control',
                 ],
+                'label_attr' => ['class' => 'form-label'],
                 'required' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please insert phone number',
-                    ]),
-                    new Length([
-                        'max' => 20,
-                    ]),
+                    new NotBlank(['message' => 'Introduceți numărul de telefon.']),
+                    new Length(['max' => 20]),
                 ],
             ])
-            ->add('country', TextType::class,[
+            ->add('country', TextType::class, [
+                'label' => 'Țară',
                 'attr' => [
-                    'placeholder' => 'Country',
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
+                    'placeholder' => 'ex: România',
+                    'class' => 'form-control',
                 ],
+                'label_attr' => ['class' => 'form-label'],
                 'required' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please insert country',
-                    ]),
-                    new Length([
-                        'max' => 50,
-                    ]),
+                    new NotBlank(['message' => 'Introduceți țara.']),
+                    new Length(['max' => 50]),
                 ],
             ])
             ->add('city', TextType::class, [
+                'label' => 'Oraș',
                 'attr' => [
-                    'placeholder' => 'City',
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
-                    ],
+                    'placeholder' => 'ex: București',
+                    'class' => 'form-control',
+                ],
+                'label_attr' => ['class' => 'form-label'],
                 'required' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please insert city',
-                    ]),
-                    new Length([
-                        'max' => 50,
-                    ]),
+                    new NotBlank(['message' => 'Introduceți orașul.']),
+                    new Length(['max' => 50]),
                 ],
             ])
             ->add('address', TextType::class, [
+                'label' => 'Adresă',
                 'attr' => [
-                    'placeholder' => 'Address',
-                    'class' => 'block w-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
+                    'placeholder' => 'ex: Str. Exemplu, nr. 1',
+                    'class' => 'form-control',
                 ],
+                'label_attr' => ['class' => 'form-label'],
                 'required' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please insert company address',
-                    ]),
-                    new Length([
-                        'max' => 100,
-                    ]),
+                    new NotBlank(['message' => 'Introduceți adresa.']),
+                    new Length(['max' => 100]),
                 ],
             ])
             ->add('Submit', SubmitType::class, [
-                'attr' => [
-                    'class' => "block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2"
-                ],
-                'label' => 'Checkout'
+                'label' => 'Continuă spre plată',
+                'attr' => ['class' => 'btn btn-primary w-100'],
             ]);
     }
 

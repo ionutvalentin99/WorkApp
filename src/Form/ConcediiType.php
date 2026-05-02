@@ -17,40 +17,22 @@ class ConcediiType extends AbstractType
     {
         $builder
             ->add('startDate', DateType::class, [
-                'mapped' => true,
                 'widget' => 'single_text',
                 'data' => new DateTime(),
-                'label' => 'De la: ',
-                'attr' => [
-                    'class' => 'block dark:text-black rounded-full',
-                    'name' => 'startDate'
-                ]
+                'label' => 'De la',
             ])
-
             ->add('endDate', DateType::class, [
-                'mapped' => true,
                 'widget' => 'single_text',
                 'data' => new DateTime(),
-                'label' => 'pana la: ',
-                'attr' => [
-                    'class' => 'block dark:text-black rounded-full',
-                    'name' => 'endDate'
-                ]
+                'label' => 'Până la',
             ])
-
             ->add('details', TextType::class, [
-                'label' => 'Detalii: ',
-                'attr' => [
-                    'placeholder' => 'Detalii despre concediu...',
-                    'class' => 'block w-auto rounded-full shadow-sm border-gray-300 dark:border-transparent dark:text-gray-800 rounded-md border p-2 mt-1 mb-2'
-                ]
+                'label' => 'Detalii',
+                'attr' => ['placeholder' => 'ex: concediu medical, odihnă, eveniment personal...'],
             ])
-
             ->add('save', SubmitType::class, [
-                'label' => 'Trimite',
-                'attr' => [
-                    'class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-                ]
+                'label' => 'Trimite cererea',
+                'attr' => ['class' => 'btn btn-primary w-100 mt-2'],
             ])
         ;
     }

@@ -21,20 +21,18 @@ class IntervalWorkSearchType extends AbstractType
             ->add('dateFrom', DateType::class, [
                 'mapped' => false,
                 'widget' => 'single_text',
-                'label' => 'Interval Search from: ',
+                'label' => 'De la',
                 'data' => new DateTime(),
-                'attr' => ['class' => 'rounded-full text-black hover:focus:ring-3 dark:hover:bg-gray-200 top-3']
             ])
             ->add('dateTo', DateType::class, [
                 'mapped' => false,
                 'widget' => 'single_text',
-                'label' => 'to: ',
+                'label' => 'Până la',
                 'data' => new DateTime(),
-                'attr' => ['class' => 'rounded-full text-black hover:focus:ring-3 dark:hover:bg-gray-200 top-3']
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Search',
-                'attr' => ['class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800']
+                'label' => 'Caută',
+                'attr' => ['class' => 'btn btn-primary'],
             ])
             ->setMethod(Request::METHOD_GET);
     }

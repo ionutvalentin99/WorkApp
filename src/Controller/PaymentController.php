@@ -37,36 +37,65 @@ class PaymentController extends AbstractController
     #[Route('/payment/success', name: 'app_stripe_success')]
     public function success(EntityManagerInterface $manager, Request $request): Response
     {
-        //TODO: on future implement stripe webhook
         /** @var User $user */
         $user = $this->getUser();
         $sessionId = $request->query->get('session_id');
-        $companyId = $request->query->get('company_id');
-        
-        $company = $companyId ? $this->repository->find($companyId) : null;
 
-        if ($sessionId && $company && $company->getOwner() === $user) {
-            $company->setIsPaid(true);
-            $manager->flush();
-
-            return $this->render('payment/success.html.twig');
+        if (!$sessionId) {
+            return $this->redirectToRoute('app_home');
         }
 
-        return $this->redirectToRoute('app_stripe_failed', ['company_id' => $companyId]);
+        try {
+            $session = $this->stripeService->retrieveSession($sessionId);
+        } catch (ApiErrorException) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        if ($session->payment_status !== 'paid' || $session->status !== 'complete') {
+            return $this->redirectToRoute('app_stripe_failed', ['session_id' => $sessionId]);
+        }
+
+        $companyId = $session->metadata['company_id'] ?? null;
+        $company = $companyId ? $this->repository->find($companyId) : null;
+
+        if (!$company || $company->getOwner() !== $user) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        if (!$company->isPaid()) {
+            $company->setIsPaid(true);
+            $manager->flush();
+        }
+
+        return $this->render('payment/success.html.twig');
     }
+
     #[Route('/payment/failed', name: 'app_stripe_failed')]
     public function failed(Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-        $companyId = $request->query->get('company_id');
-        $company = $companyId ? $this->repository->find($companyId) : null;
+        $sessionId = $request->query->get('session_id');
+        $company = null;
+
+        if ($sessionId) {
+            try {
+                $session = $this->stripeService->retrieveSession($sessionId);
+                $companyId = $session->metadata['company_id'] ?? null;
+                $company = $companyId ? $this->repository->find($companyId) : null;
+            } catch (ApiErrorException) {
+                // session invalidă sau expirată
+            }
+        }
 
         if (!$company || $company->getOwner() !== $user || $company->isPaid()) {
             return $this->redirectToRoute('app_home');
         }
-        $this->activeCompanyService->clearActiveCompany();
-        $this->repository->remove($company, true);
-        return $this->render('payment/failed.html.twig');
+
+        $this->activeCompanyService->setActiveCompany($company);
+
+        return $this->render('payment/failed.html.twig', [
+            'company' => $company,
+        ]);
     }
 }

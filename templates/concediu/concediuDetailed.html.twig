@@ -1,20 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Concediul {{ concedii.id }}{% endblock %}
+{% block title %}ePontaje | Detalii cerere #{{ concedii.id }}{% endblock %}
 
 {% block body %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3 border-start border-danger border-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-semibold mb-4">
+                        <i class="bi bi-x-circle-fill text-danger me-2"></i>Cerere respinsă
+                    </h5>
 
-    <div>Concediul cu numarul {{ concedii.id }}:</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">De la</p>
+                            <p class="fw-medium mb-0">{{ concedii.startDate|date("d.M.Y") }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">Până la</p>
+                            <p class="fw-medium mb-0">{{ concedii.endDate|date("d.M.Y") }}</p>
+                        </div>
+                    </div>
 
-    <p>De la: {{ concedii.getStartDate|date("d.M.Y")}}</p>
+                    <div class="alert alert-danger rounded-3">
+                        <p class="fw-medium mb-1">Motiv respingere:</p>
+                        <p class="mb-0">{{ concedii.details }}</p>
+                    </div>
 
-    <p>Pana la: {{ concedii.getEndDate|date("d.M.Y")}}</p>
-
-    <div class="font-bold">A fost respins cu motivul:</div>
-    <p> {{ concedii.details }} </p>
-
-
-
-
-
+                    <a href="{{ path('app_concediu_showconcedii') }}" class="btn btn-outline-secondary w-100 mt-2">
+                        <i class="bi bi-arrow-left me-1"></i>Înapoi la istoric
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

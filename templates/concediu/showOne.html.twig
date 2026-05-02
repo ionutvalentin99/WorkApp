@@ -1,30 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Holiday {{ concedii.id }}{% endblock %}
+{% block title %}ePontaje | Cerere #{{ concedii.id }}{% endblock %}
 
 {% block body %}
+<div class="container py-4">
 
-        <p>Nume:  {{ concedii.userId.lastName }}</p>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="{{ path('app_pending_concedii') }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i>
+            <span class="d-none d-sm-inline ms-1">Înapoi la cereri</span>
+        </a>
+    </div>
 
-        <p>Prenume: {{ concedii.userId.firstName }} </p>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-semibold mb-4">
+                        <i class="bi bi-person-check me-2 text-primary"></i>Detalii cerere
+                    </h5>
 
-        <p>De la: {{ concedii.getStartDate|date("d.M.Y")}}</p>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <p class="text-muted small mb-1">Angajat</p>
+                            <p class="fw-medium mb-0">{{ concedii.userId.lastName }} {{ concedii.userId.firstName }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">De la</p>
+                            <p class="fw-medium mb-0">{{ concedii.startDate|date("d.M.Y") }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">Până la</p>
+                            <p class="fw-medium mb-0">{{ concedii.endDate|date("d.M.Y") }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">Număr zile</p>
+                            <p class="fw-medium mb-0">{{ concedii.startDate.diff(concedii.endDate).days + 1 }} zile</p>
+                        </div>
+                        <div class="col-12">
+                            <p class="text-muted small mb-1">Detalii</p>
+                            <p class="mb-0">{{ concedii.details }}</p>
+                        </div>
+                    </div>
 
-        <p>Pana la: {{ concedii.getEndDate|date("d.M.Y")}}</p>
+                    <hr>
 
-        <p>Detalii: {{ concedii.details }}</p>
+                    {# Aprobare #}
+                    <form method="post" action="{{ path('app_pending_approved', {id: concedii.id}) }}" class="mb-3">
+                        <button type="submit"
+                                class="btn btn-success w-100"
+                                onclick="return confirm('Ești sigur că vrei să aprobi această cerere?')">
+                            <i class="bi bi-check-circle me-1"></i>Aprobă cererea
+                        </button>
+                    </form>
 
-        <form method="post" action="{{ path('app_pending_approved', {'id': concedii.id}) }}">
-                <label>
-                        <button type="submit" onclick="return confirm('Are you sure you want to approve?')" class="text-center block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Aprobare</button>
-                </label>
-        </form>
+                    {# Respingere #}
+                    <form method="post" action="{{ path('app_pending_denied', {id: concedii.id}) }}">
+                        <div class="mb-2">
+                            <label for="deny" class="form-label small fw-medium text-danger">Motiv respingere</label>
+                            <textarea id="deny"
+                                      name="deny"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Descrie motivul respingerii..."
+                                      required></textarea>
+                        </div>
+                        <button type="submit"
+                                class="btn btn-outline-danger w-100"
+                                onclick="return confirm('Ești sigur că vrei să respingi această cerere?')">
+                            <i class="bi bi-x-circle me-1"></i>Respinge cererea
+                        </button>
+                    </form>
 
-        <form method="post" action="{{ path('app_pending_denied', {'id': concedii.id}) }}">
-        <label>
-                <button type="submit" onclick="return confirm('Are you sure you want to deny?')" class="text-center block w-full shadow-sm border-transparent bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white rounded-md border p-2 mt-4 mb-2">Respinge</button>
-                <input type="text" id="deny" required name="deny" placeholder="Detalii respingere..." class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        </label>
-        </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+</div>
 {% endblock %}

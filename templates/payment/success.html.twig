@@ -1,12 +1,26 @@
 {% extends 'base.html.twig' %}
-{% block title %}Payment Success!{% endblock %}
+
+{% block title %}Plată reușită{% endblock %}
+
 {% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-6 col-lg-5 text-center">
 
-    <h1>Thanks for your order!</h1>
-    <p>
-        We appreciate your business!
-        If you have any questions, please email
-        <a href="mailto:ionut_c1999@yahoo.com">ionut_c1999@yahoo.com</a>.
-    </p>
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h2 class="fw-bold mb-2">Plată confirmată!</h2>
+                <p class="text-muted mb-4">
+                    Compania ta a fost activată cu succes. Poți începe să folosești toate funcționalitățile aplicației.
+                </p>
+                <a href="{{ path('app_company') }}" class="btn btn-primary rounded-pill px-5">
+                    Mergi la companie
+                </a>
+            </div>
 
+        </div>
+    </div>
+</div>
 {% endblock %}

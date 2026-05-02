@@ -1,11 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Editare pontaj {% endblock %}
+{% block title %}ePontaje | Editare pontaj{% endblock %}
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 
 {% block body %}
-
-    <div class="flex justify-center">
-        {{ form(form) }}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-semibold mb-4">
+                        <i class="bi bi-pencil-square me-2 text-primary"></i>Editare pontaj
+                    </h5>
+                    {{ form(form) }}
+                    <a href="{{ path('app_pontaj') }}" class="btn btn-outline-secondary w-100 mt-2">
+                        <i class="bi bi-arrow-left me-1"></i>Înapoi
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-
+</div>
 {% endblock %}
