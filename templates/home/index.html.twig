@@ -150,17 +150,15 @@
                 {# --- CARD 1: PONTAJ RAPID --- #}
                 <div class="col-lg-4">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
-                        <div class="card-body p-4">
+                        <div class="card-body p-4 d-flex flex-column">
                             <div class="d-flex align-items-center mb-3">
-                                {# Folosim bg-primary (10% accent - Steel Azure) #}
                                 <div class="d-inline-flex align-items-center justify-content-center text-white rounded-3 p-3 me-3 bg-primary">
                                     <i class="bi bi-clock-fill fs-5"></i>
                                 </div>
                                 <h5 class="fw-bold mb-0">Pontaj Rapid</h5>
                             </div>
-                            <p class="text-muted small mb-4">Începe o sesiune de lucru sau adaugă ore manual.</p>
-                            <div class="d-grid">
-                                {# Buton Primary #}
+                            <p class="text-muted small">Începe o sesiune de lucru sau adaugă ore manual.</p>
+                            <div class="d-grid mt-auto">
                                 <a href="{{ path('app_pontaj_new') }}" class="btn btn-primary rounded-pill text-white">
                                     <i class="bi bi-play-circle me-2"></i> Adaugă Pontaj
                                 </a>
@@ -172,46 +170,95 @@
                 {# --- CARD 2: TOTAL ORE --- #}
                 <div class="col-lg-4">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                {# Am schimbat bg-success cu bg-secondary (30% - Steel Blue) pentru consistenta temei #}
-                                <div class="d-inline-flex align-items-center justify-content-center bg-secondary text-white rounded-3 p-3 me-3">
-                                    <i class="bi bi-bar-chart-fill fs-5"></i>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-secondary text-white rounded-3 p-3 me-3">
+                                        <i class="bi bi-bar-chart-fill fs-5"></i>
+                                    </div>
+                                    <h5 class="fw-bold mb-0">Total Ore</h5>
                                 </div>
-                                <h5 class="fw-bold mb-0">Total Ore</h5>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-primary active" id="btnStatWeek" onclick="showStat('week')">Săpt.</button>
+                                    <button type="button" class="btn btn-outline-primary" id="btnStatMonth" onclick="showStat('month')">Lună</button>
+                                </div>
                             </div>
-                            <div class="d-flex align-items-end">
-                                <h2 class="fw-bold mb-0 me-2">{{ totalHours }}<small class="fs-6 text-muted">h</small></h2>
-                                <span class="text-muted small mb-1">din {{ countRecords }} intrări</span>
+                            <div id="statWeek" class="mt-auto">
+                                <h2 class="fw-bold mb-0">{{ weekTotals.hours }}<small class="fs-6 text-muted fw-normal">h</small></h2>
+                                <span class="text-muted small">din {{ weekTotals.count }} intrări &bull; {{ weekTotals.label }}</span>
+                            </div>
+                            <div id="statMonth" class="mt-auto d-none">
+                                <h2 class="fw-bold mb-0">{{ monthTotals.hours }}<small class="fs-6 text-muted fw-normal">h</small></h2>
+                                <span class="text-muted small">din {{ monthTotals.count }} intrări &bull; {{ monthTotals.label }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {# --- CARD 3: ISTORIC --- #}
+                {# --- CARD 3: QR PONTAJ --- #}
+                {% set _qrCompany = active_company() %}
                 <div class="col-lg-4">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                {# Folosim bg-secondary (30% - Steel Blue) #}
-                                <div class="d-inline-flex align-items-center justify-content-center bg-secondary text-white rounded-3 p-3 me-3">
-                                    <i class="bi bi-archive-fill fs-5"></i>
+                        <div class="card-body p-4 d-flex flex-column">
+                            {% if not _qrCompany %}
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-light text-muted rounded-3 p-3 me-3">
+                                        <i class="bi bi-building-x fs-5"></i>
+                                    </div>
+                                    <h5 class="fw-bold mb-0 text-muted">Pontaj QR</h5>
                                 </div>
-                                <h5 class="fw-bold mb-0">Istoric</h5>
-                            </div>
-                            <p class="text-muted small mb-4">Vezi rapoarte detaliate și exportă date.</p>
-                            <div class="d-grid">
-                                <a href="{{ path('app_pontaj') }}" class="btn btn-primary rounded-pill">
-                                    Vezi Tot
-                                </a>
-                            </div>
+                                <p class="text-muted small mb-3">Nu ești înregistrat în nicio companie. Alătură-te sau creează una pentru a folosi pontajul QR.</p>
+                                <a href="{{ path('app_company_search') }}" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">Caută companie</a>
+                            {% elseif not _qrCompany.isPaid() %}
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-light text-muted rounded-3 p-3 me-3">
+                                        <i class="bi bi-lock fs-5"></i>
+                                    </div>
+                                    <h5 class="fw-bold mb-0 text-muted">Pontaj QR</h5>
+                                </div>
+                                {% if app.user == _qrCompany.owner %}
+                                    <p class="text-muted small mb-3">Compania nu este activată. Finalizează plata pentru a putea înregistra pontaje.</p>
+                                    <a href="{{ path('app_company') }}" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">Activează compania</a>
+                                {% else %}
+                                    <p class="text-muted small mb-0">Compania nu este activată. Contactează administratorul companiei.</p>
+                                {% endif %}
+                            {% elseif openPontaj %}
+                                <div class="row g-0 align-items-center h-100">
+                                    <div class="col-12 col-md-6 pe-md-3 mb-3 mb-md-0">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-warning text-white rounded-3 p-2 mb-2">
+                                            <i class="bi bi-qr-code-scan fs-5"></i>
+                                        </div>
+                                        <h5 class="fw-bold mb-1 text-warning">Pontaj deschis</h5>
+                                        <p class="text-muted small mb-0">
+                                            Start: <strong>{{ openPontaj.timeStart|date('H:i') }}</strong><br>
+                                            Scanează pentru a termina
+                                        </p>
+                                    </div>
+                                    <div class="col-12 col-md-6 d-flex justify-content-center justify-content-md-end">
+                                        <div id="qrCanvas" class="rounded-2" style="line-height:0;"></div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="row g-0 align-items-center h-100">
+                                    <div class="col-12 col-md-6 pe-md-3 mb-3 mb-md-0">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 p-2 mb-2">
+                                            <i class="bi bi-qr-code fs-5"></i>
+                                        </div>
+                                        <h5 class="fw-bold mb-1">Pontaj QR</h5>
+                                        <p class="text-muted small mb-0">Scanează pentru a deschide un pontaj</p>
+                                    </div>
+                                    <div class="col-12 col-md-6 d-flex justify-content-center justify-content-md-end">
+                                        <div id="qrCanvas" class="rounded-2" style="line-height:0;"></div>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
 
             {# ================= RECENT RECORDS TABLE ================= #}
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
                 <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold mb-0">Pontaje Recente</h5>
                     <span class="badge bg-light text-dark border rounded-pill px-3">Ultimele intrări</span>
@@ -232,7 +279,6 @@
                             </thead>
                             <tbody class="border-top-0">
                             {% for pontaj in pontaje %}
-                                {% set diff = date(pontaj.timeEnd).diff(date(pontaj.timeStart)) %}
                                 <tr>
                                     <td class="ps-4 py-3">
                                         <div class="d-flex align-items-center">
@@ -249,11 +295,19 @@
                                     <td class="py-3">
                                         <span class="badge bg-light text-dark border fw-normal">{{ pontaj.timeStart|date('H:i') }}</span>
                                         <i class="bi bi-arrow-right text-muted mx-1 small"></i>
-                                        <span class="badge bg-light text-dark border fw-normal">{{ pontaj.timeEnd|date('H:i') }}</span>
+                                        {% if pontaj.timeEnd %}
+                                            <span class="badge bg-light text-dark border fw-normal">{{ pontaj.timeEnd|date('H:i') }}</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark fw-normal">în curs</span>
+                                        {% endif %}
                                     </td>
                                     <td class="py-3">
-                                        {# Modificat in text-primary pentru contrast cu tema #}
-                                        <span class="fw-bold text-primary">{{ diff|date('%h') }}h {{ diff|date('%i') }}m</span>
+                                        {% if pontaj.timeEnd %}
+                                            {% set diff = date(pontaj.timeEnd).diff(date(pontaj.timeStart)) %}
+                                            <span class="fw-bold text-primary">{{ diff|date('%h') }}h {{ diff|date('%i') }}m</span>
+                                        {% else %}
+                                            <span class="text-warning fw-bold">—</span>
+                                        {% endif %}
                                     </td>
                                     <td class="py-3 text-muted small">{{ pontaj.details|default('—') }}</td>
                                     <td class="text-end pe-4 py-3">
@@ -271,18 +325,22 @@
                     {# --- VARIANTĂ MOBIL: Listă de Carduri (vizibilă doar sub md) --- #}
                     <div class="d-md-none">
                         {% for pontaj in pontaje %}
-                            {% set diff = date(pontaj.timeEnd).diff(date(pontaj.timeStart)) %}
                             <div class="p-3 border-bottom">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div class="d-flex align-items-center">
-                                        {# Inlocuit style color inline cu text-primary #}
                                         <div class="bg-light text-primary rounded-3 text-center p-2 me-3" style="min-width: 45px; border: 1px solid #eee;">
                                             <div class="fw-bold lh-1">{{ pontaj.timeStart|date('d') }}</div>
                                             <small style="font-size: 0.7rem;" class="text-uppercase">{{ pontaj.timeStart|date('M') }}</small>
                                         </div>
                                         <div>
-                                            <div class="fw-bold">{{ diff|date('%h') }}h {{ diff|date('%i') }}m</div>
-                                            <small class="text-muted">{{ pontaj.timeStart|date('H:i') }} - {{ pontaj.timeEnd|date('H:i') }}</small>
+                                            {% if pontaj.timeEnd %}
+                                                {% set diffM = date(pontaj.timeEnd).diff(date(pontaj.timeStart)) %}
+                                                <div class="fw-bold">{{ diffM|date('%h') }}h {{ diffM|date('%i') }}m</div>
+                                                <small class="text-muted">{{ pontaj.timeStart|date('H:i') }} - {{ pontaj.timeEnd|date('H:i') }}</small>
+                                            {% else %}
+                                                <div class="fw-bold text-warning">În curs</div>
+                                                <small class="text-muted">Start: {{ pontaj.timeStart|date('H:i') }}</small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="dropdown">
@@ -309,6 +367,166 @@
                     </div>
                 {% endif %}
             </div>
+
+            {# ================= CHART ================= #}
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                        <h5 class="fw-bold mb-0">
+                            <i class="bi bi-bar-chart-line me-2 text-primary"></i>Ore lucrate
+                        </h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary period-btn" data-period="week">7 zile</button>
+                                <button type="button" class="btn btn-primary period-btn active" data-period="month">Lună</button>
+                                <button type="button" class="btn btn-outline-primary period-btn" data-period="threeMonths">3 luni</button>
+                                <button type="button" class="btn btn-outline-primary period-btn" data-period="sixMonths">6 luni</button>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-primary type-btn active" data-type="bar" title="Bar">
+                                    <i class="bi bi-bar-chart-fill"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-primary type-btn" data-type="line" title="Linie">
+                                    <i class="bi bi-graph-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="pontajChart" height="90"></canvas>
+                </div>
+            </div>
+
         {% endif %}
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% if app.user and active_company() %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        // ── Total Ore toggle ──
+        function showStat(p) {
+            document.getElementById('statWeek').classList.toggle('d-none', p !== 'week');
+            document.getElementById('statMonth').classList.toggle('d-none', p !== 'month');
+            document.getElementById('btnStatWeek').classList.toggle('btn-primary', p === 'week');
+            document.getElementById('btnStatWeek').classList.toggle('btn-outline-primary', p !== 'week');
+            document.getElementById('btnStatMonth').classList.toggle('btn-primary', p === 'month');
+            document.getElementById('btnStatMonth').classList.toggle('btn-outline-primary', p !== 'month');
+        }
+
+        // ── QR Code ──
+        (function () {
+            const el = document.getElementById('qrCanvas');
+            if (!el) return;
+            const qrUrl = {{ openPontaj ? ('"' ~ url('app_pontaj_qr_end') ~ '"')|raw : ('"' ~ url('app_pontaj_qr_start') ~ '"')|raw }};
+            new QRCode(el, {
+                text: qrUrl,
+                width: 110,
+                height: 110,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        })();
+    </script>
+    <script>
+        const datasets    = {{ chartDatasets|raw }};
+        let currentPeriod = 'month';
+        let currentType   = 'bar';
+
+        function makeDataset(type, labels, data) {
+            const canvas = document.getElementById('pontajChart');
+            const ctx    = canvas.getContext('2d');
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(6, 71, 137, 0.85)');
+            gradient.addColorStop(1, 'rgba(66, 122, 161, 0.15)');
+
+            const base = {
+                label: 'Ore lucrate',
+                data: data,
+                borderColor: 'rgba(6, 71, 137, 0.9)',
+                borderWidth: 2,
+            };
+
+            if (type === 'bar') {
+                return { ...base, backgroundColor: gradient, borderWidth: 0, borderRadius: 6, borderSkipped: false };
+            } else {
+                return { ...base, backgroundColor: gradient, fill: true, tension: 0.4, pointRadius: 4,
+                         pointBackgroundColor: 'rgba(6,71,137,0.9)', pointBorderColor: '#fff', pointBorderWidth: 2 };
+            }
+        }
+
+        const chartOptions = {
+            responsive: true,
+            animation: { duration: 300 },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: { label: ctx => ` ${ctx.parsed.y}h lucrate` }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#8a9bb0', font: { size: 11 } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { color: '#8a9bb0', font: { size: 11 }, callback: v => v + 'h' }
+                }
+            }
+        };
+
+        let chart = new Chart(document.getElementById('pontajChart'), {
+            type: currentType,
+            data: {
+                labels: datasets[currentPeriod].labels,
+                datasets: [makeDataset(currentType, datasets[currentPeriod].labels, datasets[currentPeriod].data)]
+            },
+            options: chartOptions
+        });
+
+        function rebuildChart() {
+            chart.destroy();
+            chart = new Chart(document.getElementById('pontajChart'), {
+                type: currentType,
+                data: {
+                    labels: datasets[currentPeriod].labels,
+                    datasets: [makeDataset(currentType, datasets[currentPeriod].labels, datasets[currentPeriod].data)]
+                },
+                options: chartOptions
+            });
+        }
+
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.period-btn').forEach(b => {
+                    b.classList.remove('btn-primary', 'active');
+                    b.classList.add('btn-outline-primary');
+                });
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary', 'active');
+                currentPeriod = this.dataset.period;
+                rebuildChart();
+            });
+        });
+
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.type-btn').forEach(b => {
+                    b.classList.remove('btn-primary', 'active');
+                    b.classList.add('btn-outline-primary');
+                });
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary', 'active');
+                currentType = this.dataset.type;
+                rebuildChart();
+            });
+        });
+    </script>
+    {% endif %}
 {% endblock %}
