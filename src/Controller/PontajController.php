@@ -210,6 +210,88 @@ class PontajController extends AbstractController
         ]);
     }
 
+    #[Route('/user/work/qr/start', name: 'app_pontaj_qr_start')]
+    public function qrStart(): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $activeCompany = $this->activeCompanyService->getActiveCompany();
+
+        if (!$activeCompany) {
+            return $this->render('pontaj/qr_confirm.html.twig', [
+                'status' => 'error',
+                'message' => 'Nu ești în nicio companie activă.',
+            ]);
+        }
+
+        if (!$activeCompany->isPaid()) {
+            return $this->render('pontaj/qr_confirm.html.twig', [
+                'status' => 'error',
+                'message' => 'Compania nu este activată.',
+            ]);
+        }
+
+        $existing = $this->repository->getOpenPontaj($user, $activeCompany);
+        if ($existing) {
+            return $this->render('pontaj/qr_confirm.html.twig', [
+                'status' => 'already_open',
+                'startTime' => $existing->getTimeStart(),
+            ]);
+        }
+
+        $now = new DateTime();
+        $pontaj = new Work();
+        $pontaj->setUser($user);
+        $pontaj->setCompany($activeCompany);
+        $pontaj->setTimeStart($now);
+        $pontaj->setTimeEnd(null);
+        $pontaj->setDate(new DateTime('today'));
+        $pontaj->setDetails('Munca, ' . $now->format('d.m.Y'));
+        $pontaj->setCreated($now);
+        $pontaj->setRecordId($this->uuid->getUuid());
+
+        $this->repository->save($pontaj, true);
+
+        return $this->render('pontaj/qr_confirm.html.twig', [
+            'status' => 'opened',
+            'startTime' => $now,
+        ]);
+    }
+
+    #[Route('/user/work/qr/end', name: 'app_pontaj_qr_end')]
+    public function qrEnd(): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $activeCompany = $this->activeCompanyService->getActiveCompany();
+
+        if (!$activeCompany) {
+            return $this->render('pontaj/qr_confirm.html.twig', [
+                'status' => 'error',
+                'message' => 'Nu ești în nicio companie activă.',
+            ]);
+        }
+
+        $openPontaj = $this->repository->getOpenPontaj($user, $activeCompany);
+        if (!$openPontaj) {
+            return $this->render('pontaj/qr_confirm.html.twig', [
+                'status' => 'no_open',
+                'message' => 'Nu există un pontaj deschis de închis.',
+            ]);
+        }
+
+        $now = new DateTime();
+        $openPontaj->setTimeEnd($now);
+        $openPontaj->setUpdated($now);
+        $this->repository->save($openPontaj, true);
+
+        return $this->render('pontaj/qr_confirm.html.twig', [
+            'status' => 'closed',
+            'startTime' => $openPontaj->getTimeStart(),
+            'endTime' => $now,
+        ]);
+    }
+
     #[Route('/user/work/delete/{id}', name: 'app_pontaj_delete')]
     public function delete($id, Work $pontaje, Request $request): Response
     {

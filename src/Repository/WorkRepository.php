@@ -78,6 +78,36 @@ class WorkRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function getRecordsForPeriod($user, $company, DateTime $start, DateTime $end): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('p.company = :company')
+            ->setParameter('company', $company)
+            ->andWhere('p.date BETWEEN :start AND :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('p.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getOpenPontaj($user, $company): ?Work
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('p.company = :company')
+            ->setParameter('company', $company)
+            ->andWhere('p.time_end IS NULL')
+            ->orderBy('p.time_start', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function getLastWorkRecords($userId, $companyId)
     {
         return $this->createQueryBuilder('p')

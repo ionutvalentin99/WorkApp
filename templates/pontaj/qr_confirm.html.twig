@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ePontaje | QR Pontaj{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-8 col-md-5">
+            <div class="card border-0 shadow rounded-4 text-center p-4">
+
+                {% if status == 'opened' %}
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mb-3" style="width:72px;height:72px;">
+                            <i class="bi bi-play-circle-fill fs-2"></i>
+                        </div>
+                        <h4 class="fw-bold text-success mb-1">Pontaj deschis!</h4>
+                        <p class="text-muted mb-0">
+                            Start: <strong>{{ startTime|date('H:i') }}</strong> — {{ startTime|date('d.m.Y') }}
+                        </p>
+                        <p class="text-muted small mt-2">Scanează codul QR de <em>încheiere</em> când termini.</p>
+                    </div>
+
+                {% elseif status == 'closed' %}
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle mb-3" style="width:72px;height:72px;">
+                            <i class="bi bi-check-circle-fill fs-2"></i>
+                        </div>
+                        <h4 class="fw-bold text-primary mb-1">Pontaj înregistrat!</h4>
+                        <p class="text-muted mb-1">
+                            <i class="bi bi-clock me-1"></i>
+                            {{ startTime|date('H:i') }} &rarr; {{ endTime|date('H:i') }}
+                        </p>
+                        {% set diffSec = endTime.timestamp - startTime.timestamp %}
+                        {% set diffH   = (diffSec / 3600)|round(0, 'floor') %}
+                        {% set diffM   = ((diffSec % 3600) / 60)|round(0, 'floor') %}
+                        <p class="text-muted small">
+                            Durată: <strong>{{ diffH }}h {{ diffM }}m</strong> &bull; detalii: Munca, {{ startTime|date('d.m.Y') }}
+                        </p>
+                        <p class="text-muted small mt-1">Poți modifica detaliile din secțiunea Pontajele mele.</p>
+                    </div>
+
+                {% elseif status == 'already_open' %}
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-warning text-white rounded-circle mb-3" style="width:72px;height:72px;">
+                            <i class="bi bi-exclamation-circle-fill fs-2"></i>
+                        </div>
+                        <h4 class="fw-bold text-warning mb-1">Pontaj deja deschis</h4>
+                        <p class="text-muted mb-0">
+                            Ai un pontaj deschis din <strong>{{ startTime|date('H:i') }}</strong>.
+                        </p>
+                        <p class="text-muted small mt-2">Scaneaza codul QR de <em>încheiere</em> pentru a-l închide.</p>
+                    </div>
+
+                {% elseif status == 'no_open' %}
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-secondary text-white rounded-circle mb-3" style="width:72px;height:72px;">
+                            <i class="bi bi-info-circle-fill fs-2"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1">Niciun pontaj deschis</h4>
+                        <p class="text-muted mb-0">Scaneaza codul QR de <em>deschidere</em> pentru a începe.</p>
+                    </div>
+
+                {% else %}
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-danger text-white rounded-circle mb-3" style="width:72px;height:72px;">
+                            <i class="bi bi-x-circle-fill fs-2"></i>
+                        </div>
+                        <h4 class="fw-bold text-danger mb-1">Eroare</h4>
+                        <p class="text-muted mb-0">{{ message|default('A apărut o eroare. Încearcă din nou.') }}</p>
+                    </div>
+                {% endif %}
+
+                <a href="{{ path('app_home') }}" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-house me-1"></i> Acasă
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
